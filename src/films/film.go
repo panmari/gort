@@ -7,4 +7,6 @@ import (
 type Film interface {
 	AddSample(x, y int, sample *vec3.T)
 	WriteToPng(filename string)
+	GetWidth() int
+	GetHeight() int
 }
