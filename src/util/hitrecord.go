@@ -19,5 +19,5 @@ func (h *Hitrecord) DoesHit() bool {
 }
 
 type Intersectable interface {
-	Intersect(r *Ray) Hitrecord
+	Intersect(r *Ray) *Hitrecord
 }

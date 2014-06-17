@@ -11,7 +11,7 @@ type Sphere struct {
 	Radius float32
 }
 
-func (s *Sphere) Intersect(r *util.Ray) util.Hitrecord {
+func (s *Sphere) Intersect(r *util.Ray) *util.Hitrecord {
 	a := r.Direction.LengthSqr()
 	originCenter := vec3.Sub(&r.Origin, &s.Center)
 	b := 2 * vec3.Dot(&r.Direction, &originCenter)
@@ -25,10 +25,10 @@ func (s *Sphere) Intersect(r *util.Ray) util.Hitrecord {
 			return s.makeHitrecord(t1, r)
 		}
 	}
-	return util.Hitrecord{}
+	return &util.Hitrecord{}
 }
 
-func (s *Sphere) makeHitrecord(t float32, r *util.Ray) util.Hitrecord {
+func (s *Sphere) makeHitrecord(t float32, r *util.Ray) *util.Hitrecord {
 	hitPoint := r.PointAt(t)
 	normal := vec3.Sub(&hitPoint, &s.Center)
 	normal.Normalize()
@@ -40,5 +40,5 @@ func (s *Sphere) makeHitrecord(t float32, r *util.Ray) util.Hitrecord {
 	u := 0.5 + fmath.Atan2(hitPoint[2], hitPoint[0])/(2*fmath.Pi)
 	v := 0.5 - fmath.Asin(hitPoint[1])/fmath.Pi
 
-	return util.Hitrecord{t, hitPoint, normal, wIn, u, v, s}
+	return &util.Hitrecord{t, hitPoint, normal, wIn, u, v, s}
 }
