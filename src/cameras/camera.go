@@ -5,5 +5,5 @@ import (
 )
 
 type Camera interface {
-	MakeWorldSpaceRay(i, j int, samples *[2]float32) util.Ray
+	MakeWorldSpaceRay(i, j int, samples *[2]float32) *util.Ray
 }
