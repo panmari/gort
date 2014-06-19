@@ -34,6 +34,7 @@ func MakeSimpleScene() *TestScene {
 	root := intersectables.MakeIntersectableList(2)
 	root.Add(intersectables.Sphere{Center: vec3.T{0,0,0}, Radius: 1.0})
 	root.Add(intersectables.Sphere{Center: vec3.T{2,0,0}, Radius: 1.0})
+	root.Add(intersectables.Sphere{Center: vec3.T{-3,0,0}, Radius: 1.0})
 	
 	return &TestScene{Camera: c, Sampler: s, Integrator: i, Film: f, Root: root}
 }
