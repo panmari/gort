@@ -8,7 +8,7 @@ import (
 type DebugIntegrator struct {
 }
 
-func (d DebugIntegrator) Integrate(r *util.Ray, root util.Intersectable) *vec3.T {
+func (d *DebugIntegrator) Integrate(r *util.Ray, root util.Intersectable) *vec3.T {
 	if hit := root.Intersect(r); hit.DoesHit() {
 		return &vec3.T{1,0,0}
 	}
