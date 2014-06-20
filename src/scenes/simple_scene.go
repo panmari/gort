@@ -19,14 +19,17 @@ func MakeSimpleScene() *Scene {
 	width := 640
 	height := 360
 	c := cameras.MakePinholeCamera(&eye, &lookAt, &up, fov, aspect, width, height)
-	s := samplers.MakeRandomSampler()
+	//s := samplers.MakeRandomSampler()
+	s := samplers.MakeOneSampler()
 	f := films.MakeBoxFilterFilm(width, height)
 	
 	root := intersectables.MakeIntersectableList(2)
 	root.Add(intersectables.MakeDiffuseSphere(vec3.T{0,0,0}, 1.0))
 	root.Add(intersectables.MakeDiffuseSphere(vec3.T{2,1,0}, 1.0))
 	root.Add(intersectables.MakeDiffuseSphere(vec3.T{-3,0,0}, 1.0))
-	root.Add(intersectables.MakeDiffusePlane(vec3.T{0,0,-1}, 4))
+	root.Add(intersectables.MakeDiffusePlane(vec3.T{0,0,1}, 4))
+	root.Add(intersectables.MakeDiffusePlane(vec3.T{0,1,0}, 2))
+	
 	//i := integrators.MakeDebugIntegrator(root)
 	l := make([]lights.LightGeometry, 0, 2)
 	l = append(l, lights.MakePointLight(&vec3.T{0,2,0}, &vec3.T{10,10,10}))
