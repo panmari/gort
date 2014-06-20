@@ -5,11 +5,14 @@ import (
 	"samplers"
 	"integrators"
 	"films"
+	"util"
 )
 
-type Scene interface {
-	GetCamera() (*cameras.Camera)
-	GetSampler() (*samplers.Sampler)
-	GetIntegrator() (*integrators.Integrator)
-	getFilm() (*films.Film)
+type Scene struct {
+	Camera cameras.Camera
+	Sampler samplers.Sampler
+	Integrator integrators.Integrator
+	Film	films.Film
+	Root util.Intersectable
+	SPP int
 }

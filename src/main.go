@@ -13,13 +13,15 @@ func main() {
 	start := time.Now()
 	for x := 0; x < scene.Film.GetWidth(); x++ {
 		for y := 0; y < scene.Film.GetHeight(); y++ {
-			sample := scene.Sampler.Get2DSample()
-			ray := scene.Camera.MakeWorldSpaceRay(x, y, sample)
-			color := scene.Integrator.Integrate(ray, scene.Root)
-			scene.Film.AddSample(x,y,color)
+			for s := 0; s < scene.SPP; s++ {
+				sample := scene.Sampler.Get2DSample()
+				ray := scene.Camera.MakeWorldSpaceRay(x, y, sample)
+				color := scene.Integrator.Integrate(ray, scene.Root)
+				scene.Film.AddSample(x,y,color)
+			}
 		}
 	}
 	duration := time.Since(start)
 	fmt.Println(duration.String())
-	scene.Film.WriteToPng("test")
+	scene.Film.WriteToPng("test_rnd_sample")
 }
