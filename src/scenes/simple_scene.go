@@ -26,12 +26,12 @@ func MakeSimpleScene() *Scene {
 	root.Add(intersectables.MakeDiffuseSphere(vec3.T{0,0,0}, 1.0))
 	root.Add(intersectables.MakeDiffuseSphere(vec3.T{2,1,0}, 1.0))
 	root.Add(intersectables.MakeDiffuseSphere(vec3.T{-3,0,0}, 1.0))
-	
+	root.Add(intersectables.MakeDiffusePlane(vec3.T{0,0,-1}, 4))
 	//i := integrators.MakeDebugIntegrator(root)
 	l := make([]lights.LightGeometry, 0, 2)
 	l = append(l, lights.MakePointLight(&vec3.T{0,2,0}, &vec3.T{10,10,10}))
 	l = append(l, lights.MakePointLight(&vec3.T{-3,2,0}, &vec3.T{10,10,10}))
 	i := integrators.MakePointLightIntegrator(root, l)
 	
-	return &Scene{Camera: c, Sampler: s, Integrator: i, Film: f, Root: root, SPP: 8, Filename: "test_scene"}
+	return &Scene{Camera: c, Sampler: s, Integrator: i, Film: f, Root: root, SPP: 1, Filename: "test_scene"}
 }

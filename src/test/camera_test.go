@@ -20,9 +20,9 @@ func TestCameraRay(t *testing.T) {
 	expectedOrig := vec3.T{0,0,5}
 	if r.Origin != expectedOrig {
 		t.Error("wrong origin")	
-		}
-	expectedDir := vec3.T{1.192093e-07 -0.7071069 -0.70710665}
-	if !HasTinyDifferenceVec3(r.Direction, expectedDir) {
-		t.Errorf("wrong direction: %v", r.Direction)
+	}
+	expectedDir := vec3.T{1.192093e-07, -0.7071069, -0.70710665}
+	if vec3.Distance(&expectedDir, &r.Direction) > 0.001 {
+		t.Errorf("wrong direction: %v vs %v, dist: %f", r.Direction, expectedDir, vec3.Distance(&expectedDir, &r.Direction))
 	}
 }
