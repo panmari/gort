@@ -4,8 +4,8 @@ import (
 	"github.com/barnex/fmath"
 	
 )
-func HasTinyDifferenceVec3(a, b vec3.T) bool {
-	return a.Distance(&b) < 0.0001
+func HasTinyDifferenceVec3(a, b *vec3.T) bool {
+	return vec3.Distance(a, b) < 0.0001
 }
 
 func HasTinyDifference(a, b float32) bool {

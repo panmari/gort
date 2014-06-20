@@ -27,7 +27,8 @@ func (i *BoxFilterFilm) ColorModel() color.Model {
 }
 
 func (i *BoxFilterFilm) At(x, y int) color.Color {
-	//TODO: make more sense here
+	// invert y axis here
+	y = i.height - y - 1
 	s := i.Film[y*i.width+x]
 	s.Scale(255.0/s[3])
 	s.Clamp(&vec4.Zero,&vec4.T{255,255,255})

@@ -24,7 +24,7 @@ func MakeSimpleScene() *Scene {
 	
 	root := intersectables.MakeIntersectableList(2)
 	root.Add(intersectables.MakeDiffuseSphere(vec3.T{0,0,0}, 1.0))
-	root.Add(intersectables.MakeDiffuseSphere(vec3.T{2,0,0}, 1.0))
+	root.Add(intersectables.MakeDiffuseSphere(vec3.T{2,1,0}, 1.0))
 	root.Add(intersectables.MakeDiffuseSphere(vec3.T{-3,0,0}, 1.0))
 	
 	//i := integrators.MakeDebugIntegrator(root)
