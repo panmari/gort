@@ -15,3 +15,9 @@ func (m *PointLightMaterial) HasSpecularReflection() bool {
 func (m *PointLightMaterial) HasSpecularRefraction() bool {
 	return false
 }
+
+func MakePointLightMaterial(emission *vec3.T) *PointLightMaterial {
+	m := new(PointLightMaterial)
+	m.emission = emission
+	return m
+}

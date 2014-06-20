@@ -14,10 +14,6 @@ type Hitrecord struct {
 	Intersectable Intersectable
 }
 
-func (h *Hitrecord) DoesHit() bool {
-	return h.Intersectable != nil
-}
-
 type Intersectable interface {
-	Intersect(r *Ray) *Hitrecord
+	Intersect(r *Ray) (*Hitrecord, bool)
 }

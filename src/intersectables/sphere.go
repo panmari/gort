@@ -11,7 +11,7 @@ type Sphere struct {
 	Radius float32
 }
 
-func (s Sphere) Intersect(r *util.Ray) *util.Hitrecord {
+func (s Sphere) Intersect(r *util.Ray) (*util.Hitrecord, bool) {
 	a := r.Direction.LengthSqr()
 	originCenter := vec3.Sub(&r.Origin, &s.Center)
 	b := 2 * vec3.Dot(&r.Direction, &originCenter)
@@ -19,13 +19,13 @@ func (s Sphere) Intersect(r *util.Ray) *util.Hitrecord {
 	t0, t1, hasSolution := util.SolveQuadratic(a, b, c)
 	if hasSolution {
 		if t0 > 0 {
-			return (&s).makeHitrecord(t0, r)
+			return s.makeHitrecord(t0, r), true
 		}
 		if t1 > 0 {
-			return (&s).makeHitrecord(t1, r)
+			return s.makeHitrecord(t1, r), true
 		}
 	}
-	return &util.Hitrecord{}
+	return nil, false
 }
 
 func (s Sphere) makeHitrecord(t float32, r *util.Ray) *util.Hitrecord {

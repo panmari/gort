@@ -13,15 +13,17 @@ func (list *IntersectableList) Add(intersectable util.Intersectable) {
 	list.intersectables = append(list.intersectables, intersectable)
 }
 
-func (list *IntersectableList) Intersect(ray *util.Ray) *util.Hitrecord {
+func (list *IntersectableList) Intersect(ray *util.Ray) (*util.Hitrecord, bool) {
 	closestHit := new(util.Hitrecord)
 	closestHit.T = math.MaxFloat32
+	doesHit := false
 	for _, i := range list.intersectables {
-		if  hit := i.Intersect(ray); hit.DoesHit() && hit.T < closestHit.T && hit.T > 0 {
+		if  hit, doesHit := i.Intersect(ray); doesHit && hit.T < closestHit.T && hit.T > 0 {
 			closestHit = hit
+			doesHit = true
 		}
 	}
-	return closestHit
+	return closestHit, doesHit
 }
 
 func MakeIntersectableList(initialSize int) *IntersectableList {

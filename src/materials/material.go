@@ -12,6 +12,8 @@ type Material interface {
 	DoesCastShadows() bool
 	HasSpecularReflection() bool
 	HasSpecularRefraction() bool
-	EvaluateSpecularReflection(hit *util.Hitrecord) (*vec3.T)
-	EvaluateBRDF(hit *util.Hitrecord, wOut, wIn *vec3.T) (*vec3.T)
+	
+	// these pass a copy back
+	EvaluateSpecularReflection(hit *util.Hitrecord) (vec3.T)
+	EvaluateBRDF(hit *util.Hitrecord, wOut, wIn *vec3.T) (vec3.T)
 }

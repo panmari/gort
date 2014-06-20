@@ -33,8 +33,8 @@ func (m *Diffuse) HasSpecularRefraction() bool {
 	return false
 }
 
-func (m *Diffuse) EvaluateSpecularReflection(hit *util.Hitrecord) (*vec3.T) {
-	return new(vec3.T)
+func (m *Diffuse) EvaluateSpecularReflection(hit *util.Hitrecord) (vec3.T) {
+	return vec3.T{}
 }
 
 func (m *Diffuse) EvaluateBRDF(hit *util.Hitrecord, wOut, wIn *vec3.T) (vec3.T) {
