@@ -1,0 +1,24 @@
+# gort - A ray tracer in go
+
+This is a raytracing framework used for educational purposes. 
+
+## Installation
+
+Install go and dependencies. On a Debian derivative this may be done using the following command
+
+     sudo apt-get install golang golang-go.tools gocode
+
+Configure your GOPATH by changing your inserting the following line into your `.bashrc` file
+
+     export $GOPATH={go_workspace}/{local clone of repositry}
+
+Install goclipse by following the instructions on 
+https://github.com/GoClipse/goclipse/blob/latest/documentation/Installation.md
+Go to `window` -> `preferences` -> `go` and enter the following settings
+
+* GOROOT: `/usr/lib/go`
+* GOPATH: todo
+* Go tool path (go): `/usr/bin/go`
+* Go formatter (gofmt):  `/usr/bin/gofmt`
+* Go documentor (godoc): `/usr/bin/godoc`
+
