@@ -9,8 +9,9 @@ type PointLightMaterial struct {
 	emission *vec3.T
 }
 func (m *PointLightMaterial) EvaluateEmission(hit *util.Hitrecord, wOut *vec3.T) (*vec3.T) {
-	return nil
+	return m.emission
 }
+
 func (m *PointLightMaterial) GetEmissionSample(hit *util.Hitrecord, sample [2]float32) (*vec3.T) {
 	return nil
 }

@@ -15,4 +15,5 @@ type Scene struct {
 	Film	films.Film
 	Root util.Intersectable
 	SPP int
+	Filename string
 }

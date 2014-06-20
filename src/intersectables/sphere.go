@@ -4,6 +4,7 @@ import (
 	"github.com/barnex/fmath"
 	"github.com/ungerik/go3d/vec3"
 	"util"
+	"materials"
 )
 
 type Sphere struct {
@@ -42,4 +43,12 @@ func (s Sphere) makeHitrecord(t float32, r *util.Ray) *util.Hitrecord {
 	v := 0.5 - fmath.Asin(hitPoint[1])/fmath.Pi
 
 	return &util.Hitrecord{t, hitPoint, normal, wIn, u, v, s, s.Material }
+}
+
+func MakeDiffuseSphere(center vec3.T, radius float32) *Sphere {
+	s := new(Sphere)
+	s.Center = center
+	s.Radius = radius
+	s.Material = materials.MakeDiffuseMaterial(&vec3.T{1, 1, 1})
+	return s
 }

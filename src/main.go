@@ -23,5 +23,6 @@ func main() {
 	}
 	duration := time.Since(start)
 	fmt.Println(duration.String())
-	scene.Film.WriteToPng("test_rnd_sample")
+	scene.Film.WriteToPng(scene.Filename)
+	fmt.Printf("Printed to %s", scene.Filename)
 }
