@@ -12,7 +12,11 @@ type PointLight struct {
 }
 
 func (p *PointLight) Sample(sample [2]float32) *util.Hitrecord {
-	return new(util.Hitrecord)
+	h := new(util.Hitrecord)
+	h.Intersectable = p
+	h.Position = *p.Position
+	h.Material = p.Material
+	return h
 }
 
 // can not be hit

@@ -16,7 +16,7 @@ func main() {
 			for s := 0; s < scene.SPP; s++ {
 				sample := scene.Sampler.Get2DSample()
 				ray := scene.Camera.MakeWorldSpaceRay(x, y, sample)
-				color := scene.Integrator.Integrate(ray, scene.Root)
+				color := scene.Integrator.Integrate(ray)
 				scene.Film.AddSample(x,y,color)
 			}
 		}

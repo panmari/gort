@@ -18,7 +18,7 @@ func (list *IntersectableList) Intersect(ray *util.Ray) (*util.Hitrecord, bool) 
 	closestHit.T = math.MaxFloat32
 	doesHit := false
 	for _, i := range list.intersectables {
-		if  hit, doesHit := i.Intersect(ray); doesHit && hit.T < closestHit.T && hit.T > 0 {
+		if hit, doesHit := i.Intersect(ray); doesHit && hit.T < closestHit.T && hit.T > 0 {
 			closestHit = hit
 			doesHit = true
 		}

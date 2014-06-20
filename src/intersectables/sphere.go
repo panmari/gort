@@ -9,6 +9,7 @@ import (
 type Sphere struct {
 	Center vec3.T
 	Radius float32
+	Material util.Material
 }
 
 func (s Sphere) Intersect(r *util.Ray) (*util.Hitrecord, bool) {
@@ -40,5 +41,5 @@ func (s Sphere) makeHitrecord(t float32, r *util.Ray) *util.Hitrecord {
 	u := 0.5 + fmath.Atan2(hitPoint[2], hitPoint[0])/(2*fmath.Pi)
 	v := 0.5 - fmath.Asin(hitPoint[1])/fmath.Pi
 
-	return &util.Hitrecord{t, hitPoint, normal, wIn, u, v, s}
+	return &util.Hitrecord{t, hitPoint, normal, wIn, u, v, s, s.Material }
 }

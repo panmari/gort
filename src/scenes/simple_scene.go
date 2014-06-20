@@ -7,6 +7,7 @@ import (
 	"films"
 	"github.com/ungerik/go3d/vec3"
 	"intersectables"
+//	"lights"
 )
 
 func MakeSimpleScene() *Scene {
@@ -19,13 +20,16 @@ func MakeSimpleScene() *Scene {
 	height := 360
 	c := cameras.MakePinholeCamera(&eye, &lookAt, &up, fov, aspect, width, height)
 	s := samplers.MakeRandomSampler()
-	i := integrators.MakeDebugIntegrator()
 	f := films.MakeBoxFilterFilm(width, height)
 	
 	root := intersectables.MakeIntersectableList(2)
 	root.Add(intersectables.Sphere{Center: vec3.T{0,0,0}, Radius: 1.0})
 	root.Add(intersectables.Sphere{Center: vec3.T{2,0,0}, Radius: 1.0})
 	root.Add(intersectables.Sphere{Center: vec3.T{-3,0,0}, Radius: 1.0})
+	
+	i := integrators.MakeDebugIntegrator(root)
+	//lights := make([]lights.LightGeometry, 0, 2)
+	//i := integrators.MakePointLightIntegrator(root, lights)
 	
 	return &Scene{Camera: c, Sampler: s, Integrator: i, Film: f, Root: root, SPP: 8}
 }
