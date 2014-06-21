@@ -21,13 +21,12 @@ func (d *PointLightIntegrator) Integrate(r *util.Ray) *vec3.T {
 			dist2 := lightDir.LengthSqr()
 			lightDir.Normalize()
 			
-			/*
 			dist := fmath.Sqrt(dist2)
 			shadowRay := util.MakeEpsilonRay(&hit.Position, &lightDir)
 			if shadowHit, hasShadowHit := d.root.Intersect(shadowRay); hasShadowHit && shadowHit.T < dist {
 				continue 
 			}
-			*/
+			
 			brdfValue := hit.Material.EvaluateBRDF(hit, &hit.W_in, &lightDir)
 			
 			inverseLightDir := lightDir.Scaled(-1)
