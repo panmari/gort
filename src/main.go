@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"util"
 	"sync"
+	"runtime"
 )
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	scene := scenes.MakeSimpleScene()
 	
 	tasksize := 4
