@@ -25,9 +25,7 @@ func SolveQuadratic(a, b, c float32) (float32, float32, bool) {
 
 	//make t0 always the intersection closer to the camera
 	if t0 > t1 {
-		swap := t0
-		t0 = t1
-		t1 = swap
+		t0, t1 = t1, t0
 	}
 	return t0, t1, true
 }

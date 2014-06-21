@@ -9,11 +9,11 @@ import (
 )
 
 type Scene struct {
-	Camera cameras.Camera
-	Sampler samplers.Sampler
-	Integrator integrators.Integrator
-	Film	films.Film
-	Root util.Intersectable
-	SPP int
-	Filename string
+	Camera 		cameras.Camera
+	Sampler 	samplers.Sampler
+	Integrator 	integrators.Integrator
+	Film		films.Film
+	Root 		util.Intersectable
+	SPP 		int
+	Filename 	string
 }
