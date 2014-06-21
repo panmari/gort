@@ -35,3 +35,11 @@ func SolveQuadratic(a, b, c float32) (float32, float32, bool) {
 func ToRadians(degrees float32) float32 {
 	return fmath.Pi * degrees / 180.0
 }
+
+func Min(a, b int) int {
+	if a < b {
+		return a
+	} else {
+		return b
+	}
+}
