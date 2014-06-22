@@ -9,7 +9,7 @@ type IntersectableList struct {
 	intersectables []util.Intersectable
 }
 
-func (list IntersectableList) Add(intersectable util.Intersectable) {
+func (list *IntersectableList) Add(intersectable util.Intersectable) {
 	list.intersectables = append(list.intersectables, intersectable)
 }
 
