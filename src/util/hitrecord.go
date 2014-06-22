@@ -20,7 +20,7 @@ type Intersectable interface {
 }
 
 type Material interface {
-	EvaluateEmission(hit *Hitrecord, wOut *vec3.T) (*vec3.T)
+	EvaluateEmission(hit *Hitrecord, wOut *vec3.T) (vec3.T)
 	GetEmissionSample(hit *Hitrecord, sample [2]float32) (*vec3.T)
 	GetShadingSample(hit *Hitrecord, sample [2]float32) (*vec3.T)
 	DoesCastShadows() bool

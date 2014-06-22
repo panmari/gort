@@ -31,7 +31,7 @@ func (d *PointLightIntegrator) Integrate(r *util.Ray) *vec3.T {
 			
 			inverseLightDir := lightDir.Scaled(-1)
 			lightValue := lightHit.Material.EvaluateEmission(lightHit, &inverseLightDir)
-			brdfValue.Mul(lightValue)
+			brdfValue.Mul(&lightValue)
 			ndotl := fmath.Max(vec3.Dot(&hit.Normal, &lightDir), 0)
 			brdfValue.Scale(ndotl)
 			brdfValue.Scale(1/dist2)

@@ -13,9 +13,9 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	scene := scenes.MakeSimpleScene()
 	
-	tasksize := 32
+	tasksize := 64
 	start := time.Now()
-	sampleChan := make(chan *Sample, 10)
+	sampleChan := make(chan Sample, 10)
 	for x := 0; x < scene.Film.GetWidth(); x += tasksize {
 		for y := 0; y < scene.Film.GetHeight(); y+= tasksize {
 			x_border := util.Min(x + tasksize, scene.Film.GetWidth())
@@ -27,6 +27,7 @@ func main() {
 		sample := <- sampleChan
 		scene.Film.AddSample(sample.x, sample.y, sample.color)
 	}
+	close(sampleChan)
 	duration := time.Since(start)
 	fmt.Println(duration.String())
 	scene.Film.WriteToPng(scene.Filename)
@@ -38,14 +39,17 @@ type Sample struct {
 	color *vec3.T
 }
 
-func renderWindow(scene scenes.Scene, left, right, bottom, top int, sampleChan chan *Sample) {
+func renderWindow(scene scenes.Scene, left, right, bottom, top int, sampleChan chan Sample) {
+	sampler := scene.Sampler
+	camera := scene.Camera
+	integrator := scene.Integrator
 	for x := left; x < right; x++ {
 		for y := bottom; y < top; y++ {
 			for s := 0; s < scene.SPP; s++ {
-				sample := scene.Sampler.Get2DSample()
-				ray := scene.Camera.MakeWorldSpaceRay(x, y, sample)
-				color := scene.Integrator.Integrate(ray)
-				sampleChan <- &Sample{x,y,color}
+				sample := sampler.Get2DSample()
+				ray := camera.MakeWorldSpaceRay(x, y, sample)
+				color := integrator.Integrate(ray)
+				sampleChan <- Sample{x,y,color}
 			}
 		}
 	}

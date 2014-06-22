@@ -5,7 +5,7 @@ import (
 )
 
 type RandomSampler struct {
-	rand *rand.Rand
+	rand rand.Rand
 }
 
 func (r *RandomSampler) Get2DSample() (*[2]float32) {
@@ -14,5 +14,5 @@ func (r *RandomSampler) Get2DSample() (*[2]float32) {
 
 //TODO: seed?
 func MakeRandomSampler() *RandomSampler {
-	return &RandomSampler{ rand.New(rand.NewSource(42)) }
+	return &RandomSampler{ *rand.New(rand.NewSource(42)) }
 }
