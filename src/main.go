@@ -7,9 +7,26 @@ import (
 	"util"
 	"runtime"
 	"github.com/ungerik/go3d/vec3"
+	"flag"
+	"os"
+	"log"
+	"runtime/pprof"
 )
 
+var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
+var memprofile = flag.String("memprofile", "", "write memory profile to this file")
+
 func main() {
+	flag.Parse()
+	if *cpuprofile != "" {
+		f, err := os.Create(*cpuprofile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
+	}
+	
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	scene := scenes.MakeSimpleScene()
 	
@@ -31,7 +48,16 @@ func main() {
 	duration := time.Since(start)
 	fmt.Println(duration.String())
 	scene.Film.WriteToPng(scene.Filename)
-	fmt.Printf("Printed to %s", scene.Filename)
+	fmt.Printf("Printed to %s\n", scene.Filename)
+	if *memprofile != "" {
+        f, err := os.Create(*memprofile)
+        if err != nil {
+            log.Fatal(err)
+        }
+        pprof.WriteHeapProfile(f)
+        f.Close()
+        return
+    }
 }
 
 type Sample struct {
