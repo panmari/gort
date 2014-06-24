@@ -2,13 +2,13 @@ package lights
 
 import (
 	"github.com/ungerik/go3d/vec3"
-	"util"
 	"materials"
+	"util"
 )
 
 type PointLight struct {
 	Position vec3.T
-	Material materials.PointLightMaterial 
+	Material materials.PointLightMaterial
 }
 
 func (p PointLight) Sample(sample [2]float32) *util.Hitrecord {

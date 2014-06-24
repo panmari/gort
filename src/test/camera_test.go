@@ -17,9 +17,9 @@ func TestCameraRay(t *testing.T) {
 	c := cameras.MakePinholeCamera(&eye, &lookAt, &up, fov, aspect, width, height)
 	samples := [2]float32{0.0, 0.0}
 	r := c.MakeWorldSpaceRay(width/2, height/2, &samples)
-	expectedOrig := vec3.T{0,0,5}
+	expectedOrig := vec3.T{0, 0, 5}
 	if r.Origin != expectedOrig {
-		t.Error("wrong origin")	
+		t.Error("wrong origin")
 	}
 	expectedDir := vec3.T{1.192093e-07, -0.7071069, -0.70710665}
 	if vec3.Distance(&expectedDir, &r.Direction) > 0.001 {

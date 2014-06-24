@@ -1,8 +1,8 @@
 package intersectables
 
 import (
-	"util"
 	"math"
+	"util"
 )
 
 type IntersectableList struct {

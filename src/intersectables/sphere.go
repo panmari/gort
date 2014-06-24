@@ -3,13 +3,13 @@ package intersectables
 import (
 	"github.com/barnex/fmath"
 	"github.com/ungerik/go3d/vec3"
-	"util"
 	"materials"
+	"util"
 )
 
 type Sphere struct {
-	Center vec3.T
-	Radius float32
+	Center   vec3.T
+	Radius   float32
 	Material util.Material
 }
 
@@ -42,7 +42,7 @@ func (s *Sphere) makeHitrecord(t float32, r *util.Ray) *util.Hitrecord {
 	u := 0.5 + fmath.Atan2(hitPoint[2], hitPoint[0])/(2*fmath.Pi)
 	v := 0.5 - fmath.Asin(hitPoint[1])/fmath.Pi
 
-	return &util.Hitrecord{t, hitPoint, normal, wIn, u, v, s, s.Material }
+	return &util.Hitrecord{t, hitPoint, normal, wIn, u, v, s, s.Material}
 }
 
 func MakeDiffuseSphere(center vec3.T, radius float32) *Sphere {

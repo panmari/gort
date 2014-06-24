@@ -2,19 +2,19 @@ package intersectables
 
 import (
 	"github.com/ungerik/go3d/vec3"
-	"util"
 	"materials"
+	"util"
 )
 
 type Plane struct {
-	Normal vec3.T
+	Normal         vec3.T
 	DistanceOrigin float32
-	Material util.Material
+	Material       util.Material
 }
 
 func (s *Plane) Intersect(r *util.Ray) (*util.Hitrecord, bool) {
 	tmp := vec3.Dot(&r.Direction, &s.Normal)
-	
+
 	if tmp == 0 { // parallel to plane, does not hit
 		return nil, false
 	}
@@ -22,7 +22,7 @@ func (s *Plane) Intersect(r *util.Ray) (*util.Hitrecord, bool) {
 	if t <= 0 { // negative t is not hit
 		return nil, false
 	}
-	
+
 	hit := new(util.Hitrecord)
 	hit.T = t
 	pos := r.Direction.Scaled(t)

@@ -1,16 +1,16 @@
 package films
 
 import (
-		"github.com/ungerik/go3d/vec4"
-		"github.com/ungerik/go3d/vec3"
-		"image"
-		"image/color"
-		"os"
-		"image/png"
+	"github.com/ungerik/go3d/vec3"
+	"github.com/ungerik/go3d/vec4"
+	"image"
+	"image/color"
+	"image/png"
+	"os"
 )
 
 type BoxFilterFilm struct {
-	Film []vec4.T
+	Film          []vec4.T
 	width, height int
 }
 
@@ -30,9 +30,9 @@ func (i BoxFilterFilm) At(x, y int) color.Color {
 	// invert y axis here
 	y = i.height - y - 1
 	s := i.Film[y*i.width+x]
-	s.Scale(255.0/s[3])
-	s.Clamp(&vec4.Zero,&vec4.T{255,255,255})
-	return color.RGBA{uint8(s[0]),uint8(s[1]),uint8(s[2]), 255}
+	s.Scale(255.0 / s[3])
+	s.Clamp(&vec4.Zero, &vec4.T{255, 255, 255})
+	return color.RGBA{uint8(s[0]), uint8(s[1]), uint8(s[2]), 255}
 }
 
 func (i BoxFilterFilm) Bounds() image.Rectangle {
@@ -41,15 +41,17 @@ func (i BoxFilterFilm) Bounds() image.Rectangle {
 
 func (i BoxFilterFilm) WriteToPng(filename string) {
 	fo, err := os.Create(filename + ".png")
-	if err != nil { panic(err) }
+	if err != nil {
+		panic(err)
+	}
 	png.Encode(fo, i)
 }
 
 func MakeBoxFilterFilm(w, h int) BoxFilterFilm {
-	return BoxFilterFilm {
+	return BoxFilterFilm{
 		width:  w,
 		height: h,
-		Film:    make([]vec4.T, w*h)}
+		Film:   make([]vec4.T, w*h)}
 }
 
 func (i BoxFilterFilm) GetWidth() int {

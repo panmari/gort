@@ -1,13 +1,11 @@
 package intersectables
 
 import (
-	"util"
 	"github.com/ungerik/go3d/mat4"
+	"util"
 )
 
-
 type Instance struct {
-	
 }
 
 func (i *Instance) Intersect(r *util.Ray) *util.Hitrecord {

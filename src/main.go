@@ -1,17 +1,17 @@
 package main
 
 import (
-	"scenes"
-	"time"
-	"fmt"
-	"util"
-	"runtime"
-	"github.com/ungerik/go3d/vec3"
 	"flag"
-	"os"
+	"fmt"
+	"github.com/ungerik/go3d/vec3"
 	"log"
+	"os"
+	"runtime"
 	"runtime/pprof"
+	"scenes"
 	"sync"
+	"time"
+	"util"
 )
 
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
@@ -27,17 +27,17 @@ func main() {
 		pprof.StartCPUProfile(f)
 		defer pprof.StopCPUProfile()
 	}
-	
+
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	scene := scenes.MakeSimpleScene()
-	
+
 	tasksize := 64
 	start := time.Now()
 	var wg sync.WaitGroup
 	for x := 0; x < scene.Film.GetWidth(); x += tasksize {
-		for y := 0; y < scene.Film.GetHeight(); y+= tasksize {
-			x_border := util.Min(x + tasksize, scene.Film.GetWidth())
-			y_border := util.Min(y + tasksize, scene.Film.GetHeight())
+		for y := 0; y < scene.Film.GetHeight(); y += tasksize {
+			x_border := util.Min(x+tasksize, scene.Film.GetWidth())
+			y_border := util.Min(y+tasksize, scene.Film.GetHeight())
 			wg.Add(1)
 			go renderWindow(scene, x, int(x_border), y, int(y_border), &wg)
 		}
@@ -48,18 +48,18 @@ func main() {
 	scene.Film.WriteToPng(scene.Filename)
 	fmt.Printf("Printed to %s\n", scene.Filename)
 	if *memprofile != "" {
-        f, err := os.Create(*memprofile)
-        if err != nil {
-            log.Fatal(err)
-        }
-        pprof.WriteHeapProfile(f)
-        f.Close()
-        return
-    }
+		f, err := os.Create(*memprofile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		pprof.WriteHeapProfile(f)
+		f.Close()
+		return
+	}
 }
 
 type Sample struct {
-	x, y int
+	x, y  int
 	color *vec3.T
 }
 

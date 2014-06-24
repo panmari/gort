@@ -25,9 +25,15 @@ func MakePinholeCamera(eye *vec3.T, lookat *vec3.T, up *vec3.T,
 	v := vec3.Cross(&w, &u)
 
 	var camMatrix mat4.T
-	camMatrix[0][0] = u[0]; camMatrix[0][1] = u[1]; camMatrix[0][2] = u[2]
-	camMatrix[1][0] = v[0]; camMatrix[1][1] = v[1]; camMatrix[1][2] = v[2]
-	camMatrix[2][0] = w[0]; camMatrix[2][1] = w[1]; camMatrix[2][2] = w[2]
+	camMatrix[0][0] = u[0]
+	camMatrix[0][1] = u[1]
+	camMatrix[0][2] = u[2]
+	camMatrix[1][0] = v[0]
+	camMatrix[1][1] = v[1]
+	camMatrix[1][2] = v[2]
+	camMatrix[2][0] = w[0]
+	camMatrix[2][1] = w[1]
+	camMatrix[2][2] = w[2]
 	camMatrix.SetTranslation(eye)
 
 	var vp mat4.T
