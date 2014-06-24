@@ -19,8 +19,9 @@ func MakeSimpleScene() Scene {
 	width := 640
 	height := 360
 	c := cameras.MakePinholeCamera(&eye, &lookAt, &up, fov, aspect, width, height)
-	//s := samplers.MakeRandomSampler()
-	s := samplers.MakeOneSampler()
+	// pass function to create new samplers
+	s := samplers.MakeRandomSampler
+	//s := samplers.MakeOneSampler()
 	f := films.MakeBoxFilterFilm(width, height)
 	
 	root := intersectables.MakeIntersectableList(2)

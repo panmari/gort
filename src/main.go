@@ -64,7 +64,9 @@ type Sample struct {
 }
 
 func renderWindow(scene scenes.Scene, left, right, bottom, top int, wg *sync.WaitGroup) {
-	sampler := scene.Sampler
+	defer wg.Done()
+	seed := int64(left*scene.Film.GetWidth() + top)
+	sampler := scene.Sampler(seed)
 	camera := scene.Camera
 	integrator := scene.Integrator
 	film := scene.Film
@@ -78,5 +80,4 @@ func renderWindow(scene scenes.Scene, left, right, bottom, top int, wg *sync.Wai
 			}
 		}
 	}
-	wg.Done()
 }

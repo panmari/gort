@@ -13,6 +13,6 @@ func (r *RandomSampler) Get2DSample() (*[2]float32) {
 }
 
 //TODO: seed?
-func MakeRandomSampler() *RandomSampler {
-	return &RandomSampler{ *rand.New(rand.NewSource(42)) }
+func MakeRandomSampler(seed int64) Sampler {
+	return &RandomSampler{ *rand.New(rand.NewSource(seed)) }
 }
