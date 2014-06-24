@@ -11,6 +11,7 @@ import (
 	"os"
 	"log"
 	"runtime/pprof"
+	"sync"
 )
 
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
@@ -32,19 +33,16 @@ func main() {
 	
 	tasksize := 64
 	start := time.Now()
-	sampleChan := make(chan Sample, 10)
+	var wg sync.WaitGroup
 	for x := 0; x < scene.Film.GetWidth(); x += tasksize {
 		for y := 0; y < scene.Film.GetHeight(); y+= tasksize {
 			x_border := util.Min(x + tasksize, scene.Film.GetWidth())
 			y_border := util.Min(y + tasksize, scene.Film.GetHeight())
-			go renderWindow(scene, x, int(x_border), y, int(y_border), sampleChan)
+			wg.Add(1)
+			go renderWindow(scene, x, int(x_border), y, int(y_border), &wg)
 		}
 	}
-	for s := 0; s < scene.Film.GetHeight()*scene.Film.GetWidth()*scene.SPP; s++ {
-		sample := <- sampleChan
-		scene.Film.AddSample(sample.x, sample.y, sample.color)
-	}
-	close(sampleChan)
+	wg.Wait()
 	duration := time.Since(start)
 	fmt.Println(duration.String())
 	scene.Film.WriteToPng(scene.Filename)
@@ -65,18 +63,20 @@ type Sample struct {
 	color *vec3.T
 }
 
-func renderWindow(scene scenes.Scene, left, right, bottom, top int, sampleChan chan Sample) {
+func renderWindow(scene scenes.Scene, left, right, bottom, top int, wg *sync.WaitGroup) {
 	sampler := scene.Sampler
 	camera := scene.Camera
 	integrator := scene.Integrator
+	film := scene.Film
 	for x := left; x < right; x++ {
 		for y := bottom; y < top; y++ {
 			for s := 0; s < scene.SPP; s++ {
 				sample := sampler.Get2DSample()
 				ray := camera.MakeWorldSpaceRay(x, y, sample)
 				color := integrator.Integrate(ray)
-				sampleChan <- Sample{x,y,color}
+				film.AddSample(x, y, color)
 			}
 		}
 	}
+	wg.Done()
 }

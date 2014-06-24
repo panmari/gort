@@ -12,7 +12,7 @@ type Plane struct {
 	Material util.Material
 }
 
-func (s Plane) Intersect(r *util.Ray) (*util.Hitrecord, bool) {
+func (s *Plane) Intersect(r *util.Ray) (*util.Hitrecord, bool) {
 	tmp := vec3.Dot(&r.Direction, &s.Normal)
 	
 	if tmp == 0 { // parallel to plane, does not hit

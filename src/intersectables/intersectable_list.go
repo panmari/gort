@@ -13,7 +13,7 @@ func (list *IntersectableList) Add(intersectable util.Intersectable) {
 	list.intersectables = append(list.intersectables, intersectable)
 }
 
-func (list IntersectableList) Intersect(ray *util.Ray) (*util.Hitrecord, bool) {
+func (list *IntersectableList) Intersect(ray *util.Ray) (*util.Hitrecord, bool) {
 	closestHit := new(util.Hitrecord)
 	closestHit.T = math.MaxFloat32
 	hadHit := false

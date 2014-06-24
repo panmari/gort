@@ -13,7 +13,7 @@ type Sphere struct {
 	Material util.Material
 }
 
-func (s Sphere) Intersect(r *util.Ray) (*util.Hitrecord, bool) {
+func (s *Sphere) Intersect(r *util.Ray) (*util.Hitrecord, bool) {
 	a := r.Direction.LengthSqr()
 	originCenter := vec3.Sub(&r.Origin, &s.Center)
 	b := 2 * vec3.Dot(&r.Direction, &originCenter)
@@ -30,7 +30,7 @@ func (s Sphere) Intersect(r *util.Ray) (*util.Hitrecord, bool) {
 	return nil, false
 }
 
-func (s Sphere) makeHitrecord(t float32, r *util.Ray) *util.Hitrecord {
+func (s *Sphere) makeHitrecord(t float32, r *util.Ray) *util.Hitrecord {
 	hitPoint := r.PointAt(t)
 	normal := vec3.Sub(&hitPoint, &s.Center)
 	normal.Normalize()
