@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/ungerik/go3d/vec3"
 	"log"
 	"os"
 	"runtime"
@@ -56,11 +55,6 @@ func main() {
 		f.Close()
 		return
 	}
-}
-
-type Sample struct {
-	x, y  int
-	color *vec3.T
 }
 
 func renderWindow(scene scenes.Scene, left, right, bottom, top int, wg *sync.WaitGroup) {
