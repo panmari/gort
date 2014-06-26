@@ -1,7 +1,6 @@
-package test
+package cameras
 
 import (
-	"cameras"
 	"github.com/ungerik/go3d/vec3"
 	"testing"
 )
@@ -14,7 +13,7 @@ func TestCameraRay(t *testing.T) {
 	var aspect float32 = 16.0 / 9.0
 	width := 640
 	height := 360
-	c := cameras.MakePinholeCamera(&eye, &lookAt, &up, fov, aspect, width, height)
+	c := MakePinholeCamera(&eye, &lookAt, &up, fov, aspect, width, height)
 	samples := [2]float32{0.0, 0.0}
 	r := c.MakeWorldSpaceRay(width/2, height/2, &samples)
 	expectedOrig := vec3.T{0, 0, 5}

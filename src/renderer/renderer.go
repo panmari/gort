@@ -1,37 +1,15 @@
-package main
+package renderer
 
 import (
-	"flag"
-	"fmt"
-	"log"
-	"os"
-	"runtime"
-	"runtime/pprof"
 	"scenes"
 	"sync"
-	"time"
+	"runtime"
 	"util"
 )
-
-var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
-var memprofile = flag.String("memprofile", "", "write memory profile to this file")
-
-func main() {
-	flag.Parse()
-	if *cpuprofile != "" {
-		f, err := os.Create(*cpuprofile)
-		if err != nil {
-			log.Fatal(err)
-		}
-		pprof.StartCPUProfile(f)
-		defer pprof.StopCPUProfile()
-	}
-
+func StartRendering(scene scenes.Scene) {
 	runtime.GOMAXPROCS(runtime.NumCPU())
-	scene := scenes.MakeSimpleScene()
 
 	tasksize := 64
-	start := time.Now()
 	var wg sync.WaitGroup
 	for x := 0; x < scene.Film.GetWidth(); x += tasksize {
 		for y := 0; y < scene.Film.GetHeight(); y += tasksize {
@@ -42,19 +20,6 @@ func main() {
 		}
 	}
 	wg.Wait()
-	duration := time.Since(start)
-	fmt.Println(duration.String())
-	scene.Film.WriteToPng(scene.Filename)
-	fmt.Printf("Printed to %s\n", scene.Filename)
-	if *memprofile != "" {
-		f, err := os.Create(*memprofile)
-		if err != nil {
-			log.Fatal(err)
-		}
-		pprof.WriteHeapProfile(f)
-		f.Close()
-		return
-	}
 }
 
 func renderWindow(scene scenes.Scene, left, right, bottom, top int, wg *sync.WaitGroup) {
