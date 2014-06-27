@@ -24,3 +24,13 @@ Go to window -> preferences -> go and enter the following settings
 
 And additionally in the tab gocode, you need to set the path to your gocode executable, which is
 usually `/usr/bin/gocode` if you installed it through the packaging system.
+
+## Profiling
+
+To optimize code, you may want to profile it once in a while. This can be done using the performance test
+
+    go test -bench . -cpuprofile cpu.out -benchtime 10s test/
+    
+The CPU profile can then be visualized using
+
+    go tool pprof test.test cpu.out --web
