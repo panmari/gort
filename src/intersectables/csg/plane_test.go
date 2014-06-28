@@ -4,13 +4,12 @@ import (
 	"github.com/ungerik/go3d/vec3"
 	"testing"
 	"util"
-	"intersectables/csg"
 )
 
 
 func TestPlaneIntersection(t *testing.T) {
 	parallelRay := util.Ray{vec3.Zero, vec3.UnitX}
-	s := csg.NewDiffusePlane(vec3.UnitX, 1)
+	s := NewDiffusePlane(vec3.UnitX, 1)
 
 	if hit, doesHit := s.Intersect(&parallelRay); doesHit {
 		t.Errorf("Parallel ray hit plane!", hit)

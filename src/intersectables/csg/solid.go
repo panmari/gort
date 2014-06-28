@@ -4,10 +4,16 @@ import (
 	"util"
 )
 
-type Solid struct {}
+type Shape interface {
+	GetIntervalBoundaries(r *util.Ray) *ByT
+}
+
+type Solid struct {
+	shape Shape
+	}
 
 func (s *Solid) Intersect(r *util.Ray) (*util.Hitrecord, bool) {
-	for _, ib := range *s.GetIntervalBoundaries(r) {
+	for _, ib := range *s.shape.GetIntervalBoundaries(r) {
 		hit := ib.hit
 		if hit != nil && hit.T > 0 {
 			hit.Intersectable = s
@@ -15,11 +21,6 @@ func (s *Solid) Intersect(r *util.Ray) (*util.Hitrecord, bool) {
 		} 
 	}
 	return nil, false
-}
-
-func (s *Solid) GetIntervalBoundaries(r *util.Ray) *ByT {
-	b := make(ByT, 0,0)
-	return &b
 }
 
 type IntervalBoundary struct {
