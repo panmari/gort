@@ -29,3 +29,17 @@ func TestPlaneIntersection(t *testing.T) {
 		t.Errorf("Ray pointing towards plane hits at strange T: %f", hit.T)
 	}
 }
+
+func BenchmarkPlaneIntersection(b *testing.B) {
+	pointingTowardsRay := util.Ray{vec3.Zero, vec3.T{-1, 0, 0}}
+	pointingAwayRay := util.Ray{vec3.Zero, vec3.UnitX}
+	parallelRay := util.Ray{vec3.Zero, vec3.UnitX}
+	s := NewDiffusePlane(vec3.UnitX, 1)
+	
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		s.Intersect(&pointingTowardsRay)
+		s.Intersect(&pointingAwayRay)
+		s.Intersect(&parallelRay)
+	}
+}
