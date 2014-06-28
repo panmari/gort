@@ -2,6 +2,7 @@ package csg
 
 import (
 	"util"
+	"github.com/ungerik/go3d/vec3"
 )
 
 type Shape interface {
@@ -21,6 +22,10 @@ func (s *Solid) Intersect(r *util.Ray) (*util.Hitrecord, bool) {
 		} 
 	}
 	return nil, false
+}
+
+func isBoundaryTypeStart(h *util.Hitrecord, r *util.Ray) bool {
+	return vec3.Dot(&h.Normal, &r.Direction) < 0 
 }
 
 type IntervalBoundary struct {

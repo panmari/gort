@@ -8,7 +8,6 @@ import (
 )
 
 type Plane struct {
-	Solid
 	plane  intersectables.Plane
 }
 
@@ -41,6 +40,6 @@ func (p *Plane) GetIntervalBoundaries(r *util.Ray) *ByT {
 }
 
 func NewDiffusePlane(normal vec3.T, dist float32) *Solid {
-	p := Solid{&Plane{Solid{}, *intersectables.MakeDiffusePlane(normal, dist)}}
+	p := Solid{&Plane{*intersectables.MakeDiffusePlane(normal, dist)}}
 	return &p
 }
