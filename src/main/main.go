@@ -26,7 +26,7 @@ func main() {
 	}
 	start := time.Now()
 	
-	scene := scenes.MakeSimpleScene()
+	scene := scenes.NewSimpleCSGScene()
 	renderer.StartRendering(scene)
 	
 	duration := time.Since(start)

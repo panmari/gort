@@ -4,13 +4,15 @@ import (
 	"github.com/ungerik/go3d/vec3"
 	"testing"
 	"util"
+	"intersectables"
+	"math"
 )
 
 
 func TestPlaneIntersection(t *testing.T) {
-	parallelRay := util.Ray{vec3.Zero, vec3.UnitX}
 	s := NewDiffusePlane(vec3.UnitX, 1)
 
+	parallelRay := util.Ray{vec3.Zero, vec3.UnitY}
 	if hit, doesHit := s.Intersect(&parallelRay); doesHit {
 		t.Errorf("Parallel ray hit plane!", hit)
 	}
@@ -28,6 +30,19 @@ func TestPlaneIntersection(t *testing.T) {
 	if hit.T != 1 {
 		t.Errorf("Ray pointing towards plane hits at strange T: %f", hit.T)
 	}
+}
+
+func TestPlaneGetIntervalboundaries(t *testing.T) {
+	r := util.Ray{vec3.Zero, vec3.T{-1, 0, 0}}
+	s := Plane{*intersectables.MakeDiffusePlane(vec3.UnitX, 1)}
+	ibs := *s.GetIntervalBoundaries(&r)
+	if ibs[0].t != 1 {
+		t.Errorf("First intersection not correct: %f", ibs[0].t)
+	}
+	if ibs[1].t != math.MaxFloat32 {
+		t.Errorf("Second intersection not correct: %f", ibs[1].t)
+	}
+	
 }
 
 func BenchmarkPlaneIntersection(b *testing.B) {

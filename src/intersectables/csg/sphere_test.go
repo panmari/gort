@@ -4,6 +4,7 @@ import (
 	"github.com/ungerik/go3d/vec3"
 	"testing"
 	"util"
+	"intersectables"
 )
 
 
@@ -19,6 +20,19 @@ func TestSphereIntersection(t *testing.T) {
 		t.Errorf("Did hit something unexpected: %v", hit.Position)
 	}
 }
+
+func TestSphereGetIntervalboundaries(t *testing.T) {
+	r := util.Ray{vec3.Zero, vec3.UnitX}
+	s := Sphere{*intersectables.MakeDiffuseSphere(vec3.Zero, 2)}
+	ibs := *s.GetIntervalBoundaries(&r)
+	if ibs[0].t != -2 {
+		t.Errorf("First intersection not correct: %f", ibs[0].t)
+	}
+	if ibs[1].t != 2 {
+		t.Errorf("Second intersection not correct: %f", ibs[1].t)
+	}
+}
+
 
 func BenchmarkSphereIntersection(b *testing.B) {
 	pointingTowardsRay := util.Ray{vec3.Zero, vec3.T{-1, 0, 0}}

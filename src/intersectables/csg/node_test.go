@@ -7,29 +7,53 @@ import (
 	)
 
 func TestSimpleNodeIntersection(t *testing.T) {
-	parallelRay := util.Ray{vec3.Zero, vec3.UnitX}
 	
 	p := NewDiffusePlane(vec3.UnitX, 1)
-	s := NewDiffuseSphere(vec3.Zero, 2)
-	
+	s := NewDiffuseSphere(vec3.Zero, 2)	
 	n := NewNode(p, s, ADD)
 	
+	parallelRay := util.Ray{vec3.T{0,3,0}, vec3.UnitY}	
 	if hit, doesHit := n.Intersect(&parallelRay); doesHit {
 		t.Errorf("Parallel ray hit plane: %v", hit)
 	}
 
+	parallelRaySphereHit := util.Ray{vec3.T{0,-3,0}, vec3.UnitY}
+	hitPar, doesHitPar := n.Intersect(&parallelRaySphereHit);
+	if !doesHitPar {
+		t.Errorf("Does not hit added sphere: %v", hitPar)
+	}
+	if hitPar.T != 1 {
+		t.Errorf("Strange T for hit: %f", hitPar.T)
+	}
+	expected := vec3.T{0, -2, 0};
+	if hitPar.Position != expected {
+		t.Errorf("Strange hit Position for hit: %v", hitPar.Position)
+	}
+	
 	pointingAwayRay := util.Ray{vec3.Zero, vec3.UnitX}
-	if hit, doesHit := n.Intersect(&pointingAwayRay); doesHit {
-		t.Errorf("Ray pointing away from plane hit plane: %v", hit)
+	if hit, doesHit := n.Intersect(&pointingAwayRay); !doesHit {
+		t.Errorf("Ray didn't hit inside of sphere: %v", hit)
 	}
 
 	pointingTowardsRay := util.Ray{vec3.Zero, vec3.T{-1, 0, 0}}
-	
 	hit, doesHit := n.Intersect(&pointingTowardsRay)
 	if !doesHit {
 		t.Errorf("Ray pointing towards plane does not hit plane: %v", hit)
 	}
-	if hit.T != 1 {
-		t.Errorf("Ray pointing towards plane hits at strange T: %f", hit.T)
+	if hit.T != 2 {
+		t.Errorf("Ray doesnt hit sphere when shot from inside, T: %f", hit.T)
+	}
+	
+	shouldHitPlane := util.Ray{vec3.T{10, 10, 10}, vec3.T{-1,0,0}}
+	hitPlane, doesHitPlane := n.Intersect(&shouldHitPlane);
+	if !doesHitPlane {
+		t.Errorf("ray does not hit plane: %v", hit)
+	}
+	if hitPlane.T != 11 {
+		t.Errorf("ray does not hit plane at correct T: %f", hitPlane.T)
+	}
+	expected = vec3.T{-1, 10, 10}
+	if hitPlane.Position != expected {
+		t.Errorf("ray does not hit plane at correct Position: %v", hitPlane.Position)
 	}
 }
