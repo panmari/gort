@@ -82,4 +82,7 @@ func TestNodeIntersect(t *testing.T) {
 	if ibs[1].isStart {
 		t.Error("Second intersection is not exiting")
 	}
+	
+	t.Errorf("hit: %#v", ibs[0].hit)
+	t.Errorf("hit: %#v", ibs[1].hit)
 }

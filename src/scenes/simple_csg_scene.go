@@ -27,8 +27,10 @@ func NewSimpleCSGScene() Scene {
 
 	root := intersectables.MakeIntersectableList(2)
 	sphere := csg.NewDiffuseSphere(vec3.T{0, 0, 0}, 1.0)
-	plane := csg.NewDiffusePlane(vec3.UnitY, 0)
-	node := csg.NewNode(sphere, plane, csg.ADD)
+	cutNormal := vec3.T{0.3,.5,.1}
+	cutNormal.Normalize()
+	plane := csg.NewDiffusePlane(cutNormal, 0)
+	node := csg.NewNode(sphere, plane, csg.INTERSECT)
 	root.Add(node)
 	root.Add(intersectables.MakeDiffuseSphere(vec3.T{2, 1, 0}, 1.0))
 	root.Add(intersectables.MakeDiffuseSphere(vec3.T{-3, 0, 0}, 1.0))
