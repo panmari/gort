@@ -3,12 +3,9 @@ package renderer
 import (
 	"scenes"
 	"sync"
-	"runtime"
 	"util"
 )
 func StartRendering(scene scenes.Scene) {
-	runtime.GOMAXPROCS(runtime.NumCPU())
-
 	tasksize := 64
 	var wg sync.WaitGroup
 	for x := 0; x < scene.Film.GetWidth(); x += tasksize {

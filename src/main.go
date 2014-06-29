@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"runtime/pprof"
+	"runtime"
 	"scenes"
 	"time"
 	"renderer"
@@ -13,6 +14,7 @@ import (
 
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
 var memprofile = flag.String("memprofile", "", "write memory profile to this file")
+var	maxProcs = flag.Int("procs", runtime.NumCPU(), "set the number of processors to use")
 
 func main() {
 	flag.Parse()
@@ -26,6 +28,7 @@ func main() {
 	}
 	start := time.Now()
 	
+	runtime.GOMAXPROCS(*maxProcs)
 	scene := scenes.NewSimpleCSGScene()
 	renderer.StartRendering(scene)
 	
