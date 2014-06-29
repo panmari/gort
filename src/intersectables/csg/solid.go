@@ -36,7 +36,7 @@ type IntervalBoundary struct {
 }
 
 // A slice of interval boundaries that is sortable by the T of their hitpoints
-type ByT []IntervalBoundary
+type ByT []*IntervalBoundary
 
 func (a ByT) Len() int				{return len(a) }
 func (a ByT) Swap(i, j int)			{ a[i], a[j] = a[j], a[i] }

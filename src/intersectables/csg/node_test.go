@@ -35,7 +35,7 @@ func TestSimpleNodeIntersection(t *testing.T) {
 		t.Errorf("Ray didn't hit inside of sphere: %v", hit)
 	}
 
-	pointingTowardsRay := util.Ray{vec3.Zero, vec3.T{-1, 0, 0}}
+	pointingTowardsRay := util.Ray{vec3.T{4,0,0}, vec3.T{-1, 0, 0}}
 	hit, doesHit := n.Intersect(&pointingTowardsRay)
 	if !doesHit {
 		t.Errorf("Ray pointing towards plane does not hit plane: %v", hit)
@@ -55,5 +55,31 @@ func TestSimpleNodeIntersection(t *testing.T) {
 	expected = vec3.T{-1, 10, 10}
 	if hitPlane.Position != expected {
 		t.Errorf("ray does not hit plane at correct Position: %v", hitPlane.Position)
+	}
+}
+
+func TestNodeIntersect(t *testing.T) {
+	
+	p := NewDiffusePlane(vec3.UnitX, 1)
+	s := NewDiffuseSphere(vec3.Zero, 2)	
+	n := NewNode(p, s, INTERSECT)
+	r := util.Ray{vec3.T{4,0,0}, vec3.T{-1, 0, 0}}
+	ibs := *n.shape.GetIntervalBoundaries(&r)
+	
+	if len(ibs) != 2 {
+		t.Errorf("More than two intersections: %d", len(ibs))
+	}
+	if ibs[0].t != 5 {
+		t.Errorf("Entering shape at wrong t: %f", ibs[0].t)
+	}
+	if !ibs[0].isStart {
+		t.Error("First intersection is not entering")
+	}
+	
+	if ibs[1].t != 6 {
+		t.Errorf("Exiting shape at wrong t: %f", ibs[0].t)
+	}
+	if ibs[1].isStart {
+		t.Error("Second intersection is not exiting")
 	}
 }

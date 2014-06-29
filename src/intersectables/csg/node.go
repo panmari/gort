@@ -62,7 +62,7 @@ func combineIntervals(left, right *ByT) *ByT {
 	}
 	for _, ib := range *right {
 		ib.belongsToLeft = false
-	}	
+	}
 	combined := append(*left, *right...)
 	return &combined
 }
