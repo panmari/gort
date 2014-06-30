@@ -12,29 +12,27 @@ type Plane struct {
 	Material       util.Material
 }
 
-func (s *Plane) Intersect(r *util.Ray) (*util.Hitrecord, bool) {
+func (s *Plane) Intersect(r *util.Ray) (*util.Hitrecord) {
 	tmp := vec3.Dot(&r.Direction, &s.Normal)
 
 	if tmp == 0 { // parallel to plane, does not hit
-		return nil, false
+		return nil
 	}
 	t := -(vec3.Dot(&s.Normal, &r.Origin) + s.DistanceOrigin) / tmp
 	if t <= 0 { // negative t is not hit
-		return nil, false
+		return nil
 	}
 
 	hit := new(util.Hitrecord)
 	hit.T = t
-	pos := r.Direction.Scaled(t)
-	pos.Add(&r.Origin)
-	hit.Position = pos
+	hit.Position = r.PointAt(t)
 	hit.Normal = s.Normal
 	w := r.Direction.Scaled(-1)
 	w.Normalize()
 	hit.W_in = w
 	hit.Material = s.Material
 	hit.Intersectable = s
-	return hit, true
+	return hit
 }
 
 func MakeDiffusePlane(normal vec3.T, distanceOrigin float32) *Plane {

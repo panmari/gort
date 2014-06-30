@@ -20,8 +20,8 @@ func (p *PointLight) Sample(sample [2]float32) *util.Hitrecord {
 }
 
 // can not be hit
-func (p *PointLight) Intersect(r *util.Ray) (*util.Hitrecord, bool) {
-	return nil, false
+func (p *PointLight) Intersect(r *util.Ray) (*util.Hitrecord) {
+	return nil
 }
 
 func MakePointLight(position, emission vec3.T) *PointLight {

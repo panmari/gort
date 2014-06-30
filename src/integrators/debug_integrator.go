@@ -10,7 +10,7 @@ type DebugIntegrator struct {
 }
 
 func (d *DebugIntegrator) Integrate(r *util.Ray) *vec3.T {
-	if _, doesHit := d.root.Intersect(r); doesHit {
+	if hit := d.root.Intersect(r); hit != nil {
 		return &vec3.T{1, 0, 0}
 	}
 	return &vec3.T{0, 0, 0}

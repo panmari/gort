@@ -16,7 +16,7 @@ type Hitrecord struct {
 }
 
 type Intersectable interface {
-	Intersect(r *Ray) (*Hitrecord, bool)
+	Intersect(r *Ray) (*Hitrecord)
 }
 
 type Material interface {

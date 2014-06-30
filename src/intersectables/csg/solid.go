@@ -13,15 +13,15 @@ type Solid struct {
 	Shape
 }
 
-func (s *Solid) Intersect(r *util.Ray) (*util.Hitrecord, bool) {
+func (s *Solid) Intersect(r *util.Ray) (*util.Hitrecord) {
 	for _, ib := range *s.GetIntervalBoundaries(r) {
 		hit := ib.hit
 		if hit != nil && hit.T > 0 {
 			hit.Intersectable = s
-			return hit, true
+			return hit
 		} 
 	}
-	return nil, false
+	return nil
 }
 
 func isBoundaryTypeStart(h *util.Hitrecord, r *util.Ray) bool {

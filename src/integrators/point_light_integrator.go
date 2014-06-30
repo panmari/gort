@@ -14,7 +14,7 @@ type PointLightIntegrator struct {
 
 func (d *PointLightIntegrator) Integrate(r *util.Ray) *vec3.T {
 	outgoing := vec3.T{}
-	if hit, doesHit := d.root.Intersect(r); doesHit {
+	if hit := d.root.Intersect(r); hit != nil {
 		for _, light := range d.pointLights {
 			lightHit := light.Sample([2]float32{0, 0})
 			lightDir := vec3.Sub(&lightHit.Position, &hit.Position)
@@ -23,7 +23,7 @@ func (d *PointLightIntegrator) Integrate(r *util.Ray) *vec3.T {
 
 			dist := fmath.Sqrt(dist2)
 			shadowRay := util.MakeEpsilonRay(&hit.Position, &lightDir)
-			if shadowHit, hasShadowHit := d.root.Intersect(shadowRay); hasShadowHit && shadowHit.T < dist {
+			if shadowHit := d.root.Intersect(shadowRay); shadowHit != nil && shadowHit.T < dist {
 				continue
 			}
 

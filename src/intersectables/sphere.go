@@ -21,17 +21,17 @@ func (s *Sphere) GetIntersections(r *util.Ray) (float32, float32, bool) {
 	return util.SolveQuadratic(a, b, c)
 }
 
-func (s *Sphere) Intersect(r *util.Ray) (*util.Hitrecord, bool) {
+func (s *Sphere) Intersect(r *util.Ray) (*util.Hitrecord) {
 	t0, t1, hasSolution := s.GetIntersections(r)
 	if hasSolution {
 		if t0 > 0 {
-			return s.MakeHitrecord(t0, r), true
+			return s.MakeHitrecord(t0, r)
 		}
 		if t1 > 0 {
-			return s.MakeHitrecord(t1, r), true
+			return s.MakeHitrecord(t1, r)
 		}
 	}
-	return nil, false
+	return nil
 }
 
 func (s *Sphere) MakeHitrecord(t float32, r *util.Ray) *util.Hitrecord {
