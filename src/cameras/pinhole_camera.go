@@ -15,8 +15,8 @@ type PinholeCamera struct {
 
 func MakePinholeCamera(eye *vec3.T, lookat *vec3.T, up *vec3.T,
 	fov float32, aspect float32,
-	width int, height int) PinholeCamera {
-	var cam PinholeCamera
+	width int, height int) *PinholeCamera {
+	cam := new(PinholeCamera)
 	cam.eye = *eye
 	w := vec3.Sub(eye, lookat)
 	w.Normalize()
@@ -49,7 +49,7 @@ func MakePinholeCamera(eye *vec3.T, lookat *vec3.T, up *vec3.T,
 	return cam
 }
 
-func (c PinholeCamera) MakeWorldSpaceRay(i, j int, samples *[2]float32) *util.Ray {
+func (c *PinholeCamera) MakeWorldSpaceRay(i, j int, samples *[2]float32) *util.Ray {
 	d := vec4.T{float32(i) + samples[0], float32(j) + samples[1], -1.0, 1.0}
 
 	// Transform it back to world coordinates
