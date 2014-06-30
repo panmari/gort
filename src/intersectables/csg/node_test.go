@@ -64,7 +64,7 @@ func TestNodeIntersect(t *testing.T) {
 	s := NewDiffuseSphere(vec3.Zero, 2)	
 	n := NewNode(p, s, INTERSECT)
 	r := util.Ray{vec3.T{4,0,0}, vec3.T{-1, 0, 0}}
-	ibs := *n.shape.GetIntervalBoundaries(&r)
+	ibs := *n.GetIntervalBoundaries(&r)
 	
 	if len(ibs) != 2 {
 		t.Errorf("More than two intersections: %d", len(ibs))
@@ -82,7 +82,4 @@ func TestNodeIntersect(t *testing.T) {
 	if ibs[1].isStart {
 		t.Error("Second intersection is not exiting")
 	}
-	
-	t.Errorf("hit: %#v", ibs[0].hit)
-	t.Errorf("hit: %#v", ibs[1].hit)
 }

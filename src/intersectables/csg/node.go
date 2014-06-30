@@ -68,6 +68,6 @@ func combineIntervals(left, right *ByT) *ByT {
 }
 
 func NewNode(left, right *Solid, o Operation) *Solid {
-	n := &Node{left.shape, right.shape, o}
+	n := &Node{left, right, o}
 	return &Solid{n}
 }

@@ -10,11 +10,11 @@ type Shape interface {
 }
 
 type Solid struct {
-	shape Shape
-	}
+	Shape
+}
 
 func (s *Solid) Intersect(r *util.Ray) (*util.Hitrecord, bool) {
-	for _, ib := range *s.shape.GetIntervalBoundaries(r) {
+	for _, ib := range *s.GetIntervalBoundaries(r) {
 		hit := ib.hit
 		if hit != nil && hit.T > 0 {
 			hit.Intersectable = s
