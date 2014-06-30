@@ -32,9 +32,9 @@ func TestSolvingQuadraticFunction(t *testing.T) {
 func TestSphereIntersection(t *testing.T) {
 	r := util.Ray{vec3.Zero, vec3.UnitX}
 	s := MakeDiffuseSphere(vec3.Zero, 2)
-	hit, doesHit := s.Intersect(&r)
+	hit := s.Intersect(&r)
 	expected := vec3.T{2, 0, 0}
-	if !doesHit {
+	if hit == nil {
 		t.Errorf("Did not hit sphere!")
 	}
 	if hit.Position != expected {
@@ -46,18 +46,18 @@ func TestPlaneIntersection(t *testing.T) {
 	parallelRay := util.Ray{vec3.Zero, vec3.UnitX}
 	s := MakeDiffusePlane(vec3.UnitX, 1)
 
-	if hit, doesHit := s.Intersect(&parallelRay); doesHit {
+	if hit := s.Intersect(&parallelRay); hit != nil {
 		t.Errorf("Parallel ray hit plane!", hit)
 	}
 
 	pointingAwayRay := util.Ray{vec3.Zero, vec3.UnitX}
-	if hit, doesHit := s.Intersect(&pointingAwayRay); doesHit {
+	if hit := s.Intersect(&pointingAwayRay); hit != nil {
 		t.Errorf("Ray pointing away from plane hit plane!", hit)
 	}
 
 	pointingTowardsRay := util.Ray{vec3.Zero, vec3.T{-1, 0, 0}}
-	hit, doesHit := s.Intersect(&pointingTowardsRay)
-	if !doesHit {
+	hit := s.Intersect(&pointingTowardsRay)
+	if hit == nil {
 		t.Errorf("Ray pointing towards plane does not hit plane!", hit)
 	}
 	if hit.T != 1 {

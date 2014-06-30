@@ -13,13 +13,13 @@ func TestSimpleNodeIntersection(t *testing.T) {
 	n := NewNode(p, s, ADD)
 	
 	parallelRay := util.Ray{vec3.T{0,3,0}, vec3.UnitY}	
-	if hit, doesHit := n.Intersect(&parallelRay); doesHit {
+	if hit := n.Intersect(&parallelRay); hit != nil {
 		t.Errorf("Parallel ray hit plane: %v", hit)
 	}
 
 	parallelRaySphereHit := util.Ray{vec3.T{0,-3,0}, vec3.UnitY}
-	hitPar, doesHitPar := n.Intersect(&parallelRaySphereHit);
-	if !doesHitPar {
+	hitPar := n.Intersect(&parallelRaySphereHit);
+	if  hitPar != nil {
 		t.Errorf("Does not hit added sphere: %v", hitPar)
 	}
 	if hitPar.T != 1 {
@@ -31,13 +31,13 @@ func TestSimpleNodeIntersection(t *testing.T) {
 	}
 	
 	pointingAwayRay := util.Ray{vec3.Zero, vec3.UnitX}
-	if hit, doesHit := n.Intersect(&pointingAwayRay); !doesHit {
+	if hit := n.Intersect(&pointingAwayRay);  hit == nil {
 		t.Errorf("Ray didn't hit inside of sphere: %v", hit)
 	}
 
 	pointingTowardsRay := util.Ray{vec3.T{4,0,0}, vec3.T{-1, 0, 0}}
-	hit, doesHit := n.Intersect(&pointingTowardsRay)
-	if !doesHit {
+	hit := n.Intersect(&pointingTowardsRay)
+	if hit == nil {
 		t.Errorf("Ray pointing towards plane does not hit plane: %v", hit)
 	}
 	if hit.T != 2 {
@@ -45,8 +45,8 @@ func TestSimpleNodeIntersection(t *testing.T) {
 	}
 	
 	shouldHitPlane := util.Ray{vec3.T{10, 10, 10}, vec3.T{-1,0,0}}
-	hitPlane, doesHitPlane := n.Intersect(&shouldHitPlane);
-	if !doesHitPlane {
+	hitPlane := n.Intersect(&shouldHitPlane);
+	if hitPlane == nil {
 		t.Errorf("ray does not hit plane: %v", hit)
 	}
 	if hitPlane.T != 11 {
