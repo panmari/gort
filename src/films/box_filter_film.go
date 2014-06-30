@@ -15,7 +15,7 @@ type BoxFilterFilm struct {
 }
 
 func (f *BoxFilterFilm) AddSample(x, y int, sample *vec3.T) {
-	t := f.Film[y*f.width+x]
+	t := &f.Film[y*f.width+x]
 	t[0] += sample[0]
 	t[1] += sample[1]
 	t[2] += sample[2]

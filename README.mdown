@@ -29,8 +29,14 @@ usually `/usr/bin/gocode` if you installed it through the packaging system.
 
 To optimize code, you may want to profile it once in a while. This can be done using the performance test
 
-    go test -bench . -cpuprofile cpu.out -benchtime 10s test/
+    go test -bench . -cpuprofile cpu.out renderer/
     
-The CPU profile can then be visualized using
+Or the shorter version:
 
-    go tool pprof test.test cpu.out --web
+    go test -bench . -cpuprofile cpu.out -short renderer/
+    
+The CPU profile can then be analyzed using
+
+    go tool pprof renderer.test cpu.out
+    
+And then typing e.g. `web` for getting an overview or the name of a method to see details.
