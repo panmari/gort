@@ -23,6 +23,7 @@ func (d *PointLightIntegrator) Integrate(r *util.Ray) *vec3.T {
 
 			dist := fmath.Sqrt(dist2)
 			shadowRay := util.MakeEpsilonRay(&hit.Position, &lightDir)
+			defer util.Raypool.Put(shadowRay)
 			if shadowHit := d.root.Intersect(shadowRay); shadowHit != nil && shadowHit.T < dist {
 				continue
 			}

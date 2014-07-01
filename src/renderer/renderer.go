@@ -32,6 +32,7 @@ func renderWindow(scene scenes.Scene, left, right, bottom, top int, wg *sync.Wai
 				sample := sampler.Get2DSample()
 				ray := camera.MakeWorldSpaceRay(x, y, sample)
 				color := integrator.Integrate(ray)
+				util.Raypool.Put(ray)
 				film.AddSample(x, y, color)
 			}
 		}
