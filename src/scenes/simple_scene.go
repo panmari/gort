@@ -10,7 +10,7 @@ import (
 	"samplers"
 )
 
-func MakeSimpleScene() Scene {
+func NewSimpleScene() Scene {
 	eye := vec3.T{0, 0, 5}
 	lookAt := vec3.T{0, 0, 0}
 	up := vec3.T{0, 1, 0}

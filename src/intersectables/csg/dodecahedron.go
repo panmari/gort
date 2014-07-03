@@ -1,9 +1,49 @@
 package csg
 
 import (
-	
+	"github.com/barnex/fmath"
+	"github.com/ungerik/go3d/vec3"
 )
-//TODO
+
+// This is actually not a type, since it only is a helper that intersects planes and nodes
 func NewDodecahedron() *Solid {
-	return new(Solid)
+	var planes [12]*Solid
+	
+	// Bottom half
+	planes[0] = NewDiffusePlane(vec3.T{0, -1, 0}, -1)
+	for i := 0; i < 5; i++ {
+		theta := float32(i) * 2 * fmath.Pi / 5
+		x := fmath.Sin(theta) * fmath.Sin(fmath.Atan(2))
+		y := -fmath.Cos(fmath.Atan(2))
+		z := fmath.Cos(theta) * fmath.Sin(fmath.Atan(2))
+		normal := vec3.T{x,y,z}
+		planes[i + 1] = NewDiffusePlane(normal, -1)
+	}
+	
+	// Top half
+	planes[6] = NewDiffusePlane(vec3.T{0, 1, 0}, -1)
+	for i := 0; i < 5; i++ {
+		theta := (float32(i) + 0.5) * 2 * fmath.Pi / 5
+		x := fmath.Sin(theta) * fmath.Sin(fmath.Atan(2))
+		y := fmath.Cos(fmath.Atan(2))
+		z := fmath.Cos(theta) * fmath.Sin(fmath.Atan(2))
+		normal := vec3.T{x,y,z}
+		planes[i + 7] = NewDiffusePlane(normal, -1)
+	}
+	
+	// Build CSG tree
+	var nodes [6]*Solid;
+	for i := 0; i < 6; i++ {
+		nodes[i] = NewNode(planes[2*i], planes[2*i+1], INTERSECT)
+	}
+	
+	var nodes2 [3]*Solid;
+	for i := 0; i < 3; i++ {
+		nodes2[i] = NewNode(nodes[2*i], nodes[2*i+1], INTERSECT)
+	}
+	
+	almostRoot := NewNode(nodes2[0], nodes2[1], INTERSECT)
+	
+	root := NewNode(almostRoot, nodes2[2], INTERSECT)
+	return root
 }

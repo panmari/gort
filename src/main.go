@@ -31,7 +31,7 @@ func main() {
 	
 	
 	// define the scene to be rendered here
-	scene := scenes.NewBoxScene()
+	scene := scenes.NewDodecahedronScene()
 	renderer.StartRendering(scene)
 	
 	duration := time.Since(start)

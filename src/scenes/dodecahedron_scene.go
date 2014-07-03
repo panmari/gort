@@ -11,22 +11,22 @@ import (
 )
 
 func NewDodecahedronScene() Scene {
+	var s Scene
+	s.Filename = "dodecahedron_scene"
 	width := 512
 	height := 512
-	c := cameras.NewFixedCamera(width, height)
-	spp := 1
-	s := samplers.MakeOneSampler
-	f := films.MakeBoxFilterFilm(width, height)
+	s.Camera = cameras.NewFixedCamera(width, height)
+	s.SPP = 1
+	s.Sampler = samplers.MakeOneSampler
+	s.Film = films.MakeBoxFilterFilm(width, height)
 
-	n1 := csg.NewNode(csg.NewDiffusePlane(vec3.T{0, 1, 0}, 1), 
-		csg.NewDodecahedron(), csg.ADD)
-	root := csg.NewNode(n1, csg.NewDiffusePlane(vec3.T{0, 0, 1}, 1), csg.ADD)
+	n1 := csg.NewNode(csg.NewDiffusePlane(vec3.T{0, 1, 0}, 1), csg.NewDodecahedron(), csg.ADD)
+	s.Root = csg.NewNode(n1, csg.NewDiffusePlane(vec3.T{0, 0, 1}, 1), csg.ADD)
 
 	//i := integrators.MakeDebugIntegrator(root)
-	l := make([]lights.LightGeometry, 0, 2)
-	l = append(l, lights.MakePointLight(vec3.T{0, 2, 0}, vec3.T{10, 10, 10}))
-	l = append(l, lights.MakePointLight(vec3.T{-3, 2, 0}, vec3.T{10, 10, 10}))
-	i := integrators.MakePointLightIntegrator(root, l)
+	l := make([]lights.LightGeometry, 0, 1)
+	l = append(l, lights.MakePointLight(vec3.T{0, 3, 0}, vec3.T{15, 15, 15}))
+	s.Integrator = integrators.MakePointLightIntegrator(s.Root, l)
 
-	return Scene{Camera: c, Sampler: s, Integrator: i, Film: f, Root: root, SPP: spp, Filename: "test_scene_csg"}
+	return s
 }
