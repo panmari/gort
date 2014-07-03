@@ -37,6 +37,7 @@ func (s *Plane) Intersect(r *util.Ray) (*util.Hitrecord) {
 
 func MakeDiffusePlane(normal vec3.T, distanceOrigin float32) *Plane {
 	p := new(Plane)
+	normal.Normalize()
 	p.Normal = normal
 	p.DistanceOrigin = distanceOrigin
 	p.Material = materials.MakeDiffuseMaterial(vec3.T{1, 1, 1})
