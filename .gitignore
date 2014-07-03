@@ -3,3 +3,6 @@ bin
 pkg
 .metadata
 *.png
+
+# profiler files
+*.out

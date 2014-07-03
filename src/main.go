@@ -26,10 +26,12 @@ func main() {
 		pprof.StartCPUProfile(f)
 		defer pprof.StopCPUProfile()
 	}
+	runtime.GOMAXPROCS(*maxProcs)	
 	start := time.Now()
 	
-	runtime.GOMAXPROCS(*maxProcs)
-	scene := scenes.NewSimpleCSGScene()
+	
+	// define the scene to be rendered here
+	scene := scenes.NewBoxScene()
 	renderer.StartRendering(scene)
 	
 	duration := time.Since(start)
