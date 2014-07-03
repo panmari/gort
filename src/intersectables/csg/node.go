@@ -3,6 +3,7 @@ package csg
 import (
 	"util"
 	"sort"
+	"fmt"
 )
 
 type Node struct {
@@ -54,6 +55,8 @@ func (n *Node) GetIntervalBoundaries(r *util.Ray) *ByT {
 			previousWasStart = b.isStart
 		}
 		return &cleaned;
+func (i *Node) String() string {
+	return fmt.Sprintf("left: %v, right: %v", i.left, i.right)
 }
 
 func combineIntervals(left, right *ByT) *ByT {

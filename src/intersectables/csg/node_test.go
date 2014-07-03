@@ -19,7 +19,7 @@ func TestSimpleNodeIntersection(t *testing.T) {
 
 	parallelRaySphereHit := util.Ray{vec3.T{0,-3,0}, vec3.UnitY}
 	hitPar := n.Intersect(&parallelRaySphereHit);
-	if  hitPar != nil {
+	if  hitPar == nil {
 		t.Errorf("Does not hit added sphere: %v", hitPar)
 	}
 	if hitPar.T != 1 {

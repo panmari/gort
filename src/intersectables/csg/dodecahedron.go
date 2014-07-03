@@ -12,6 +12,9 @@ func NewDodecahedron() *Solid {
 	// Bottom half
 	planes[0] = NewDiffusePlane(vec3.T{0, -1, 0}, -1)
 	for i := 0; i < 5; i++ {
+		// Make face normals, using facts that in a dodecahedron
+		// - top and bottom faces are uniform pentagons
+		// - dihedral angles between all faces are pi - arctan(2)
 		theta := float32(i) * 2 * fmath.Pi / 5
 		x := fmath.Sin(theta) * fmath.Sin(fmath.Atan(2))
 		y := -fmath.Cos(fmath.Atan(2))
@@ -23,6 +26,7 @@ func NewDodecahedron() *Solid {
 	// Top half
 	planes[6] = NewDiffusePlane(vec3.T{0, 1, 0}, -1)
 	for i := 0; i < 5; i++ {
+		// Make face normals
 		theta := (float32(i) + 0.5) * 2 * fmath.Pi / 5
 		x := fmath.Sin(theta) * fmath.Sin(fmath.Atan(2))
 		y := fmath.Cos(fmath.Atan(2))

@@ -3,6 +3,7 @@ package csg
 import (
 	"util"
 	"github.com/ungerik/go3d/vec3"
+	"fmt"
 )
 
 type Shape interface {
@@ -33,6 +34,17 @@ type IntervalBoundary struct {
 	isStart        bool
 	belongsToLeft  bool
 	hit            *util.Hitrecord
+}
+
+func (i *IntervalBoundary) String() string {
+	startEnd, belonging := "end", "right"
+	if i.isStart {
+		startEnd = "start"
+	} 
+	if i.belongsToLeft {
+		belonging = "left"
+	}
+	return fmt.Sprintf("At %f, %s, %s", i.t, startEnd, belonging)
 }
 
 // A slice of interval boundaries that is sortable by the T of their hitpoints
