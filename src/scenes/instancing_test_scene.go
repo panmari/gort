@@ -9,6 +9,7 @@ import (
 	"intersectables"
 	"intersectables/csg"
 	"samplers"
+	"tonemappers"
 )
 
 func NewInstancingTestScene() Scene {
@@ -24,7 +25,7 @@ func NewInstancingTestScene() Scene {
 	s.Camera = cameras.MakePinholeCamera(&eye, &lookAt, &up, fov, aspect, width, height)
 	s.SPP = 1
 	s.Sampler = samplers.MakeOneSampler
-	s.Film = films.MakeBoxFilterFilm(width, height)
+	s.Film = films.MakeBoxFilterFilm(width, height, tonemappers.ClampToneMap)
 
 	list := intersectables.NewIntersectableList(2)
 	sphere := csg.NewDiffuseSphere(vec3.T{0, 0, 0}, 1.0)

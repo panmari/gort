@@ -8,6 +8,7 @@ import (
 	"intersectables/csg"
 	"lights"
 	"samplers"
+	"tonemappers"
 )
 
 func NewDodecahedronScene() Scene {
@@ -18,7 +19,7 @@ func NewDodecahedronScene() Scene {
 	s.Camera = cameras.NewFixedCamera(width, height)
 	s.SPP = 1
 	s.Sampler = samplers.MakeOneSampler
-	s.Film = films.MakeBoxFilterFilm(width, height)
+	s.Film = films.MakeBoxFilterFilm(width, height, tonemappers.ClampToneMap)
 
 	n1 := csg.NewNode(csg.NewDiffusePlane(vec3.T{0, 1, 0}, 1), csg.NewDodecahedron(), csg.ADD)
 	s.Root = csg.NewNode(n1, csg.NewDiffusePlane(vec3.T{0, 0, 1}, 1), csg.ADD)

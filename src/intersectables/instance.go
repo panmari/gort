@@ -17,7 +17,7 @@ type Instance struct {
 
 // Transform the given ray into the coordinate frame of the instance and returns the resulting intersection.
 func (i *Instance) Intersect(r *util.Ray) *util.Hitrecord {
-	//transform into coordinate system of instance
+	//transform ray into coordinate system of instance
 	rTransformed := util.Ray{r.Origin, r.Direction}
 	i.tinverse.MulVec3(&rTransformed.Origin, 1)
 	i.tinverse.MulVec3(&rTransformed.Direction, 0)

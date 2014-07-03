@@ -8,6 +8,7 @@ import (
 	"intersectables/csg"
 	"lights"
 	"samplers"
+	"tonemappers"
 )
 
 func NewBoxScene() Scene {
@@ -18,7 +19,7 @@ func NewBoxScene() Scene {
 	s.Camera = cameras.NewFixedCamera(width, height)
 	s.SPP = 1
 	s.Sampler = samplers.MakeOneSampler
-	s.Film = films.MakeBoxFilterFilm(width, height)
+	s.Film = films.MakeBoxFilterFilm(width, height, tonemappers.ClampToneMap)
 
 	// Define the root object (an intersectable) of the scene
 	// A box

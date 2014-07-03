@@ -9,6 +9,7 @@ import (
 	"intersectables/csg"
 	"lights"
 	"samplers"
+	"tonemappers"
 )
 
 func NewSimpleCSGScene() Scene {
@@ -23,7 +24,7 @@ func NewSimpleCSGScene() Scene {
 	// pass function to create new samplers
 	s := samplers.MakeRandomSampler
 	//s := samplers.MakeOneSampler()
-	f := films.MakeBoxFilterFilm(width, height)
+	f := films.MakeBoxFilterFilm(width, height, tonemappers.ClampToneMap)
 
 	root := intersectables.NewIntersectableList(2)
 	sphere := csg.NewDiffuseSphere(vec3.T{0, 0, 0}, 1.0)

@@ -8,6 +8,7 @@ import (
 	"intersectables"
 	"lights"
 	"samplers"
+	"tonemappers"
 )
 
 func NewSimpleScene() Scene {
@@ -22,7 +23,7 @@ func NewSimpleScene() Scene {
 	// pass function to create new samplers
 	s := samplers.MakeRandomSampler
 	//s := samplers.MakeOneSampler()
-	f := films.MakeBoxFilterFilm(width, height)
+	f := films.MakeBoxFilterFilm(width, height, tonemappers.ClampToneMap)
 
 	root := intersectables.NewIntersectableList(2)
 	root.Add(intersectables.MakeDiffuseSphere(vec3.T{0, 0, 0}, 1.0))

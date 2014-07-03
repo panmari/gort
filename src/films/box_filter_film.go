@@ -10,8 +10,9 @@ import (
 )
 
 type BoxFilterFilm struct {
-	Film          []vec4.T
-	width, height int
+	Film          	[]vec4.T
+	width, height 	int
+	tonemapper		func(*vec4.T)
 }
 
 func (f *BoxFilterFilm) AddSample(x, y int, sample *vec3.T) {
@@ -31,7 +32,7 @@ func (i *BoxFilterFilm) At(x, y int) color.Color {
 	y = i.height - y - 1
 	s := i.Film[y*i.width+x]
 	s.Scale(255.0 / s[3])
-	s.Clamp(&vec4.Zero, &vec4.T{255, 255, 255})
+	i.tonemapper(&s)
 	return color.RGBA{uint8(s[0]), uint8(s[1]), uint8(s[2]), 255}
 }
 
@@ -47,10 +48,11 @@ func (i *BoxFilterFilm) WriteToPng(filename string) {
 	png.Encode(fo, i)
 }
 
-func MakeBoxFilterFilm(w, h int) *BoxFilterFilm {
+func MakeBoxFilterFilm(w, h int, tonemapper func(*vec4.T)) *BoxFilterFilm {
 	return &BoxFilterFilm{
 		width:  w,
 		height: h,
+		tonemapper: tonemapper,
 		Film:   make([]vec4.T, w*h)}
 }
 
