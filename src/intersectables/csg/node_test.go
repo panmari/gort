@@ -88,6 +88,7 @@ func TestNodeSubtract(t *testing.T) {
 }
 
 func TestNodeIntersect(t *testing.T) {
+	
 	p := NewDiffusePlane(vec3.UnitX, 1)
 	s := NewDiffuseSphere(vec3.Zero, 2)	
 	n := NewNode(s, p, INTERSECT)
@@ -116,4 +117,17 @@ func TestNodeIntersect(t *testing.T) {
 	}
 }
 
+func BenchmarkNodeIntersection(b *testing.B) {
+	p := NewDiffusePlane(vec3.UnitX, 1)
+	s := NewDiffuseSphere(vec3.Zero, 2)	
+	nInt := NewNode(s, p, INTERSECT)
+	nSub := NewNode(s, p, SUBTRACT)
+	nAdd := NewNode(s, p, ADD)
+	r := &util.Ray{vec3.T{4, 0, 0}, vec3.T{-1, 0, 0}}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		nInt.Intersect(r)
+		nSub.Intersect(r)
+		nAdd.Intersect(r)
+	}
 }
