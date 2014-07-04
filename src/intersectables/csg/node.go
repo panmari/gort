@@ -23,10 +23,10 @@ func (n *Node) GetIntervalBoundaries(r *util.Ray) ByT {
 	rightIntervals := n.right.GetIntervalBoundaries(r)
 	combined := combineIntervals(leftIntervals, rightIntervals)
 	sort.Sort(combined)
-	cleaned := make(ByT, 0, len(combined))
 	inLeft, inRight := false, false
 	previousWasStart := false
 	
+	cleanCount := 0
 	for _, b := range combined {
 		if b.belongsToLeft {
 			inLeft = b.isStart
@@ -48,18 +48,22 @@ func (n *Node) GetIntervalBoundaries(r *util.Ray) ByT {
 					b.hit.Normal.Scale(-1)
 				}
 		}
+		// remove start - start or end - end combinations by only adding good ones back
 		if previousWasStart != b.isStart {
-			cleaned = append(cleaned, b)
+			combined[cleanCount] = b
+			cleanCount++
 		}
 		previousWasStart = b.isStart
 	}
-	return cleaned;
+	// only return 0..cleanCount entries, the others are garbage
+	return combined[:cleanCount];
 }
 
 func (i *Node) String() string {
 	return fmt.Sprintf("left: %v, right: %v", i.left, i.right)
 }
 
+//combines the two intervals and tags all containing intervalboundaries as left resp. right
 func combineIntervals(left, right ByT) ByT {
 	for _, ib := range left {
 		ib.belongsToLeft = true
