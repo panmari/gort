@@ -13,7 +13,7 @@ type Plane struct {
 
 func (p *Plane) GetIntervalBoundaries(r *util.Ray) ByT {
 	boundaries := make(ByT, 0, 2)
-	if hit := p.plane.Intersect(r); hit != nil {
+	if hit := p.plane.IntersectHelper(r, true); hit != nil {
 		b1 := IntervalBoundary{t: hit.T, hit: hit}
 		b2 := IntervalBoundary{}
 		if vec3.Dot(&p.plane.Normal, &r.Direction) < 0 {

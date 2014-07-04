@@ -12,17 +12,20 @@ type Plane struct {
 	Material       util.Material
 }
 
-func (s *Plane) Intersect(r *util.Ray) (*util.Hitrecord) {
+func (s *Plane) Intersect(r *util.Ray) *util.Hitrecord {
+	return s.IntersectHelper(r, false)
+}
+
+func (s *Plane) IntersectHelper(r *util.Ray, allowNegative bool) (*util.Hitrecord) {
 	tmp := vec3.Dot(&r.Direction, &s.Normal)
 
 	if tmp == 0 { // parallel to plane, does not hit
 		return nil
 	}
 	t := -(vec3.Dot(&s.Normal, &r.Origin) + s.DistanceOrigin) / tmp
-	if t <= 0 { // negative t is not hit
+	if !allowNegative && t <= 0 { // only allow negative for CSG objects
 		return nil
 	}
-
 	hit := new(util.Hitrecord)
 	hit.T = t
 	hit.Position = r.PointAt(t)
