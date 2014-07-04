@@ -3,14 +3,15 @@ package csg
 import (
 	"github.com/barnex/fmath"
 	"github.com/ungerik/go3d/vec3"
+	"materials"
 )
 
 // This is actually not a type, since it only is a helper that intersects planes and nodes
 func NewDodecahedron() *Solid {
 	var planes [12]*Solid
-	
+	m := materials.MakeDiffuseMaterial(vec3.Red)
 	// Bottom half
-	planes[0] = NewDiffusePlane(vec3.T{0, -1, 0}, -1)
+	planes[0] = NewPlane(vec3.T{0, -1, 0}, -1, m)
 	for i := 0; i < 5; i++ {
 		// Make face normals, using facts that in a dodecahedron
 		// - top and bottom faces are uniform pentagons
@@ -20,11 +21,11 @@ func NewDodecahedron() *Solid {
 		y := -fmath.Cos(fmath.Atan(2))
 		z := fmath.Cos(theta) * fmath.Sin(fmath.Atan(2))
 		normal := vec3.T{x,y,z}
-		planes[i + 1] = NewDiffusePlane(normal, -1)
+		planes[i + 1] = NewPlane(normal, -1, m)
 	}
 	
 	// Top half
-	planes[6] = NewDiffusePlane(vec3.T{0, 1, 0}, -1)
+	planes[6] = NewPlane(vec3.T{0, 1, 0}, -1, m)
 	for i := 0; i < 5; i++ {
 		// Make face normals
 		theta := (float32(i) + 0.5) * 2 * fmath.Pi / 5
@@ -32,7 +33,7 @@ func NewDodecahedron() *Solid {
 		y := fmath.Cos(fmath.Atan(2))
 		z := fmath.Cos(theta) * fmath.Sin(fmath.Atan(2))
 		normal := vec3.T{x,y,z}
-		planes[i + 7] = NewDiffusePlane(normal, -1)
+		planes[i + 7] = NewPlane(normal, -1, m)
 	}
 	
 	// Build CSG tree

@@ -42,3 +42,8 @@ func NewDiffusePlane(normal vec3.T, dist float32) *Solid {
 	p := Solid{&Plane{*intersectables.MakeDiffusePlane(normal, dist)}}
 	return &p
 }
+
+func NewPlane(normal vec3.T, dist float32, m util.Material) *Solid {
+	p := Solid{&Plane{*intersectables.NewPlane(normal, dist, m)}}
+	return &p
+}

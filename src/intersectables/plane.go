@@ -44,3 +44,12 @@ func MakeDiffusePlane(normal vec3.T, distanceOrigin float32) *Plane {
 	p.Material = materials.MakeDiffuseMaterial(vec3.T{1, 1, 1})
 	return p
 }
+
+func NewPlane(normal vec3.T, distanceOrigin float32, m util.Material) *Plane {
+	p := new(Plane)
+	normal.Normalize()
+	p.Normal = normal
+	p.DistanceOrigin = distanceOrigin
+	p.Material = m
+	return p
+}
