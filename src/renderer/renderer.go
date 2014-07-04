@@ -5,6 +5,7 @@ import (
 	"sync"
 	"util"
 )
+
 func StartRendering(scene scenes.Scene) {
 	tasksize := 64
 	var wg sync.WaitGroup
@@ -19,6 +20,7 @@ func StartRendering(scene scenes.Scene) {
 	wg.Wait()
 }
 
+// renders a window of the given scene
 func renderWindow(scene scenes.Scene, left, right, bottom, top int, wg *sync.WaitGroup) {
 	defer wg.Done()
 	seed := int64(left*scene.Film.GetWidth() + top)
@@ -36,4 +38,11 @@ func renderWindow(scene scenes.Scene, left, right, bottom, top int, wg *sync.Wai
 			}
 		}
 	}
+}
+
+// mainly used for debugging
+func RenderPixel(scene scenes.Scene, x, y int) {
+	var wg sync.WaitGroup
+	wg.Add(1)
+	renderWindow(scene, x, x+1, y, y+1, &wg)
 }

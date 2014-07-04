@@ -31,8 +31,11 @@ func main() {
 	
 	
 	// define the scene to be rendered here
-	scene := scenes.NewDodecahedronScene()
+	//scene := scenes.NewDodecahedronScene()
+	//scene := scenes.NewBoxScene()
+	scene := scenes.NewSimpleCSGScene()
 	renderer.StartRendering(scene)
+	//renderer.RenderPixel(scene, 300, 300)
 	
 	duration := time.Since(start)
 	fmt.Println(duration.String())
