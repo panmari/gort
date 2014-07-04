@@ -20,17 +20,17 @@ func (p *Plane) GetIntervalBoundaries(r *util.Ray) ByT {
 			b1.isStart = true
 			b2.isStart = false
 			if hit.T > 0 {
-				b2.t = math.MaxFloat32
+				b2.t = float32(math.Inf(1))
 			} else {
-				b2.t = -math.MaxFloat32
+				b2.t = float32(math.Inf(-1))
 			}
 		} else {
 			b1.isStart = false
 			b2.isStart = true
 			if hit.T > 0 {
-				b2.t = -math.MaxFloat32
+				b2.t = float32(math.Inf(-1))
 			} else {
-				b2.t = math.MaxFloat32
+				b2.t = float32(math.Inf(1))
 			}
 		}
 		boundaries = append(boundaries, &b1, &b2)

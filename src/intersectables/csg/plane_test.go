@@ -39,7 +39,7 @@ func TestPlaneGetIntervalboundaries(t *testing.T) {
 	if ibs[0].t != 1 {
 		t.Errorf("First intersection not correct: %f", ibs[0].t)
 	}
-	if ibs[1].t != math.MaxFloat32 {
+	if ibs[1].t != float32(math.Inf(1)) {
 		t.Errorf("Second intersection not correct: %f", ibs[1].t)
 	}
 	
