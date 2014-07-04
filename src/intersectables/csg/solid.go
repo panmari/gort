@@ -7,7 +7,7 @@ import (
 )
 
 type Shape interface {
-	GetIntervalBoundaries(r *util.Ray) *ByT
+	GetIntervalBoundaries(r *util.Ray) ByT
 }
 
 type Solid struct {
@@ -15,7 +15,8 @@ type Solid struct {
 }
 
 func (s *Solid) Intersect(r *util.Ray) (*util.Hitrecord) {
-	for _, ib := range *s.GetIntervalBoundaries(r) {
+	ibs := s.GetIntervalBoundaries(r)
+	for _, ib := range ibs {
 		hit := ib.hit
 		if hit != nil && hit.T > 0 {
 			hit.Intersectable = s

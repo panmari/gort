@@ -11,7 +11,7 @@ type Plane struct {
 	plane  intersectables.Plane
 }
 
-func (p *Plane) GetIntervalBoundaries(r *util.Ray) *ByT {
+func (p *Plane) GetIntervalBoundaries(r *util.Ray) ByT {
 	boundaries := make(ByT, 0, 2)
 	if hit := p.plane.Intersect(r); hit != nil {
 		b1 := IntervalBoundary{t: hit.T, hit: hit}
@@ -35,7 +35,7 @@ func (p *Plane) GetIntervalBoundaries(r *util.Ray) *ByT {
 		}
 		boundaries = append(boundaries, &b1, &b2)
 	} 
-	return &boundaries
+	return boundaries
 }
 
 func NewDiffusePlane(normal vec3.T, dist float32) *Solid {

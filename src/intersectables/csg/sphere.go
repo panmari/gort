@@ -10,7 +10,7 @@ type Sphere struct {
 	sphere  intersectables.Sphere
 }
 
-func (s *Sphere) GetIntervalBoundaries(r *util.Ray) *ByT {
+func (s *Sphere) GetIntervalBoundaries(r *util.Ray) ByT {
 	boundaries := make(ByT, 0, 2)
 	if t0, t1, hasSolutions := s.sphere.GetIntersections(r); hasSolutions {
 		h0 := s.sphere.MakeHitrecord(t0, r)
@@ -21,7 +21,7 @@ func (s *Sphere) GetIntervalBoundaries(r *util.Ray) *ByT {
 		
 		boundaries = append(boundaries, &b0, &b1)
 	}
-	return &boundaries
+	return boundaries
 }
 
 func NewDiffuseSphere(center vec3.T, radius float32) *Solid {

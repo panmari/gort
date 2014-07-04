@@ -6,7 +6,7 @@ import (
 	"util"
 	)
 
-func TestSimpleNodeIntersection(t *testing.T) {
+func TestNodeAdd(t *testing.T) {
 	
 	p := NewDiffusePlane(vec3.UnitX, 1)
 	s := NewDiffuseSphere(vec3.Zero, 2)	
@@ -58,15 +58,47 @@ func TestSimpleNodeIntersection(t *testing.T) {
 	}
 }
 
-func TestNodeIntersect(t *testing.T) {
-	
+func TestNodeSubtract(t *testing.T) {
 	p := NewDiffusePlane(vec3.UnitX, 1)
 	s := NewDiffuseSphere(vec3.Zero, 2)	
-	n := NewNode(p, s, INTERSECT)
-	r := util.Ray{vec3.T{4,0,0}, vec3.T{-1, 0, 0}}
-	ibs := *n.GetIntervalBoundaries(&r)
+	n := NewNode(s, p, SUBTRACT)
+	r := util.Ray{vec3.T{4, 0, 0}, vec3.T{-1, 0, 0}}
+	ibs := n.GetIntervalBoundaries(&r)
 	
-	if len(ibs) != 2 {
+	if len(ibs) < 2 {
+		t.Errorf("There were fewer than two intersections: %d", len(ibs))
+		t.FailNow()
+	}
+	if len(ibs) > 2 {
+		t.Errorf("More than two intersections: %d", len(ibs))
+	}
+	if ibs[0].t != 2 {
+		t.Errorf("Entering shape at wrong t: %f", ibs[0].t)
+	}
+	if !ibs[0].isStart {
+		t.Error("First intersection is not entering")
+	}
+	
+	if ibs[1].t != 5 {
+		t.Errorf("Exiting shape at wrong t: %f", ibs[1].t)
+	}
+	if ibs[1].isStart {
+		t.Error("Second intersection is not exiting")
+	}
+}
+
+func TestNodeIntersect(t *testing.T) {
+	p := NewDiffusePlane(vec3.UnitX, 1)
+	s := NewDiffuseSphere(vec3.Zero, 2)	
+	n := NewNode(s, p, INTERSECT)
+	r := util.Ray{vec3.T{4, 0, 0}, vec3.T{-1, 0, 0}}
+	ibs := n.GetIntervalBoundaries(&r)
+	
+	if len(ibs) < 2 {
+		t.Errorf("There were fewer than two intersections: %d", len(ibs))
+		t.FailNow()
+	}
+	if len(ibs) > 2 {
 		t.Errorf("More than two intersections: %d", len(ibs))
 	}
 	if ibs[0].t != 5 {
@@ -77,9 +109,11 @@ func TestNodeIntersect(t *testing.T) {
 	}
 	
 	if ibs[1].t != 6 {
-		t.Errorf("Exiting shape at wrong t: %f", ibs[0].t)
+		t.Errorf("Exiting shape at wrong t: %f", ibs[1].t)
 	}
 	if ibs[1].isStart {
 		t.Error("Second intersection is not exiting")
 	}
+}
+
 }

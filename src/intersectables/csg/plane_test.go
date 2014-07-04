@@ -35,7 +35,7 @@ func TestPlaneIntersection(t *testing.T) {
 func TestPlaneGetIntervalboundaries(t *testing.T) {
 	r := util.Ray{vec3.Zero, vec3.T{-1, 0, 0}}
 	s := Plane{*intersectables.MakeDiffusePlane(vec3.UnitX, 1)}
-	ibs := *s.GetIntervalBoundaries(&r)
+	ibs := s.GetIntervalBoundaries(&r)
 	if ibs[0].t != 1 {
 		t.Errorf("First intersection not correct: %f", ibs[0].t)
 	}

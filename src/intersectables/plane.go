@@ -35,6 +35,7 @@ func (s *Plane) Intersect(r *util.Ray) (*util.Hitrecord) {
 	return hit
 }
 
+// Creates a new plane with the givne normal and the given distance to origin (measured along normal)
 func MakeDiffusePlane(normal vec3.T, distanceOrigin float32) *Plane {
 	p := new(Plane)
 	normal.Normalize()

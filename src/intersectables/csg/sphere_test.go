@@ -24,7 +24,7 @@ func TestSphereIntersection(t *testing.T) {
 func TestSphereGetIntervalboundaries(t *testing.T) {
 	r := util.Ray{vec3.Zero, vec3.UnitX}
 	s := Sphere{*intersectables.MakeDiffuseSphere(vec3.Zero, 2)}
-	ibs := *s.GetIntervalBoundaries(&r)
+	ibs := s.GetIntervalBoundaries(&r)
 	if ibs[0].t != -2 {
 		t.Errorf("First intersection not correct: %f", ibs[0].t)
 	}
