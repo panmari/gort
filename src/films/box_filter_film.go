@@ -41,11 +41,16 @@ func (i *BoxFilterFilm) Bounds() image.Rectangle {
 }
 
 func (i *BoxFilterFilm) WriteToPng(filename string) {
-	fo, err := os.Create(filename + ".png")
+	if err := os.Mkdir("output", os.ModePerm); err != nil && !os.IsExist(err) {
+		panic(err)
+	}
+	fo, err := os.Create("output/" + filename + ".png")
 	if err != nil {
 		panic(err)
 	}
-	png.Encode(fo, i)
+	if err = png.Encode(fo, i); err != nil {
+		panic(err)
+	}
 }
 
 func MakeBoxFilterFilm(w, h int, tonemapper func(*vec4.T)) *BoxFilterFilm {
