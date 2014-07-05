@@ -21,7 +21,7 @@ func Read(fileName string) (*Data, error){
 	
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		data.insertLine(scanner.Text())
+		data.InsertLine(scanner.Text())
 	}
 	return &data, scanner.Err()
 }
@@ -37,9 +37,10 @@ type Data struct{
 	TexCoords []vec2.T
 	Normals []vec3.T
 	Faces []Face
+	HasTexCoords bool
 }
 
-func (o *Data) insertLine(line string) {
+func (o *Data) InsertLine(line string) {
 	scanner := bufio.NewScanner(strings.NewReader(line))
 	scanner.Split(bufio.ScanWords)
 	scanner.Scan()
@@ -52,6 +53,7 @@ func (o *Data) insertLine(line string) {
 			o.Normals = append(o.Normals, parseVec3(scanner))
 		case "vt":
 			o.TexCoords = append(o.TexCoords, parseVec2(scanner))
+			o.HasTexCoords = true
 		case "f":
 			o.Faces = append(o.Faces, parseFace(scanner))
 		default:

@@ -9,30 +9,41 @@ import (
 )
 
 type Mesh struct {
-	triangles []MeshTriangle
+	triangles []util.Intersectable
 }
 
-//TODO: iterate over all triangles
-func (m *Mesh) Intersect(r *util.Ray) *util.Hitrecord {
-	return nil
+func (m *Mesh) Size() int {
+	return len(m.triangles)
 }
 
-func NewMesh(data *obj.Data) {
-	mesh := Mesh{make([]MeshTriangle, len(data.Faces))}
+func (m *Mesh) GetIntersectables() []util.Intersectable {
+	return m.triangles
+}
+
+func NewMesh(data *obj.Data) *Mesh {
+	mesh := Mesh{make([]util.Intersectable, len(data.Faces))}
 	for i, face := range data.Faces {
+		var t MeshTriangle
 		for j := 0; j < 3; j++ {
-			mesh.triangles[i].vertices[j] = &data.Vertices[face.VertexIds[j]]
-			mesh.triangles[i].texCoords[j] = &data.TexCoords[face.TexCoordIds[j]]
-			mesh.triangles[i].normals[j] = &data.Normals[face.NormalIds[j]]
+			t.vertices[j] = &data.Vertices[face.VertexIds[j]]
+			t.normals[j] = &data.Normals[face.NormalIds[j]]
+			if data.HasTexCoords {
+				t.texCoords[j] = &data.TexCoords[face.TexCoordIds[j]]
+			}
 		}
+		mesh.triangles[i] = &t
 	}
+	return &mesh
 }
 
+func NewMeshAggregate(data *obj.Data) util.Intersectable {
+	return NewAggregate(NewMesh(data))
+}
 
 type MeshTriangle struct {
-	vertices [3]*vec3.T
-	normals [3]*vec3.T
-	texCoords [2]*vec2.T
+	vertices   [3]*vec3.T
+	normals    [3]*vec3.T
+	texCoords  [2]*vec2.T
 }
 
 func (t *MeshTriangle) Intersect(r *util.Ray) *util.Hitrecord {

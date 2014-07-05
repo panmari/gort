@@ -39,7 +39,7 @@ func NewInstancingTestScene() Scene {
 	sphere3 := intersectables.NewDiffuseInstance(sphere, trans2)
 	
 	list.Add(sphere, sphere2, sphere3)
-	s.Root = list
+	s.Root = &intersectables.Aggregate{list}
 
 	s.Integrator = integrators.MakeDebugIntegrator(s.Root)
 	return s
