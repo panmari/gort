@@ -8,6 +8,7 @@ import (
 	"strings"
 	"github.com/ungerik/go3d/vec3"
 	"github.com/ungerik/go3d/vec2"
+	"bytes"
 )
 
 func Read(fileName string) ([]float32, error){
@@ -20,12 +21,16 @@ func Read(fileName string) ([]float32, error){
 	
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		myObjData.parseLine(scanner.Text())
+		myObjData.insertLine(scanner.Text())
 	}
 	return nil, scanner.Err()
 }
 
-type Face [3]int
+type Face struct {
+	vertexIds [3]int
+	texCoordIds [3]int
+	normalIds [3]int
+}
 
 type ObjData struct{
 	vertices []vec3.T
@@ -34,9 +39,7 @@ type ObjData struct{
 	faces []Face
 }
 
-
-
-func (o *ObjData) parseLine(line string) {
+func (o *ObjData) insertLine(line string) {
 	scanner := bufio.NewScanner(strings.NewReader(line))
 	scanner.Split(bufio.ScanWords)
 	scanner.Scan()
@@ -91,13 +94,48 @@ func parseFace(scanner *bufio.Scanner) Face {
 	counter := 0
 	//TODO: convert quadrangle faces into triangle faces
 	for scanner.Scan() {
-		//TODO, split according to format: "vertex/texcoord/normal"
-		i, err := strconv.Atoi(scanner.Text())
-		if err != nil {
-			log.Printf("Could not turn into float: %v", scanner.Text())
-		}
-		face[counter] = i
+		face.vertexIds[counter], face.texCoordIds[counter], face.normalIds[counter] = parseFacePoint(scanner.Bytes())
 		counter++
 	}
 	return face
+}
+
+//split according to format: "vertex/texcoord/normal"
+func parseFacePoint(data []byte) (int, int, int) {
+	scanner := bufio.NewScanner(bytes.NewReader(data))
+	scanner.Split(ScanSlashes)
+	
+	vertex_id := parseId(scanner)
+	texCoord_id := parseId(scanner)
+	normal_id := parseId(scanner)
+	
+	return vertex_id, texCoord_id, normal_id
+}
+
+func parseId(scanner *bufio.Scanner) int {
+	scanner.Scan()
+	t := scanner.Text()
+	if t == "" {
+		return -1
+	}
+	id, err := strconv.Atoi(t)
+	if err != nil {
+		log.Print("Failed to parse %v", err)
+	}
+	return id
+}
+
+func ScanSlashes(data []byte, atEOF bool) (advance int, token[]byte, err error) {
+	if atEOF && len(data) == 0 {
+		return 0, nil, nil
+	}
+	if i:= bytes.IndexByte(data, '/'); i >= 0 {
+		return i + 1, data[0:i], nil
+	}
+	// If we're at EOF, we have a final, non-terminated line. Return it.
+	if atEOF {
+		return len(data), data, nil
+	}
+	// Request more data.
+	return 0, nil, nil
 }
