@@ -1,6 +1,7 @@
 package intersectables
 
 import (
+	"fmt"
 	"util"
 	"util/obj"
 	"github.com/ungerik/go3d/vec3"
@@ -18,6 +19,10 @@ func (m *Mesh) Size() int {
 
 func (m *Mesh) GetIntersectables() []util.Intersectable {
 	return m.triangles
+}
+
+func (m *Mesh) String() string {
+	return fmt.Sprintf("Mesh: %v", m.triangles)
 }
 
 func NewMesh(data *obj.Data) *Mesh {
@@ -54,8 +59,15 @@ func (t *MeshTriangle) Intersect(r *util.Ray) *util.Hitrecord {
 	
 	betaGammaT := getBetaGammaTCramer(&m, b)
 	if isInside(betaGammaT) {
-		//TODO: assemble hitrecord
-		return new(util.Hitrecord)
+		h := new(util.Hitrecord)
+		h.T = betaGammaT[2]
+		h.Position = r.PointAt(h.T)
+		//TODO: fix normal
+		h.Normal = *t.normals[0]
+		h.W_in = r.Direction
+		h.W_in.Normalize().Scale(-1)
+		//TODO: texture coordinates
+		return h
 	}
 	return nil
 }
@@ -81,4 +93,8 @@ func getBetaGammaTCramer(m *mat3.T, b vec3.T) *vec3.T {
 	detA2 := m2.Determinant()
 	// alpha, beta gamma in one vector
 	return &vec3.T{detA0/detA, detA1/detA, detA2/detA}
+}
+
+func (t *MeshTriangle) String() string {
+	return fmt.Sprintf("v: %v, \nn: %v, \ntc: %v", t.vertices, t.normals, t.texCoords)
 }

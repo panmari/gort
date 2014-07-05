@@ -3,6 +3,7 @@ package intersectables
 import (
 	"util"
 	"math"
+	"fmt"
 )
 
 type Aggregate struct {
@@ -24,6 +25,10 @@ func (a *Aggregate) Intersect(ray *util.Ray) (*util.Hitrecord) {
 		}
 	}
 	return closestHit
+}
+
+func (a *Aggregate) String() string {
+	return fmt.Sprint(a.GetIntersectables())
 }
 
 func NewAggregate(a Aggregator) util.Intersectable {
