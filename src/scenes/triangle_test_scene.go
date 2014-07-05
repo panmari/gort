@@ -16,6 +16,7 @@ func NewTriangleTestScene() Scene {
 	s.Filename = "triangle_test_scene"
 	width := 512
 	height := 512
+	s.SPP = 1
 	
 	eye := vec3.T{0, 0, 3}
 	lookAt := vec3.T{0, 0, 0}

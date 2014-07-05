@@ -91,7 +91,7 @@ func getBetaGammaTCramer(m *mat3.T, b vec3.T) *vec3.T {
 	detA1 := m1.Determinant()
 	m2 := mat3.T{m[0], m[1], b}
 	detA2 := m2.Determinant()
-	// alpha, beta gamma in one vector
+	// alpha, beta, gamma in one vector
 	return &vec3.T{detA0/detA, detA1/detA, detA2/detA}
 }
 
