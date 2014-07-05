@@ -49,7 +49,7 @@ func TestParseFacePointNoTc(t *testing.T) {
 }
 
 func TestParseFace(t *testing.T) { 
-	o := ObjData{}
+	o := Data{}
 	line := "f 1/2/3 5/6/7 11/12/13"
 	o.insertLine(line)
 	f := o.faces[0]

@@ -11,8 +11,8 @@ import (
 	"bytes"
 )
 
-func Read(fileName string) ([]float32, error){
-	myObjData := ObjData{}
+func Read(fileName string) (*Data, error){
+	data := Data{}
 	file, err := os.Open(fileName)
 	if err != nil {
 		return nil, err
@@ -21,25 +21,25 @@ func Read(fileName string) ([]float32, error){
 	
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		myObjData.insertLine(scanner.Text())
+		data.insertLine(scanner.Text())
 	}
-	return nil, scanner.Err()
+	return &data, scanner.Err()
 }
 
 type Face struct {
-	vertexIds [3]int
-	texCoordIds [3]int
-	normalIds [3]int
+	VertexIds [3]int
+	TexCoordIds [3]int
+	NormalIds [3]int
 }
 
-type ObjData struct{
-	vertices []vec3.T
-	texCoords []vec2.T
-	normals []vec3.T
-	faces []Face
+type Data struct{
+	Vertices []vec3.T
+	TexCoords []vec2.T
+	Normals []vec3.T
+	Faces []Face
 }
 
-func (o *ObjData) insertLine(line string) {
+func (o *Data) insertLine(line string) {
 	scanner := bufio.NewScanner(strings.NewReader(line))
 	scanner.Split(bufio.ScanWords)
 	scanner.Scan()
@@ -47,13 +47,13 @@ func (o *ObjData) insertLine(line string) {
 		case "#":
 			//comment, do nothing			
 		case "v":
-			o.vertices = append(o.vertices, parseVec3(scanner))
+			o.Vertices = append(o.Vertices, parseVec3(scanner))
 		case "vn":
-			o.normals = append(o.normals, parseVec3(scanner))
+			o.Normals = append(o.Normals, parseVec3(scanner))
 		case "vt":
-			o.texCoords = append(o.texCoords, parseVec2(scanner))
+			o.TexCoords = append(o.TexCoords, parseVec2(scanner))
 		case "f":
-			o.faces = append(o.faces, parseFace(scanner))
+			o.Faces = append(o.Faces, parseFace(scanner))
 		default:
 			log.Printf("Can not parse %s", line)
 		
@@ -92,9 +92,9 @@ func parseVec2(scanner *bufio.Scanner) vec2.T {
 func parseFace(scanner *bufio.Scanner) Face {
 	var face Face
 	counter := 0
-	//TODO: convert quadrangle faces into triangle faces
+	//TODO: convert quadrangle Faces into triangle Faces
 	for scanner.Scan() {
-		face.vertexIds[counter], face.texCoordIds[counter], face.normalIds[counter] = parseFacePoint(scanner.Bytes())
+		face.VertexIds[counter], face.TexCoordIds[counter], face.NormalIds[counter] = parseFacePoint(scanner.Bytes())
 		counter++
 	}
 	return face
