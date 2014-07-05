@@ -7,6 +7,7 @@ import (
 	"github.com/ungerik/go3d/vec3"
 	"github.com/ungerik/go3d/vec2"
 	"github.com/ungerik/go3d/mat3"
+	"materials"
 )
 
 type Mesh struct {
@@ -25,10 +26,14 @@ func (m *Mesh) String() string {
 	return fmt.Sprintf("Mesh: %v", m.triangles)
 }
 
-func NewMesh(data *obj.Data) *Mesh {
+func NewDiffuseMesh(data *obj.Data) *Mesh {
+	return NewMesh(data, materials.MakeDiffuseMaterial(vec3.UnitXYZ))
+}
+
+func NewMesh(data *obj.Data, m util.Material) *Mesh {
 	mesh := Mesh{make([]util.Intersectable, len(data.Faces))}
 	for i, face := range data.Faces {
-		var t MeshTriangle
+		t := MeshTriangle{material: m}
 		for j := 0; j < 3; j++ {
 			t.vertices[j] = &data.Vertices[face.VertexIds[j]]
 			t.normals[j] = &data.Normals[face.NormalIds[j]]
@@ -41,14 +46,15 @@ func NewMesh(data *obj.Data) *Mesh {
 	return &mesh
 }
 
-func NewMeshAggregate(data *obj.Data) util.Intersectable {
-	return NewAggregate(NewMesh(data))
+func NewMeshAggregate(data *obj.Data, m util.Material) util.Intersectable {
+	return NewAggregate(NewMesh(data, m))
 }
 
 type MeshTriangle struct {
 	vertices   [3]*vec3.T
 	normals    [3]*vec3.T
 	texCoords  [2]*vec2.T
+	material   util.Material
 }
 
 func (t *MeshTriangle) Intersect(r *util.Ray) *util.Hitrecord {
@@ -67,6 +73,8 @@ func (t *MeshTriangle) Intersect(r *util.Ray) *util.Hitrecord {
 		h.W_in = r.Direction
 		h.W_in.Normalize().Scale(-1)
 		//TODO: texture coordinates
+		h.Material = t.material
+		h.Intersectable = t
 		return h
 	}
 	return nil

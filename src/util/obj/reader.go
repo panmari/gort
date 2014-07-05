@@ -11,11 +11,11 @@ import (
 	"bytes"
 )
 
-func Read(fileName string) (*Data, error){
+func Read(fileName string) (*Data) {
 	data := Data{}
 	file, err := os.Open(fileName)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 	defer file.Close()
 	
@@ -23,7 +23,10 @@ func Read(fileName string) (*Data, error){
 	for scanner.Scan() {
 		data.InsertLine(scanner.Text())
 	}
-	return &data, scanner.Err()
+	if scanner.Err() != nil {
+		panic(scanner.Err())
+	}
+	return &data
 }
 
 type Face struct {
@@ -124,7 +127,8 @@ func parseId(scanner *bufio.Scanner) int {
 	if err != nil {
 		log.Print("Failed to parse %v", err)
 	}
-	return id
+	// minus one bc one based counting system in obj
+	return id -1
 }
 
 func ScanSlashes(data []byte, atEOF bool) (advance int, token[]byte, err error) {

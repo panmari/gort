@@ -9,17 +9,19 @@ import (
 	"intersectables"
 	"samplers"
 	"tonemappers"
+	"lights"
 	"materials"
 )
 
-func NewTriangleTestScene() Scene {
+func NewInstancingTeapotsScene() Scene {
 	var s Scene
-	s.Filename = "triangle_test_scene"
-	width := 512
-	height := 512
+	s.Filename = "instancing_teapots_scene"
 	s.SPP = 1
 	
-	eye := vec3.T{0, 0, 3}
+	width := 256
+	height := 256
+	
+	eye := vec3.T{0, 0, 2}
 	lookAt := vec3.T{0, 0, 0}
 	up := vec3.T{0, 1, 0}
 	var fov float32 = 60.0
@@ -28,18 +30,13 @@ func NewTriangleTestScene() Scene {
 	s.Sampler = samplers.MakeOneSampler
 	s.Film = films.MakeBoxFilterFilm(width, height, tonemappers.ClampToneMap)
 	
-	data := new(obj.Data)
-	data.InsertLine("v 0 0 0")
-	data.InsertLine("v 1 0 0")
-	data.InsertLine("v 0 1 0")
-	data.InsertLine("vn 0 0 1")
-	data.InsertLine("vn 0 0 1")
-	data.InsertLine("vn 0 0 1")
-	data.InsertLine("f 0//0 1//1 2//2")
+	data := obj.Read("obj/teapot.obj")
 	s.Root = intersectables.NewMeshAggregate(data, &materials.DiffuseDefault)
 	
-	s.Integrator = integrators.MakeDebugIntegrator(s.Root)
-	
+	l := []lights.LightGeometry{ 	lights.MakePointLight(vec3.T{0,0.8,0.8}, vec3.T{3, 3, 3}),
+									lights.MakePointLight(vec3.T{-0.8,0.2,1}, vec3.T{1.5, 1.5, 1.5})}
+		
+	s.Integrator = integrators.MakePointLightIntegrator(s.Root, l)
 	return s
 }
 
