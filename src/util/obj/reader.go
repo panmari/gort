@@ -20,7 +20,8 @@ func Read(fileName string, scale float32) (*Data) {
 	data := Data{min: vec3.MaxVal, max: vec3.MinVal}
 	file, err := os.Open(fileName)
 	if err != nil {
-		panic(err)
+		wd, _ := os.Getwd()
+		log.Fatalf("Could not find obj file in %s/%s", wd, fileName)
 	}
 	defer file.Close()
 	
@@ -42,7 +43,6 @@ func Read(fileName string, scale float32) (*Data) {
 		}
 	}
 	usedScale := scale * normalizeScale
-	log.Printf("Scale: %f, trans: %v", usedScale, trans)
 	for _, v := range data.Vertices {
 		v.Add(&trans).Scale(usedScale)
 	}

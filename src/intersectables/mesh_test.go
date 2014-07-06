@@ -54,15 +54,15 @@ func TestTeapotMesh(t *testing.T) {
 	}
 	
 	m := NewMeshAggregate(data, materials.DiffuseDefault)
-	r := util.Ray{vec3.T{.2,.2, 1}, vec3.T{0,0,-5}}
+	r := util.Ray{vec3.T{.1,.1, 1}, vec3.T{0,0,-2}}
 	hit := m.Intersect(&r)
 	if hit == nil { 
-		t.Errorf("Did not hit")
+		t.Fatalf("Did not hit")
 	}
 	if hit.T - 0.404918 > 0.0001 {
 		t.Errorf("Hit at wrong t: %f", hit.T)
 	}
-	expectedNormal := vec3.T{0.29397509, -0.4074524, 0.8646162}
+	expectedNormal := vec3.T{0.28876302, 0.3982444, 0.87064195}
 	if hit.Normal != expectedNormal {
 		t.Errorf("Wrong normal: %v", hit.Normal)
 	}
