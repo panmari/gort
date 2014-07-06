@@ -63,7 +63,7 @@ func (t *MeshTriangle) Intersect(r *util.Ray) *util.Hitrecord {
 	m := mat3.T{col0, col1, r.Direction}
 	b := vec3.Sub(t.vertices[0], &r.Origin)
 	
-	betaGammaT := getBetaGammaTCramer(&m, b)
+	betaGammaT := getBetaGammaTCramer(&m, &b)
 	if isInside(betaGammaT) {
 		h := new(util.Hitrecord)
 		h.T = betaGammaT[2]
@@ -101,16 +101,24 @@ func isInside(betaGammaT *vec3.T) bool {
 	return f > 0 && f < 1	
 }
 
-func getBetaGammaTCramer(m *mat3.T, b vec3.T) *vec3.T {
+// Solves the linear system m*a = b via cramer's rule and returns a
+func getBetaGammaTCramer(m *mat3.T, b *vec3.T) *vec3.T {
 	detA := m.Determinant()
-	m0 := mat3.T{b, m[1], m[2]}
-	detA0 := m0.Determinant()
-	m1 := mat3.T{m[0], b, m[2]}
-	detA1 := m1.Determinant()
-	m2 := mat3.T{m[0], m[1], b}
-	detA2 := m2.Determinant()
+	mCopy := *m
+	m[0] = *b
+	detA0 := m.Determinant()
+	m[0] = mCopy[0]
+	m[1] = *b
+	detA1 := m.Determinant()
+	m[1] = mCopy[1]
+	m[2] = *b
+	detA2 := m.Determinant()
 	// alpha, beta, gamma in one vector
-	return &vec3.T{detA0/detA, detA1/detA, detA2/detA}
+	// reuse b to return result
+	b[0] = detA0/detA
+	b[1] = detA1/detA
+	b[2] = detA2/detA
+	return b
 }
 
 func (t *MeshTriangle) String() string {
