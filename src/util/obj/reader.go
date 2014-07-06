@@ -42,7 +42,7 @@ func Read(fileName string, scale float32) (*Data) {
 		}
 	}
 	usedScale := scale * normalizeScale
-	//log.Printf("Scale: %f, trans: %v", usedScale, trans)
+	log.Printf("Scale: %f, trans: %v", usedScale, trans)
 	for _, v := range data.Vertices {
 		(&v).Add(&trans).Scale(usedScale)
 	}

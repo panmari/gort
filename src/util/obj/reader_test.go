@@ -15,7 +15,7 @@ func TestParseVertex(t *testing.T) {
 	vector := parseVec3(scanner)
 	
 	expected := vec3.T{3.4, 1.2, 4.1}	
-	if vector != expected{
+	if *vector != expected{
 		t.Errorf("Dat vörtex is sömthing else actually... %v", vector)
 	}
 }

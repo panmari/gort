@@ -68,8 +68,7 @@ func (t *MeshTriangle) Intersect(r *util.Ray) *util.Hitrecord {
 		h := new(util.Hitrecord)
 		h.T = betaGammaT[2]
 		h.Position = r.PointAt(h.T)
-		//TODO: fix normal
-		h.Normal = *t.normals[0]
+		h.Normal = *t.makeNormal(betaGammaT)
 		h.W_in = r.Direction
 		h.W_in.Normalize().Scale(-1)
 		//TODO: texture coordinates
@@ -79,7 +78,18 @@ func (t *MeshTriangle) Intersect(r *util.Ray) *util.Hitrecord {
 	}
 	return nil
 }
-
+func (t *MeshTriangle) makeNormal(betaGammaT *vec3.T) *vec3.T {
+	var normal vec3.T
+	n0 := t.normals[0].Scaled(1 - betaGammaT[0] - betaGammaT[1])
+	normal.Add(&n0)
+	n1 := t.normals[1].Scaled(betaGammaT[0])
+	normal.Add(&n1)
+	n2 := t.normals[2].Scaled(betaGammaT[1])
+	normal.Add(&n2)
+	// this should not be needed, but most meshes suck...
+	normal.Normalize()
+	return &normal
+}
 func isInside(betaGammaT *vec3.T) bool {
 	if 	(betaGammaT[0] <= 0 ||
 		betaGammaT[0] >= 1 ||
