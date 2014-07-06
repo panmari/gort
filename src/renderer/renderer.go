@@ -7,6 +7,9 @@ import (
 )
 
 func StartRendering(scene scenes.Scene) {
+	if scene.Film.GetWidth() == 0 || scene.Film.GetHeight() == 0 || scene.SPP == 0 {
+		panic("Invalid settings for scene!")
+	}
 	tasksize := 64
 	var wg sync.WaitGroup
 	for x := 0; x < scene.Film.GetWidth(); x += tasksize {

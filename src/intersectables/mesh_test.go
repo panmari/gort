@@ -5,6 +5,7 @@ import (
     "util"
     "github.com/ungerik/go3d/vec3"
     "util/obj"
+	"materials"
 )
 
 func TestSingleTrianglesAdded(t *testing.T) {
@@ -18,7 +19,7 @@ func TestSingleTrianglesAdded(t *testing.T) {
 	data.InsertLine("f 1//1 2//2 3//3")
 	t.Log(data)
 	
-	m := NewMeshAggregate(data)
+	m := NewMeshAggregate(data, &materials.DiffuseDefault)
 	r := util.Ray{vec3.T{.2,.2, 1}, vec3.T{0,0,-1}}
 	t.Log(m)
 	hit := m.Intersect(&r)
@@ -44,7 +45,7 @@ func TestSingleTrianglesAdded(t *testing.T) {
 }
 
 func TestTeapotMesh(t *testing.T) {
-	data := obj.Read("../../obj/teapot.obj")
+	data := obj.Read("../../obj/teapot.obj", 1)
 	if len(data.Vertices) != 302 {
 		t.Errorf("Wrong number of vertices: %d", len(data.Vertices))
 	}
@@ -52,7 +53,7 @@ func TestTeapotMesh(t *testing.T) {
 		t.Errorf("Wrong number of normals: %d", len(data.Normals))
 	}
 	
-	m := NewMeshAggregate(data)
+	m := NewMeshAggregate(data, &materials.DiffuseDefault)
 	r := util.Ray{vec3.T{.2,.2, 1}, vec3.T{0,0,-5}}
 	hit := m.Intersect(&r)
 	if hit == nil { 

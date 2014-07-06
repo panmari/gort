@@ -30,7 +30,7 @@ func NewInstancingTeapotsScene() Scene {
 	s.Sampler = samplers.MakeOneSampler
 	s.Film = films.MakeBoxFilterFilm(width, height, tonemappers.ClampToneMap)
 	
-	data := obj.Read("obj/teapot.obj")
+	data := obj.Read("obj/teapot.obj", 1)
 	s.Root = intersectables.NewMeshAggregate(data, &materials.DiffuseDefault)
 	
 	l := []lights.LightGeometry{ 	lights.MakePointLight(vec3.T{0,0.8,0.8}, vec3.T{3, 3, 3}),

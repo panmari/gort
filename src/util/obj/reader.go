@@ -9,10 +9,12 @@ import (
 	"github.com/ungerik/go3d/vec3"
 	"github.com/ungerik/go3d/vec2"
 	"bytes"
+	"math"
 )
 
-func Read(fileName string) (*Data) {
-	data := Data{}
+// Reads the given obj file, centers it at origin and scales it by the given amount.
+func Read(fileName string, scale float32) (*Data) {
+	data := Data{min: vec3.MaxVal, max: vec3.MinVal}
 	file, err := os.Open(fileName)
 	if err != nil {
 		panic(err)
@@ -26,6 +28,22 @@ func Read(fileName string) (*Data) {
 	if scanner.Err() != nil {
 		panic(scanner.Err())
 	}
+	trans := vec3.Add(&data.max, &data.min)
+	trans.Scale(-1/2)
+
+	normalizeScale := float32(math.MaxFloat32)
+	for i := 0; i < 3; i++ {
+		s := 2/(data.max[i] - data.min[i])
+		if s < normalizeScale {
+			normalizeScale = s
+		}
+	}
+	usedScale := scale * normalizeScale
+	//log.Printf("Scale: %f, trans: %v", usedScale, trans)
+	for _, v := range data.Vertices {
+		v.Add(&trans).Scale(usedScale)
+	}
+	//TODO: possibly compute normals with cross product if not present
 	return &data
 }
 
@@ -35,12 +53,14 @@ type Face struct {
 	NormalIds [3]int
 }
 
-type Data struct{
-	Vertices []vec3.T
-	TexCoords []vec2.T
-	Normals []vec3.T
-	Faces []Face
-	HasTexCoords bool
+type Data struct {
+	Vertices      []vec3.T
+	TexCoords     []vec2.T
+	Normals       []vec3.T
+	Faces         []Face
+	HasTexCoords  bool
+	min           vec3.T
+	max           vec3.T
 }
 
 func (o *Data) InsertLine(line string) {
@@ -51,7 +71,10 @@ func (o *Data) InsertLine(line string) {
 		case "#":
 			//comment, do nothing			
 		case "v":
-			o.Vertices = append(o.Vertices, parseVec3(scanner))
+			vertex := parseVec3(scanner)
+			o.min = vec3.Min(&vertex, &o.min)
+			o.max = vec3.Max(&vertex, &o.max)
+			o.Vertices = append(o.Vertices, vertex)
 		case "vn":
 			o.Normals = append(o.Normals, parseVec3(scanner))
 		case "vt":
@@ -61,7 +84,6 @@ func (o *Data) InsertLine(line string) {
 			o.Faces = append(o.Faces, parseFace(scanner))
 		default:
 			log.Printf("Can not parse %s", line)
-		
 	}
 }
 
@@ -105,7 +127,7 @@ func parseFace(scanner *bufio.Scanner) Face {
 	return face
 }
 
-//split according to format: "vertex/texcoord/normal"
+// parse Face according to format: "vertex/texcoord/normal"
 func parseFacePoint(data []byte) (int, int, int) {
 	scanner := bufio.NewScanner(bytes.NewReader(data))
 	scanner.Split(ScanSlashes)

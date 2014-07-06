@@ -74,6 +74,6 @@ func BenchmarkParseLine(b *testing.B) {
 
 func BenchmarkTeapot(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		Read("obj/teapot.obj")
+		Read("obj/teapot.obj", 1)
 	}
 }
