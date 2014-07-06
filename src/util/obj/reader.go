@@ -14,6 +14,9 @@ import (
 
 // Reads the given obj file, centers it at origin and scales it by the given amount.
 func Read(fileName string, scale float32) (*Data) {
+	if scale <= 0 {
+		log.Fatal("Invalid scale factor %f for %s: must be >= 0", scale, fileName)
+	}
 	data := Data{min: vec3.MaxVal, max: vec3.MinVal}
 	file, err := os.Open(fileName)
 	if err != nil {
@@ -41,7 +44,7 @@ func Read(fileName string, scale float32) (*Data) {
 	usedScale := scale * normalizeScale
 	//log.Printf("Scale: %f, trans: %v", usedScale, trans)
 	for _, v := range data.Vertices {
-		v.Add(&trans).Scale(usedScale)
+		(&v).Add(&trans).Scale(usedScale)
 	}
 	//TODO: possibly compute normals with cross product if not present
 	return &data
@@ -54,9 +57,9 @@ type Face struct {
 }
 
 type Data struct {
-	Vertices      []vec3.T
-	TexCoords     []vec2.T
-	Normals       []vec3.T
+	Vertices      []*vec3.T
+	TexCoords     []*vec2.T
+	Normals       []*vec3.T
 	Faces         []Face
 	HasTexCoords  bool
 	min           vec3.T
@@ -72,8 +75,8 @@ func (o *Data) InsertLine(line string) {
 			//comment, do nothing			
 		case "v":
 			vertex := parseVec3(scanner)
-			o.min = vec3.Min(&vertex, &o.min)
-			o.max = vec3.Max(&vertex, &o.max)
+			o.min = vec3.Min(vertex, &o.min)
+			o.max = vec3.Max(vertex, &o.max)
 			o.Vertices = append(o.Vertices, vertex)
 		case "vn":
 			o.Normals = append(o.Normals, parseVec3(scanner))
@@ -88,7 +91,7 @@ func (o *Data) InsertLine(line string) {
 }
 
 
-func parseVec3(scanner *bufio.Scanner) vec3.T {
+func parseVec3(scanner *bufio.Scanner) *vec3.T {
 	var vector vec3.T
 	counter := 0
 	for scanner.Scan() {
@@ -99,10 +102,10 @@ func parseVec3(scanner *bufio.Scanner) vec3.T {
 		vector[counter] = float32(f)
 		counter++
 	}
-	return vector
+	return &vector
 }
 
-func parseVec2(scanner *bufio.Scanner) vec2.T {
+func parseVec2(scanner *bufio.Scanner) *vec2.T {
 	var vector vec2.T
 	counter := 0
 	for scanner.Scan() {
@@ -113,7 +116,7 @@ func parseVec2(scanner *bufio.Scanner) vec2.T {
 		vector[counter] = float32(f)
 		counter++
 	}
-	return vector
+	return &vector
 }
 
 func parseFace(scanner *bufio.Scanner) Face {

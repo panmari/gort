@@ -35,10 +35,10 @@ func NewMesh(data *obj.Data, m util.Material) *Mesh {
 	for i, face := range data.Faces {
 		t := MeshTriangle{material: m}
 		for j := 0; j < 3; j++ {
-			t.vertices[j] = &data.Vertices[face.VertexIds[j]]
-			t.normals[j] = &data.Normals[face.NormalIds[j]]
+			t.vertices[j] = data.Vertices[face.VertexIds[j]]
+			t.normals[j] = data.Normals[face.NormalIds[j]]
 			if data.HasTexCoords {
-				t.texCoords[j] = &data.TexCoords[face.TexCoordIds[j]]
+				t.texCoords[j] = data.TexCoords[face.TexCoordIds[j]]
 			}
 		}
 		mesh.triangles[i] = &t

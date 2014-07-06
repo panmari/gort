@@ -19,7 +19,7 @@ func TestSingleTrianglesAdded(t *testing.T) {
 	data.InsertLine("f 1//1 2//2 3//3")
 	t.Log(data)
 	
-	m := NewMeshAggregate(data, &materials.DiffuseDefault)
+	m := NewMeshAggregate(data, materials.DiffuseDefault)
 	r := util.Ray{vec3.T{.2,.2, 1}, vec3.T{0,0,-1}}
 	t.Log(m)
 	hit := m.Intersect(&r)
@@ -53,7 +53,7 @@ func TestTeapotMesh(t *testing.T) {
 		t.Errorf("Wrong number of normals: %d", len(data.Normals))
 	}
 	
-	m := NewMeshAggregate(data, &materials.DiffuseDefault)
+	m := NewMeshAggregate(data, materials.DiffuseDefault)
 	r := util.Ray{vec3.T{.2,.2, 1}, vec3.T{0,0,-5}}
 	hit := m.Intersect(&r)
 	if hit == nil { 

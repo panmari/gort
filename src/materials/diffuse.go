@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	DiffuseDefault = Diffuse{vec3.T{1 / fmath.Pi, 1 / fmath.Pi, 1 / fmath.Pi}}
+	DiffuseDefault = &Diffuse{vec3.T{1 / fmath.Pi, 1 / fmath.Pi, 1 / fmath.Pi}}
 )
 
 type Diffuse struct {

@@ -36,7 +36,7 @@ func NewTriangleTestScene() Scene {
 	data.InsertLine("vn 0 0 1")
 	data.InsertLine("vn 0 0 1")
 	data.InsertLine("f 0//0 1//1 2//2")
-	s.Root = intersectables.NewMeshAggregate(data, &materials.DiffuseDefault)
+	s.Root = intersectables.NewMeshAggregate(data, materials.DiffuseDefault)
 	
 	s.Integrator = integrators.MakeDebugIntegrator(s.Root)
 	
