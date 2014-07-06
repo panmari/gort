@@ -62,7 +62,7 @@ func TestTeapotMesh(t *testing.T) {
 	if hit.T - 0.404918 > 0.0001 {
 		t.Errorf("Hit at wrong t: %f", hit.T)
 	}
-	expectedNormal := vec3.T{0.432285, -0.528569, -0.730578}
+	expectedNormal := vec3.T{0.29397509, -0.4074524, 0.8646162}
 	if hit.Normal != expectedNormal {
 		t.Errorf("Wrong normal: %v", hit.Normal)
 	}

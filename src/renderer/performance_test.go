@@ -37,3 +37,13 @@ func BenchmarkRenderingDodecahedronScene(b *testing.B) {
 		StartRendering(s)
 	}
 }
+
+func BenchmarkRenderingTeapotInstancingScene(b *testing.B) {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	s := scenes.NewInstancingTeapotsScene()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		//setting SPP doesn't change anything, has OneSampler
+		StartRendering(s)
+	}
+}

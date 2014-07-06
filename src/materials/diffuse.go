@@ -45,6 +45,13 @@ func (m *Diffuse) EvaluateBRDF(hit *util.Hitrecord, wOut, wIn *vec3.T) vec3.T {
 	return m.kd
 }
 
+func NewDiffuseMaterial(r, g, b float32) *Diffuse {
+	diffuseReflectance := vec3.T{r, g, b}
+	diffuseReflectance.Scale(1 / fmath.Pi)
+	m := Diffuse{diffuseReflectance}
+	return &m
+}
+
 func MakeDiffuseMaterial(diffuseReflectance vec3.T) *Diffuse {
 	m := new(Diffuse)
 	m.kd = diffuseReflectance.Scaled(1 / fmath.Pi)

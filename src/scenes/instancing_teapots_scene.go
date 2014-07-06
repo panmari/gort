@@ -32,11 +32,11 @@ func NewInstancingTeapotsScene() Scene {
 	s.Sampler = samplers.MakeOneSampler
 	s.Film = films.MakeBoxFilterFilm(width, height, tonemappers.ClampToneMap)
 	
-	p1 := intersectables.NewPlane(vec3.UnitY, 1, materials.DiffuseDefault)
-	p2 := intersectables.NewPlane(vec3.UnitZ, 1, materials.DiffuseDefault)
-	p3 := intersectables.NewPlane(vec3.T{-1,0,0}, 1, materials.DiffuseDefault)
-	p4 := intersectables.NewPlane(vec3.UnitX, 1, materials.DiffuseDefault)
-	p5 := intersectables.NewPlane(vec3.T{0,-1,0}, 1, materials.DiffuseDefault)
+	p1 := intersectables.NewPlane(vec3.UnitY, 1, materials.NewDiffuseMaterial(0, 0.8, 0.8))
+	p2 := intersectables.NewPlane(vec3.UnitZ, 1,materials.NewDiffuseMaterial(0.3, 0.8, 0.8))
+	p3 := intersectables.NewPlane(vec3.T{-1,0,0}, 1, materials.NewDiffuseMaterial(1, 0.8, 0.8))
+	p4 := intersectables.NewPlane(vec3.UnitX, 1, materials.NewDiffuseMaterial(0, 0.8, 0))
+	p5 := intersectables.NewPlane(vec3.T{0,-1,0}, 1, materials.NewDiffuseMaterial(0.8, 0.8, 0.8))
 	data := obj.Read("obj/teapot.obj", 1)
 	teapot := intersectables.NewMeshAggregate(data, materials.DiffuseDefault)
 	
@@ -56,8 +56,8 @@ func NewInstancingTeapotsScene() Scene {
 	
 	s.Root = intersectables.NewAggregate(list)
 	
-	l := []lights.LightGeometry{ 	lights.MakePointLight(vec3.T{0,0.8,0.8}, vec3.T{3, 3, 3}),
-									lights.MakePointLight(vec3.T{-0.8,0.2,1}, vec3.T{1.5, 1.5, 1.5})}
+	l := []lights.LightGeometry{ 	lights.MakePointLight(vec3.T{0, 0.8, 0.8}, vec3.T{3, 3, 3}),
+									lights.MakePointLight(vec3.T{-0.8, 0.2, 1}, vec3.T{1.5, 1.5, 1.5})}
 		
 	s.Integrator = integrators.MakePointLightIntegrator(s.Root, l)
 	return s
