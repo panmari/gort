@@ -32,7 +32,7 @@ func Read(fileName string, scale float32) (*Data) {
 		panic(scanner.Err())
 	}
 	trans := vec3.Add(&data.max, &data.min)
-	trans.Scale(-1/2)
+	trans.Scale(float32(-1)/2)
 
 	normalizeScale := float32(math.MaxFloat32)
 	for i := 0; i < 3; i++ {
@@ -44,7 +44,7 @@ func Read(fileName string, scale float32) (*Data) {
 	usedScale := scale * normalizeScale
 	log.Printf("Scale: %f, trans: %v", usedScale, trans)
 	for _, v := range data.Vertices {
-		(&v).Add(&trans).Scale(usedScale)
+		v.Add(&trans).Scale(usedScale)
 	}
 	//TODO: possibly compute normals with cross product if not present
 	return &data
