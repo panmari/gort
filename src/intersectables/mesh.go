@@ -41,6 +41,10 @@ func NewMesh(data *obj.Data, m util.Material) *Mesh {
 				t.texCoords[j] = data.TexCoords[face.TexCoordIds[j]]
 			}
 		}
+		// precompute matrix used for cramers rule
+		col0 := vec3.Sub(t.vertices[0], t.vertices[1])
+		col1 := vec3.Sub(t.vertices[0], t.vertices[2])
+		t.cramerMat = mat3.T{col0, col1, vec3.Zero}
 		mesh.triangles[i] = &t
 	}
 	return &mesh
@@ -51,6 +55,7 @@ func NewMeshAggregate(data *obj.Data, m util.Material) util.Intersectable {
 }
 
 type MeshTriangle struct {
+	cramerMat  mat3.T
 	vertices   [3]*vec3.T
 	normals    [3]*vec3.T
 	texCoords  [2]*vec2.T
@@ -58,12 +63,11 @@ type MeshTriangle struct {
 }
 
 func (t *MeshTriangle) Intersect(r *util.Ray) *util.Hitrecord {
-	col0 := vec3.Sub(t.vertices[0], t.vertices[1])
-	col1 := vec3.Sub(t.vertices[0], t.vertices[2])
-	m := mat3.T{col0, col1, r.Direction}
+	m := t.cramerMat
+	m[2] = r.Direction
 	b := vec3.Sub(t.vertices[0], &r.Origin)
 	
-	betaGammaT := getBetaGammaTCramer(&m, &b)
+	betaGammaT := t.getBetaGammaTCramer(&m, &b)
 	if isInside(betaGammaT) {
 		h := new(util.Hitrecord)
 		h.T = betaGammaT[2]
@@ -102,17 +106,18 @@ func isInside(betaGammaT *vec3.T) bool {
 }
 
 // Solves the linear system m*a = b via cramer's rule and returns a
-func getBetaGammaTCramer(m *mat3.T, b *vec3.T) *vec3.T {
+func (t *MeshTriangle) getBetaGammaTCramer(m *mat3.T, b *vec3.T) *vec3.T {
 	detA := m.Determinant()
-	mCopy := *m
+	// set one column to b and get determinant, do for all three columns
 	m[0] = *b
 	detA0 := m.Determinant()
-	m[0] = mCopy[0]
+	m[0] = t.cramerMat[0]
 	m[1] = *b
 	detA1 := m.Determinant()
-	m[1] = mCopy[1]
+	m[1] = t.cramerMat[1]
 	m[2] = *b
 	detA2 := m.Determinant()
+	
 	// alpha, beta, gamma in one vector
 	// reuse b to return result
 	b[0] = detA0/detA
