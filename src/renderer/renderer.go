@@ -4,6 +4,7 @@ import (
 	"scenes"
 	"sync"
 	"util"
+	"github.com/cheggaaa/pb"
 )
 
 func StartRendering(scene scenes.Scene) {
@@ -12,19 +13,21 @@ func StartRendering(scene scenes.Scene) {
 	}
 	tasksize := 64
 	var wg sync.WaitGroup
+	bar := pb.StartNew(scene.Film.GetWidth()*scene.Film.GetHeight())
 	for x := 0; x < scene.Film.GetWidth(); x += tasksize {
 		for y := 0; y < scene.Film.GetHeight(); y += tasksize {
 			x_border := util.Min(x+tasksize, scene.Film.GetWidth())
 			y_border := util.Min(y+tasksize, scene.Film.GetHeight())
 			wg.Add(1)
-			go renderWindow(scene, x, int(x_border), y, int(y_border), &wg)
+			go renderWindow(scene, x, int(x_border), y, int(y_border), &wg, bar)
 		}
 	}
 	wg.Wait()
+	bar.Finish()
 }
 
 // renders a window of the given scene
-func renderWindow(scene scenes.Scene, left, right, bottom, top int, wg *sync.WaitGroup) {
+func renderWindow(scene scenes.Scene, left, right, bottom, top int, wg *sync.WaitGroup, bar *pb.ProgressBar) {
 	defer wg.Done()
 	seed := int64(left*scene.Film.GetWidth() + top)
 	sampler := scene.Sampler(seed)
@@ -39,6 +42,7 @@ func renderWindow(scene scenes.Scene, left, right, bottom, top int, wg *sync.Wai
 				color := integrator.Integrate(ray)
 				film.AddSample(x, y, color)
 			}
+			bar.Increment()
 		}
 	}
 }
@@ -47,5 +51,5 @@ func renderWindow(scene scenes.Scene, left, right, bottom, top int, wg *sync.Wai
 func RenderPixel(scene scenes.Scene, x, y int) {
 	var wg sync.WaitGroup
 	wg.Add(1)
-	renderWindow(scene, x, x+1, y, y+1, &wg)
+	renderWindow(scene, x, x+1, y, y+1, &wg, nil) //TODO fix for progress bar
 }
