@@ -8,8 +8,12 @@ type RandomSampler struct {
 	rand rand.Rand
 }
 
-func (r *RandomSampler) Get2DSample() *[2]float32 {
-	return &[2]float32{r.rand.Float32(), r.rand.Float32()}
+func (r *RandomSampler) Get2DSamples(n int) [][2]float32 {
+	samples := make([][2]float32, n)
+	for i := range samples {
+		samples[i] = [2]float32{r.rand.Float32(), r.rand.Float32()}
+	}
+	return samples
 }
 
 //TODO: seed?

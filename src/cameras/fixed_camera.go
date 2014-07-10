@@ -48,7 +48,7 @@ func NewFixedCamera(width int, height int) *FixedCamera {
 	return cam
 }
 
-func (c *FixedCamera) MakeWorldSpaceRay(i, j int, samples *[2]float32) *util.Ray {
+func (c *FixedCamera) MakeWorldSpaceRay(i, j int, samples [2]float32) *util.Ray {
 	d := vec4.T{float32(i) + samples[0], float32(j) + samples[1], -1.0, 1.0}
 
 	// Transform it back to world coordinates
