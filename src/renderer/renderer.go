@@ -32,7 +32,7 @@ func StartRendering(scene scenes.Scene) {
 	for nrTasks > bar.Increment() {
 		<- taskDone
 	}
-	bar.FinishPrint("Finished Rendering")
+	bar.Finish()
 }
 
 // renders a window of the given scene
