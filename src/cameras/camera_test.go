@@ -14,8 +14,8 @@ func TestCameraRay(t *testing.T) {
 	width := 640
 	height := 360
 	c := MakePinholeCamera(&eye, &lookAt, &up, fov, aspect, width, height)
-	samples := [2]float32{0.0, 0.0}
-	r := c.MakeWorldSpaceRay(width/2, height/2, &samples)
+	sample := [2]float32{0.0, 0.0}
+	r := c.MakeWorldSpaceRay(width/2, height/2, sample)
 	expectedOrig := vec3.T{0, 0, 5}
 	if r.Origin != expectedOrig {
 		t.Error("wrong origin")

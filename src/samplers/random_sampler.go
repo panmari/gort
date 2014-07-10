@@ -16,7 +16,6 @@ func (r *RandomSampler) Get2DSamples(n int) [][2]float32 {
 	return samples
 }
 
-//TODO: seed?
 func MakeRandomSampler(seed int64) Sampler {
 	return &RandomSampler{*rand.New(rand.NewSource(seed))}
 }

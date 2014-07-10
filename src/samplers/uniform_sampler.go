@@ -18,12 +18,12 @@ func (r *UniformSampler) Get2DSamples(n int) [][2]float32 {
 	offset := 1/(k*2)
 	samples := make([][2]float32, k_int*k_int)
 	for i := range samples {
-		samples[i] = [2]float32{offset + dist*float32(i % k_int), offset + dist*float32(i / k_int)}
+		samples[i][0] = offset + dist*float32(i % k_int)
+		samples[i][1] = offset + dist*float32(i / k_int)
 	}
 	return samples
 }
 
-//TODO: seed?
-func NewUniformSampler(seed int64) Sampler {
+func MakeUniformSampler(seed int64) Sampler {
 	return new(UniformSampler)
 }
