@@ -5,7 +5,7 @@ import (
 	"sync"
 	"util"
 	"runtime"
-//	"fmt"
+	"github.com/cheggaaa/pb"
 )
 
 func StartRendering(scene scenes.Scene) {
@@ -20,7 +20,7 @@ func StartRendering(scene scenes.Scene) {
 	}
 	nrTasks := 0
 	for x := 0; x < scene.Film.GetWidth(); x += tasksize {
-		for y := 0; y < scene.Film.GetHeight(); y+= tasksize {
+		for y := 0; y < scene.Film.GetHeight(); y += tasksize {
 			x_border := util.Min(x + tasksize, scene.Film.GetWidth())
 			y_border := util.Min(y + tasksize, scene.Film.GetHeight())
 			taskChan <- &Task{x, int(x_border), y, int(y_border)}
@@ -28,16 +28,11 @@ func StartRendering(scene scenes.Scene) {
 		}
 	}
 	close(taskChan)
-	doneTasksCounter := 0
-	for nrTasks > doneTasksCounter {
+	bar := pb.StartNew(nrTasks)
+	for nrTasks > bar.Increment() {
 		<- taskDone
-		doneTasksCounter++
-		/*
-		if doneTasksCounter % 10 == 0 {
-			fmt.Print("*")
-		}
-		*/
 	}
+	bar.FinishPrint("Finished Rendering")
 }
 
 // renders a window of the given scene
