@@ -4,6 +4,8 @@ import (
 	"scenes"
 	"sync"
 	"util"
+	"runtime"
+	"fmt"
 )
 
 func StartRendering(scene scenes.Scene) {
@@ -11,16 +13,29 @@ func StartRendering(scene scenes.Scene) {
 		panic("Invalid settings for scene!")
 	}
 	tasksize := 64
-	var wg sync.WaitGroup
+	sampleChan := make(chan *Sample, 100)
+	taskChan := make(chan *Task, 100)	
+	for i := 0; i < runtime.NumCPU(); i++ {
+		go NewWorker(scene).renderWindow(taskChan, sampleChan)
+	}
 	for x := 0; x < scene.Film.GetWidth(); x += tasksize {
-		for y := 0; y < scene.Film.GetHeight(); y += tasksize {
-			x_border := util.Min(x+tasksize, scene.Film.GetWidth())
-			y_border := util.Min(y+tasksize, scene.Film.GetHeight())
-			wg.Add(1)
-			go renderWindow(scene, x, int(x_border), y, int(y_border), &wg)
+		for y := 0; y < scene.Film.GetHeight(); y+= tasksize {
+			x_border := util.Min(x + tasksize, scene.Film.GetWidth())
+			y_border := util.Min(y + tasksize, scene.Film.GetHeight())
+			taskChan <- &Task{x, int(x_border), y, int(y_border)}
 		}
 	}
-	wg.Wait()
+	close(taskChan)
+	
+	nSamples := scene.Film.GetHeight()*scene.Film.GetWidth()*scene.SPP
+	for s := 0; s < nSamples; s++ {
+		sample := <- sampleChan
+		scene.Film.AddSample(sample.x, sample.y, sample.color)
+		if s % 100 == 0 {
+			fmt.Print("*")
+		}
+	}
+	close(sampleChan)
 }
 
 // renders a window of the given scene
