@@ -6,7 +6,6 @@ import (
 	"util/obj"
 	"github.com/ungerik/go3d/vec3"
 	"github.com/ungerik/go3d/vec2"
-	"github.com/ungerik/go3d/mat3"
 	"materials"
 )
 
@@ -42,9 +41,8 @@ func NewMesh(data *obj.Data, m util.Material) *Mesh {
 			}
 		}
 		// precompute matrix used for cramers rule
-		col0 := vec3.Sub(t.vertices[0], t.vertices[1])
-		col1 := vec3.Sub(t.vertices[0], t.vertices[2])
-		t.cramerMat = mat3.T{col0, col1, vec3.Zero}
+		t.e1 = vec3.Sub(t.vertices[1], t.vertices[0])
+		t.e2 = vec3.Sub(t.vertices[2], t.vertices[0])
 		mesh.triangles[i] = &t
 	}
 	return &mesh
@@ -55,75 +53,67 @@ func NewMeshAggregate(data *obj.Data, m util.Material) util.Intersectable {
 }
 
 type MeshTriangle struct {
-	cramerMat  mat3.T
 	vertices   [3]*vec3.T
 	normals    [3]*vec3.T
 	texCoords  [2]*vec2.T
+	e1, e2	   vec3.T
 	material   util.Material
 }
 
-func (t *MeshTriangle) Intersect(r *util.Ray) *util.Hitrecord {
-	m := t.cramerMat
-	m[2] = r.Direction
-	b := vec3.Sub(t.vertices[0], &r.Origin)
+const (
+	EPSILON = 1e-6
+)
+
+// Using Möller-Trumbore intersectin algorithm from
+// http://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
+// to compute intersections with mesh triangle.
+func (tr *MeshTriangle) Intersect(r *util.Ray) *util.Hitrecord {
+	parameter := vec3.Cross(&r.Direction, &tr.e2)
+	det := vec3.Dot(&tr.e1, &parameter)
+	if det > -EPSILON && det < EPSILON {
+		return nil
+	}
+	inv_det := 1/det
 	
-	betaGammaT := t.getBetaGammaTCramer(&m, &b)
-	if isInside(betaGammaT) {
+	dist := vec3.Sub(&r.Origin, tr.vertices[0])
+	u := vec3.Dot(&dist, &parameter) * inv_det
+	if u < 0 || u > 1 {
+		return nil
+	}
+	vParameter := vec3.Cross(&dist, &tr.e1)
+	v := vec3.Dot(&r.Direction, &vParameter) * inv_det
+	if v < 0 || u + v > 1 {
+		return nil
+	}
+	
+	t := vec3.Dot(&tr.e2, &vParameter) * inv_det
+	
+	if t > EPSILON {
 		h := new(util.Hitrecord)
-		h.T = betaGammaT[2]
+		h.T = t
 		h.Position = r.PointAt(h.T)
-		h.Normal = *t.makeNormal(betaGammaT)
+		h.Normal = *tr.makeNormal(1 - u - v, u, v)
 		h.W_in = r.Direction
 		h.W_in.Normalize().Scale(-1)
 		//TODO: texture coordinates
-		h.Material = t.material
-		h.Intersectable = t
+		h.Material = tr.material
+		h.Intersectable = tr
 		return h
 	}
 	return nil
 }
-func (t *MeshTriangle) makeNormal(betaGammaT *vec3.T) *vec3.T {
+
+func (t *MeshTriangle) makeNormal(alpha, beta, gamma float32) *vec3.T {
 	var normal vec3.T
-	n0 := t.normals[0].Scaled(1 - betaGammaT[0] - betaGammaT[1])
+	n0 := t.normals[0].Scaled(alpha)
 	normal.Add(&n0)
-	n1 := t.normals[1].Scaled(betaGammaT[0])
+	n1 := t.normals[1].Scaled(beta)
 	normal.Add(&n1)
-	n2 := t.normals[2].Scaled(betaGammaT[1])
+	n2 := t.normals[2].Scaled(gamma)
 	normal.Add(&n2)
 	// this should not be needed, but most meshes suck...
 	normal.Normalize()
 	return &normal
-}
-func isInside(betaGammaT *vec3.T) bool {
-	if 	(betaGammaT[0] <= 0 ||
-		betaGammaT[0] >= 1 ||
-		betaGammaT[1] <= 0 ||
-		betaGammaT[1] >= 1) {
-		return false
-	}
-	f := betaGammaT[0] + betaGammaT[1]
-	return f > 0 && f < 1	
-}
-
-// Solves the linear system m*a = b via cramer's rule and returns a
-func (t *MeshTriangle) getBetaGammaTCramer(m *mat3.T, b *vec3.T) *vec3.T {
-	detA := m.Determinant()
-	// set one column to b and get determinant, do for all three columns
-	m[0] = *b
-	detA0 := m.Determinant()
-	m[0] = t.cramerMat[0]
-	m[1] = *b
-	detA1 := m.Determinant()
-	m[1] = t.cramerMat[1]
-	m[2] = *b
-	detA2 := m.Determinant()
-	
-	// alpha, beta, gamma in one vector
-	// reuse b to return result
-	b[0] = detA0/detA
-	b[1] = detA1/detA
-	b[2] = detA2/detA
-	return b
 }
 
 func (t *MeshTriangle) String() string {
