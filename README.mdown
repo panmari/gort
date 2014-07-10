@@ -1,6 +1,6 @@
 # gort - A ray tracer in go
 
-This is a raytracing framework used for educational purposes. 
+This is a raytracing framework used for educational purposes. It was developed and tested with go 1.3.
 
 ## Installation
 
@@ -39,4 +39,5 @@ The CPU profile can then be analyzed using
 
     go tool pprof renderer.test cpu.out
     
-And then typing e.g. `web` for getting an overview or the name of a method to see details.
+And then typing e.g. `web` for getting an overview or the name of a method to see details. Most performance impacting
+types have performance tests of some sort in their package.
