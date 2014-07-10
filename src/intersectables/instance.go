@@ -5,6 +5,7 @@ import (
 	"github.com/ungerik/go3d/vec3"
 	"util"
 	"materials"
+	"fmt"
 )
 
 type Instance struct {
@@ -19,23 +20,26 @@ type Instance struct {
 func (i *Instance) Intersect(r *util.Ray) *util.Hitrecord {
 	//transform ray into coordinate system of instance
 	rTransformed := util.Ray{r.Origin, r.Direction}
-	i.tinverse.MulVec3(&rTransformed.Origin, 1)
-	i.tinverse.MulVec3(&rTransformed.Direction, 0)
+	i.tinverse.TransformVec3(&rTransformed.Origin, 1)
+	i.tinverse.TransformVec3(&rTransformed.Direction, 0)
 	h := i.intersectable.Intersect(&rTransformed)
 	if h == nil {
 		return nil
 	}
-	
 	//transform back
-	i.t.MulVec3(&h.Position, 1)
-	i.t.MulVec3(&h.W_in, 0)
+	i.t.TransformVec3(&h.Position, 1)
+	i.t.TransformVec3(&h.W_in, 0)
 	h.W_in.Normalize()
 	
 	//use transpose of inverse for normal
-	i.tinverseT.MulVec3(&h.Normal, 0)
+	i.tinverseT.TransformVec3(&h.Normal, 0)
 	//normalize again, bc may contain scaling
 	h.Normal.Normalize()
 	return h
+}
+
+func (i *Instance) String() string {
+	return fmt.Sprintf("Instance around %v", i.intersectable)
 }
 
 func NewDiffuseInstance(intersectable util.Intersectable, transformation mat4.T) util.Intersectable {
