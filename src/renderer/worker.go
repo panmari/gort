@@ -5,14 +5,8 @@ import (
 	"films"
 	"samplers"
 	"integrators"
-	"github.com/ungerik/go3d/vec3"
 	"scenes"
 )
-
-type Sample struct {
-	x, y int
-	color *vec3.T
-}
 
 type Worker struct {
 	camera 		cameras.Camera
