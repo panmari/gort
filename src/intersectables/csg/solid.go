@@ -16,8 +16,8 @@ type Solid struct {
 
 func (s *Solid) Intersect(r *util.Ray) (*util.Hitrecord) {
 	ibs := s.GetIntervalBoundaries(r)
-	for _, ib := range ibs {
-		hit := ib.hit
+	for i := range ibs {
+		hit := ibs[i].hit
 		if hit != nil && hit.T > 0 {
 			hit.Intersectable = s
 			return hit
@@ -49,7 +49,7 @@ func (i *IntervalBoundary) String() string {
 }
 
 // A slice of interval boundaries that is sortable by the T of their hitpoints
-type ByT []*IntervalBoundary
+type ByT []IntervalBoundary
 
 func (a ByT) Len() int				{return len(a) }
 func (a ByT) Swap(i, j int)			{ a[i], a[j] = a[j], a[i] }

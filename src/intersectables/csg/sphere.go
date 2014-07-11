@@ -19,7 +19,7 @@ func (s *Sphere) GetIntervalBoundaries(r *util.Ray) ByT {
 		h1 := s.sphere.MakeHitrecord(t1, r)
 		b1 := IntervalBoundary{t: t1, hit: h1, isStart: isBoundaryTypeStart(h1, r)}
 		
-		boundaries = append(boundaries, &b0, &b1)
+		boundaries = append(boundaries, b0, b1)
 	}
 	return boundaries
 }

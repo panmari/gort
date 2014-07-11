@@ -33,7 +33,7 @@ func (p *Plane) GetIntervalBoundaries(r *util.Ray) ByT {
 				b2.t = float32(math.Inf(1))
 			}
 		}
-		boundaries = append(boundaries, &b1, &b2)
+		boundaries = append(boundaries, b1, b2)
 	} 
 	return boundaries
 }
