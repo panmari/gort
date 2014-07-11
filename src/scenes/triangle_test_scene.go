@@ -1,15 +1,15 @@
 package scenes
 
 import (
-	"util/obj"
 	"cameras"
 	"films"
 	"github.com/ungerik/go3d/vec3"
 	"integrators"
 	"intersectables"
+	"materials"
 	"samplers"
 	"tonemappers"
-	"materials"
+	"util/obj"
 )
 
 func NewTriangleTestScene() Scene {
@@ -18,7 +18,7 @@ func NewTriangleTestScene() Scene {
 	width := 512
 	height := 512
 	s.SPP = 1
-	
+
 	eye := vec3.T{0, 0, 3}
 	lookAt := vec3.T{0, 0, 0}
 	up := vec3.T{0, 1, 0}
@@ -27,7 +27,7 @@ func NewTriangleTestScene() Scene {
 	s.Camera = cameras.MakePinholeCamera(&eye, &lookAt, &up, fov, aspect, width, height)
 	s.Sampler = samplers.MakeOneSampler
 	s.Film = films.MakeBoxFilterFilm(width, height, tonemappers.ClampToneMap)
-	
+
 	data := new(obj.Data)
 	data.InsertLine("v 0 0 0")
 	data.InsertLine("v 1 0 0")
@@ -37,9 +37,8 @@ func NewTriangleTestScene() Scene {
 	data.InsertLine("vn 0 0 1")
 	data.InsertLine("f 0//0 1//1 2//2")
 	s.Root = intersectables.NewMeshAggregate(data, materials.DiffuseDefault)
-	
+
 	s.Integrator = integrators.MakeDebugIntegrator(s.Root)
-	
+
 	return s
 }
-

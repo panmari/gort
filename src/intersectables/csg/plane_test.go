@@ -2,12 +2,11 @@ package csg
 
 import (
 	"github.com/ungerik/go3d/vec3"
-	"testing"
-	"util"
 	"intersectables"
 	"math"
+	"testing"
+	"util"
 )
-
 
 func TestPlaneIntersection(t *testing.T) {
 	s := NewDiffusePlane(vec3.UnitX, 1)
@@ -42,7 +41,7 @@ func TestPlaneGetIntervalboundaries(t *testing.T) {
 	if ibs[1].t != float32(math.Inf(1)) {
 		t.Errorf("Second intersection not correct: %f", ibs[1].t)
 	}
-	
+
 }
 
 func BenchmarkPlaneIntersection(b *testing.B) {
@@ -50,7 +49,7 @@ func BenchmarkPlaneIntersection(b *testing.B) {
 	pointingAwayRay := util.Ray{vec3.Zero, vec3.UnitX}
 	parallelRay := util.Ray{vec3.Zero, vec3.UnitX}
 	s := NewDiffusePlane(vec3.UnitX, 1)
-	
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		s.Intersect(&pointingTowardsRay)

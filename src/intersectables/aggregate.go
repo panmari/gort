@@ -1,9 +1,9 @@
 package intersectables
 
 import (
-	"util"
-	"math"
 	"fmt"
+	"math"
+	"util"
 )
 
 type Aggregate struct {
@@ -15,7 +15,7 @@ type Aggregator interface {
 	GetIntersectables() []util.Intersectable
 }
 
-func (a *Aggregate) Intersect(ray *util.Ray) (*util.Hitrecord) {
+func (a *Aggregate) Intersect(ray *util.Ray) *util.Hitrecord {
 	var closestHit *util.Hitrecord
 	closestT := float32(math.MaxFloat32)
 	for _, i := range a.GetIntersectables() {

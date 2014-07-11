@@ -1,19 +1,19 @@
 package intersectables
 
 import (
+	"fmt"
 	"github.com/ungerik/go3d/mat4"
 	"github.com/ungerik/go3d/vec3"
-	"util"
 	"materials"
-	"fmt"
+	"util"
 )
 
 type Instance struct {
-	t 				mat4.T 
-	tinverse		mat4.T
-	tinverseT		mat4.T
-	material 		util.Material
-	intersectable	util.Intersectable
+	t             mat4.T
+	tinverse      mat4.T
+	tinverseT     mat4.T
+	material      util.Material
+	intersectable util.Intersectable
 }
 
 // Transform the given ray into the coordinate frame of the instance and returns the resulting intersection.
@@ -30,7 +30,7 @@ func (i *Instance) Intersect(r *util.Ray) *util.Hitrecord {
 	i.t.TransformVec3(&h.Position, 1)
 	i.t.TransformVec3(&h.W_in, 0)
 	h.W_in.Normalize()
-	
+
 	//use transpose of inverse for normal
 	i.tinverseT.TransformVec3(&h.Normal, 0)
 	//normalize again, bc may contain scaling
@@ -49,7 +49,7 @@ func NewDiffuseInstance(intersectable util.Intersectable, transformation mat4.T)
 	i.tinverse.Invert()
 	i.tinverseT = i.tinverse
 	i.tinverseT.Transpose()
-	i.material = materials.MakeDiffuseMaterial(vec3.T{1,1,1})
+	i.material = materials.MakeDiffuseMaterial(vec3.T{1, 1, 1})
 	i.intersectable = intersectable
 	return i
 }

@@ -1,10 +1,10 @@
 package renderer
 
 import (
+	"github.com/cheggaaa/pb"
 	"scenes"
 	"sync"
 	"util"
-	"github.com/cheggaaa/pb"
 )
 
 func StartRendering(scene scenes.Scene) {
@@ -13,7 +13,7 @@ func StartRendering(scene scenes.Scene) {
 	}
 	tasksize := 64
 	var wg sync.WaitGroup
-	bar := pb.StartNew(scene.Film.GetWidth()*scene.Film.GetHeight())
+	bar := pb.StartNew(scene.Film.GetWidth() * scene.Film.GetHeight())
 	bar.ShowSpeed = true
 	for x := 0; x < scene.Film.GetWidth(); x += tasksize {
 		for y := 0; y < scene.Film.GetHeight(); y += tasksize {

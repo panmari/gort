@@ -2,11 +2,11 @@ package intersectables
 
 import (
 	"fmt"
+	"github.com/ungerik/go3d/vec2"
+	"github.com/ungerik/go3d/vec3"
+	"materials"
 	"util"
 	"util/obj"
-	"github.com/ungerik/go3d/vec3"
-	"github.com/ungerik/go3d/vec2"
-	"materials"
 )
 
 type Mesh struct {
@@ -53,11 +53,11 @@ func NewMeshAggregate(data *obj.Data, m util.Material) util.Intersectable {
 }
 
 type MeshTriangle struct {
-	vertices   [3]*vec3.T
-	normals    [3]*vec3.T
-	texCoords  [2]*vec2.T
-	e1, e2	   vec3.T
-	material   util.Material
+	vertices  [3]*vec3.T
+	normals   [3]*vec3.T
+	texCoords [2]*vec2.T
+	e1, e2    vec3.T
+	material  util.Material
 }
 
 const (
@@ -73,8 +73,8 @@ func (tr *MeshTriangle) Intersect(r *util.Ray) *util.Hitrecord {
 	if det > -EPSILON && det < EPSILON {
 		return nil
 	}
-	inv_det := 1/det
-	
+	inv_det := 1 / det
+
 	dist := vec3.Sub(&r.Origin, tr.vertices[0])
 	u := vec3.Dot(&dist, &parameter) * inv_det
 	if u < 0 || u > 1 {
@@ -82,17 +82,17 @@ func (tr *MeshTriangle) Intersect(r *util.Ray) *util.Hitrecord {
 	}
 	vParameter := vec3.Cross(&dist, &tr.e1)
 	v := vec3.Dot(&r.Direction, &vParameter) * inv_det
-	if v < 0 || u + v > 1 {
+	if v < 0 || u+v > 1 {
 		return nil
 	}
-	
+
 	t := vec3.Dot(&tr.e2, &vParameter) * inv_det
-	
+
 	if t > EPSILON {
 		h := new(util.Hitrecord)
 		h.T = t
 		h.Position = r.PointAt(h.T)
-		h.Normal = *tr.makeNormal(1 - u - v, u, v)
+		h.Normal = *tr.makeNormal(1-u-v, u, v)
 		h.W_in = r.Direction
 		h.W_in.Normalize().Scale(-1)
 		//TODO: texture coordinates

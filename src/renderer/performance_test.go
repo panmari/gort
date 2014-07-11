@@ -1,11 +1,11 @@
 package renderer
 
 import (
-	"testing"
-	"scenes"
-	"runtime"
 	"os"
 	"path"
+	"runtime"
+	"scenes"
+	"testing"
 	//"fmt"
 )
 
@@ -47,7 +47,7 @@ func BenchmarkRenderingTeapotInstancingScene(b *testing.B) {
 		if err := os.Chdir("../../"); err != nil {
 			b.Error(err)
 		}
-	}	
+	}
 	s := scenes.NewInstancingTeapotsScene()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {

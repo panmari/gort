@@ -7,7 +7,7 @@ import (
 )
 
 type Sphere struct {
-	sphere  intersectables.Sphere
+	sphere intersectables.Sphere
 }
 
 func (s *Sphere) GetIntervalBoundaries(r *util.Ray) ByT {
@@ -15,10 +15,10 @@ func (s *Sphere) GetIntervalBoundaries(r *util.Ray) ByT {
 	if t0, t1, hasSolutions := s.sphere.GetIntersections(r); hasSolutions {
 		h0 := s.sphere.MakeHitrecord(t0, r)
 		b0 := IntervalBoundary{t: t0, hit: h0, isStart: isBoundaryTypeStart(h0, r)}
-		
+
 		h1 := s.sphere.MakeHitrecord(t1, r)
 		b1 := IntervalBoundary{t: t1, hit: h1, isStart: isBoundaryTypeStart(h1, r)}
-		
+
 		boundaries = append(boundaries, b0, b1)
 	}
 	return boundaries

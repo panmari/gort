@@ -3,12 +3,12 @@ package csg
 import (
 	"github.com/ungerik/go3d/vec3"
 	"intersectables"
-	"util"
 	"math"
+	"util"
 )
 
 type Plane struct {
-	plane  intersectables.Plane
+	plane intersectables.Plane
 }
 
 func (p *Plane) GetIntervalBoundaries(r *util.Ray) ByT {
@@ -34,7 +34,7 @@ func (p *Plane) GetIntervalBoundaries(r *util.Ray) ByT {
 			}
 		}
 		boundaries = append(boundaries, b1, b2)
-	} 
+	}
 	return boundaries
 }
 

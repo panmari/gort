@@ -4,7 +4,6 @@ import (
 	"testing"
 )
 
-
 func BenchmarkUniformSamplerOneSample(b *testing.B) {
 	s := MakeUniformSampler(0)
 	b.ResetTimer()

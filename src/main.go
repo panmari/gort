@@ -5,16 +5,16 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"runtime/pprof"
+	"renderer"
 	"runtime"
+	"runtime/pprof"
 	"scenes"
 	"time"
-	"renderer"
 )
 
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
 var memprofile = flag.String("memprofile", "", "write memory profile to this file")
-var	maxProcs = flag.Int("procs", runtime.NumCPU(), "set the number of processors to use")
+var maxProcs = flag.Int("procs", runtime.NumCPU(), "set the number of processors to use")
 
 func main() {
 	flag.Parse()
@@ -26,21 +26,20 @@ func main() {
 		pprof.StartCPUProfile(f)
 		defer pprof.StopCPUProfile()
 	}
-	runtime.GOMAXPROCS(*maxProcs)	
+	runtime.GOMAXPROCS(*maxProcs)
 	start := time.Now()
-	
-	
+
 	// define the scene to be rendered here
 	//scene := scenes.NewSimpleScene()
 	//scene := scenes.NewTriangleTestScene()
-	//scene := scenes.NewDodecahedronScene()
+	scene := scenes.NewDodecahedronScene()
 	//scene := scenes.NewBoxScene()
 	//scene := scenes.NewSimpleCSGScene()
-	scene := scenes.NewInstancingTeapotsScene()
-	
+	//scene := scenes.NewInstancingTeapotsScene()
+
 	renderer.StartRendering(scene)
 	//renderer.RenderPixel(scene, 300, 300)
-	
+
 	duration := time.Since(start)
 	fmt.Println(duration.String())
 	scene.Film.WriteToPng(scene.Filename)

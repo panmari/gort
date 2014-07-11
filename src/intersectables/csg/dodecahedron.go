@@ -20,10 +20,10 @@ func NewDodecahedron() *Solid {
 		x := fmath.Sin(theta) * fmath.Sin(fmath.Atan(2))
 		y := -fmath.Cos(fmath.Atan(2))
 		z := fmath.Cos(theta) * fmath.Sin(fmath.Atan(2))
-		normal := vec3.T{x,y,z}
-		planes[i + 1] = NewPlane(normal, -1, m)
+		normal := vec3.T{x, y, z}
+		planes[i+1] = NewPlane(normal, -1, m)
 	}
-	
+
 	// Top half
 	planes[6] = NewPlane(vec3.T{0, 1, 0}, -1, m)
 	for i := 0; i < 5; i++ {
@@ -32,23 +32,23 @@ func NewDodecahedron() *Solid {
 		x := fmath.Sin(theta) * fmath.Sin(fmath.Atan(2))
 		y := fmath.Cos(fmath.Atan(2))
 		z := fmath.Cos(theta) * fmath.Sin(fmath.Atan(2))
-		normal := vec3.T{x,y,z}
-		planes[i + 7] = NewPlane(normal, -1, m)
+		normal := vec3.T{x, y, z}
+		planes[i+7] = NewPlane(normal, -1, m)
 	}
-	
+
 	// Build CSG tree
-	var nodes [6]*Solid;
+	var nodes [6]*Solid
 	for i := 0; i < 6; i++ {
 		nodes[i] = NewNode(planes[2*i], planes[2*i+1], INTERSECT)
 	}
-	
-	var nodes2 [3]*Solid;
+
+	var nodes2 [3]*Solid
 	for i := 0; i < 3; i++ {
 		nodes2[i] = NewNode(nodes[2*i], nodes[2*i+1], INTERSECT)
 	}
-	
+
 	almostRoot := NewNode(nodes2[0], nodes2[1], INTERSECT)
-	
+
 	root := NewNode(almostRoot, nodes2[2], INTERSECT)
 	return root
 }

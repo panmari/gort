@@ -2,7 +2,7 @@ package samplers
 
 import ()
 
-type OneSampler struct {}
+type OneSampler struct{}
 
 func (o *OneSampler) Get2DSamples(n int) [][2]float32 {
 	samples := make([][2]float32, n)

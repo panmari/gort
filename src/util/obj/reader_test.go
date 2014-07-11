@@ -1,26 +1,26 @@
 package obj
 
 import (
-    "testing"
-    "bufio"
-    "strings"
-    "github.com/ungerik/go3d/vec3"
+	"bufio"
+	"github.com/ungerik/go3d/vec3"
+	"strings"
+	"testing"
 )
 
-func TestParseVertex(t *testing.T) { 
+func TestParseVertex(t *testing.T) {
 	line := "v 3.4 1.2 4.1"
 	scanner := bufio.NewScanner(strings.NewReader(line))
 	scanner.Split(bufio.ScanWords)
 	scanner.Scan()
 	vector := parseVec3(scanner)
-	
-	expected := vec3.T{3.4, 1.2, 4.1}	
-	if *vector != expected{
+
+	expected := vec3.T{3.4, 1.2, 4.1}
+	if *vector != expected {
 		t.Errorf("Dat vörtex is sömthing else actually... %v", vector)
 	}
 }
 
-func TestParseFacePoint(t *testing.T) { 
+func TestParseFacePoint(t *testing.T) {
 	line := "10/5/30"
 	v_id, tc_id, n_id := parseFacePoint([]byte(line))
 	if v_id != 9 {
@@ -34,7 +34,7 @@ func TestParseFacePoint(t *testing.T) {
 	}
 }
 
-func TestParseFacePointNoTc(t *testing.T) { 
+func TestParseFacePointNoTc(t *testing.T) {
 	line := "10//30"
 	v_id, tc_id, n_id := parseFacePoint([]byte(line))
 	if v_id != 9 {
@@ -48,7 +48,7 @@ func TestParseFacePointNoTc(t *testing.T) {
 	}
 }
 
-func TestParseFace(t *testing.T) { 
+func TestParseFace(t *testing.T) {
 	o := Data{}
 	line := "f 1/2/3 5/6/7 11/12/13"
 	o.InsertLine(line)

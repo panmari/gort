@@ -1,17 +1,18 @@
 package csg
 
 import (
-	"util"
-	"sort"
 	"fmt"
+	"sort"
+	"util"
 )
 
 type Node struct {
-	left, right 	Shape
-	operation       Operation
+	left, right Shape
+	operation   Operation
 }
 
 type Operation int
+
 const (
 	INTERSECT Operation = iota
 	ADD
@@ -25,7 +26,7 @@ func (n *Node) GetIntervalBoundaries(r *util.Ray) ByT {
 	sort.Sort(combined)
 	inLeft, inRight := false, false
 	previousWasStart := false
-	
+
 	cleanCount := 0
 	for i := range combined {
 		b := &combined[i]
@@ -35,19 +36,19 @@ func (n *Node) GetIntervalBoundaries(r *util.Ray) ByT {
 			inRight = b.isStart
 		}
 		switch n.operation {
-			case INTERSECT:
-				b.isStart = inLeft && inRight
-			case ADD:
-				b.isStart = inLeft || inRight
-			case SUBTRACT:
-				b.isStart = inLeft && !inRight
-				// In a subtract operation, the subtracted solid is turned
-				// inside out,
-				// or it "switches sign", so we need to flip its normal
-				// direction
-				if !b.belongsToLeft && b.hit != nil {
-					b.hit.Normal.Scale(-1)
-				}
+		case INTERSECT:
+			b.isStart = inLeft && inRight
+		case ADD:
+			b.isStart = inLeft || inRight
+		case SUBTRACT:
+			b.isStart = inLeft && !inRight
+			// In a subtract operation, the subtracted solid is turned
+			// inside out,
+			// or it "switches sign", so we need to flip its normal
+			// direction
+			if !b.belongsToLeft && b.hit != nil {
+				b.hit.Normal.Scale(-1)
+			}
 		}
 		// remove start - start or end - end combinations by only adding good ones back
 		if previousWasStart != b.isStart {
@@ -57,7 +58,7 @@ func (n *Node) GetIntervalBoundaries(r *util.Ray) ByT {
 		previousWasStart = b.isStart
 	}
 	// only return 0..cleanCount entries, the others are garbage
-	return combined[:cleanCount];
+	return combined[:cleanCount]
 }
 
 func (i *Node) String() string {

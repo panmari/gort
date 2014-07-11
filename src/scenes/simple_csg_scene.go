@@ -31,7 +31,7 @@ func NewSimpleCSGScene() Scene {
 
 	list := intersectables.NewIntersectableList(2)
 	sphere := csg.NewDiffuseSphere(vec3.T{0, 0, 0}, 1.0)
-	cutNormal := vec3.T{0.3,.5,.1}
+	cutNormal := vec3.T{0.3, .5, .1}
 	cutNormal.Normalize()
 	plane := csg.NewDiffusePlane(cutNormal, -.5)
 	node1 := csg.NewNode(sphere, plane, csg.INTERSECT)
@@ -46,7 +46,7 @@ func NewSimpleCSGScene() Scene {
 	list.Add(intersectables.MakeDiffusePlane(vec3.T{0, 0, 1}, 4))
 	list.Add(intersectables.MakeDiffusePlane(vec3.T{0, 1, 0}, 2))
 	s.Root = &intersectables.Aggregate{list}
-	
+
 	//s.Integrator := integrators.MakeDebugIntegrator(s.Root)
 	l := make([]lights.LightGeometry, 0, 2)
 	l = append(l, lights.MakePointLight(vec3.T{0, 2, 0}, vec3.T{10, 10, 10}))

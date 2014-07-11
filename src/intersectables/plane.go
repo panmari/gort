@@ -16,7 +16,7 @@ func (s *Plane) Intersect(r *util.Ray) *util.Hitrecord {
 	return s.IntersectHelper(r, false)
 }
 
-func (s *Plane) IntersectHelper(r *util.Ray, allowNegative bool) (*util.Hitrecord) {
+func (s *Plane) IntersectHelper(r *util.Ray, allowNegative bool) *util.Hitrecord {
 	tmp := vec3.Dot(&r.Direction, &s.Normal)
 
 	if tmp == 0 { // parallel to plane, does not hit

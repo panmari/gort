@@ -70,7 +70,7 @@ func BenchmarkPlaneIntersection(b *testing.B) {
 	pointingAwayRay := util.Ray{vec3.Zero, vec3.UnitX}
 	parallelRay := util.Ray{vec3.Zero, vec3.UnitX}
 	s := MakeDiffusePlane(vec3.UnitX, 1)
-	
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		s.Intersect(&pointingTowardsRay)
@@ -84,7 +84,7 @@ func BenchmarkSphereIntersection(b *testing.B) {
 	pointingAwayRay := util.Ray{vec3.Zero, vec3.UnitX}
 	parallelRay := util.Ray{vec3.Zero, vec3.UnitX}
 	s := MakeDiffuseSphere(vec3.UnitX, 1)
-	
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		s.Intersect(&pointingTowardsRay)

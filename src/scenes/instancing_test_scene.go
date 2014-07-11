@@ -3,8 +3,8 @@ package scenes
 import (
 	"cameras"
 	"films"
-	"github.com/ungerik/go3d/vec3"
 	"github.com/ungerik/go3d/mat4"
+	"github.com/ungerik/go3d/vec3"
 	"integrators"
 	"intersectables"
 	"intersectables/csg"
@@ -21,7 +21,7 @@ func NewInstancingTestScene() Scene {
 	lookAt := vec3.T{0, 0, 0}
 	up := vec3.T{0, 1, 0}
 	var fov float32 = 60.0
-	var aspect float32 = float32(width)/ float32(height)
+	var aspect float32 = float32(width) / float32(height)
 	s.Camera = cameras.MakePinholeCamera(&eye, &lookAt, &up, fov, aspect, width, height)
 	s.SPP = 1
 	s.Sampler = samplers.MakeOneSampler
@@ -31,13 +31,13 @@ func NewInstancingTestScene() Scene {
 	sphere := csg.NewDiffuseSphere(vec3.T{0, 0, 0}, 1.0)
 	//assemble the first instance
 	trans := mat4.Ident
-	trans.SetTranslation(&vec3.T{2,0,0})
+	trans.SetTranslation(&vec3.T{2, 0, 0})
 	sphere2 := intersectables.NewDiffuseInstance(sphere, trans)
 	//assemble the second instance
 	trans2 := mat4.Ident
-	trans2.SetTranslation(&vec3.T{-2,0,0})
+	trans2.SetTranslation(&vec3.T{-2, 0, 0})
 	sphere3 := intersectables.NewDiffuseInstance(sphere, trans2)
-	
+
 	list.Add(sphere, sphere2, sphere3)
 	s.Root = &intersectables.Aggregate{list}
 

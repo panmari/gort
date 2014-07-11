@@ -10,9 +10,9 @@ import (
 )
 
 type BoxFilterFilm struct {
-	Film          	[]vec4.T
-	width, height 	int
-	tonemapper		func(*vec4.T)
+	Film          []vec4.T
+	width, height int
+	tonemapper    func(*vec4.T)
 }
 
 func (f *BoxFilterFilm) AddSample(x, y int, sample *vec3.T) {
@@ -55,10 +55,10 @@ func (i *BoxFilterFilm) WriteToPng(filename string) {
 
 func MakeBoxFilterFilm(w, h int, tonemapper func(*vec4.T)) *BoxFilterFilm {
 	return &BoxFilterFilm{
-		width:  w,
-		height: h,
+		width:      w,
+		height:     h,
 		tonemapper: tonemapper,
-		Film:   make([]vec4.T, w*h)}
+		Film:       make([]vec4.T, w*h)}
 }
 
 func (i *BoxFilterFilm) GetWidth() int {

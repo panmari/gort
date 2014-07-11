@@ -21,7 +21,7 @@ func (s *Sphere) GetIntersections(r *util.Ray) (float32, float32, bool) {
 	return util.SolveQuadratic(a, b, c)
 }
 
-func (s *Sphere) Intersect(r *util.Ray) (*util.Hitrecord) {
+func (s *Sphere) Intersect(r *util.Ray) *util.Hitrecord {
 	t0, t1, hasSolution := s.GetIntersections(r)
 	if hasSolution {
 		if t0 > 0 {
