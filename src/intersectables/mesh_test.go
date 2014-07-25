@@ -68,3 +68,15 @@ func TestTeapotMesh(t *testing.T) {
 	}
 
 }
+
+func BenchmarkTeapotMesh(b *testing.B) {
+	data := obj.Read("../../obj/teapot.obj", 1)
+
+	m := NewMeshAggregate(data, materials.DiffuseDefault)
+	r := util.Ray{vec3.T{.1, .1, 1}, vec3.T{0, 0, -2}}
+	b.ResetTimer()
+	for i := 0; i < b.N; i ++ {
+		m.Intersect(&r)
+	}
+}
+
