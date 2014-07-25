@@ -66,6 +66,9 @@ func TestParseFace(t *testing.T) {
 	o := Data{}
 	line := "f 1/2/3 5/6/7 11/12/13"
 	o.InsertLine(line)
+	if n := len(o.Faces); n != 1 {
+		t.Error("Not correct amount of faces:", n)
+	}
 	f := o.Faces[0]
 	if f.VertexIds != [3]int{0, 4, 10} {
 		t.Error(f.VertexIds)
