@@ -74,23 +74,34 @@ func (o *Data) InsertLine(line string) {
 	case "#":
 		//comment, do nothing
 	case "v":
-		vertex := parseVec3(scanner)
+		vertex, err := parseVec3(scanner)
+		if err != nil {
+			log.Fatalf("Could not parse vector %s\n error: %v", line, err)
+		}
 		o.min = vec3.Min(vertex, &o.min)
 		o.max = vec3.Max(vertex, &o.max)
 		o.Vertices = append(o.Vertices, vertex)
 	case "vn":
-		o.Normals = append(o.Normals, parseVec3(scanner))
+		normal, err := parseVec3(scanner)
+		if err != nil {
+			log.Fatalf("Could not parse normal %s\n error: %v", line, err)
+		}
+		o.Normals = append(o.Normals, normal)
 	case "vt":
-		o.TexCoords = append(o.TexCoords, parseVec2(scanner))
+		tex_coord, err := parseVec2(scanner)
+		if err != nil {
+			log.Fatalf("Could not parse text coordinate %s\n error: %v", line, err)
+		}
+		o.TexCoords = append(o.TexCoords, tex_coord)
 		o.HasTexCoords = true
 	case "f":
 		o.Faces = append(o.Faces, parseFace(scanner))
 	default:
-		log.Printf("Can not parse %s", line)
+		log.Printf("Unknown token (ignored): %s", line)
 	}
 }
 
-func parseVec3(scanner *bufio.Scanner) *vec3.T {
+func parseVec3(scanner *bufio.Scanner) (*vec3.T, error) {
 	var vector vec3.T
 	counter := 0
 	for scanner.Scan() {
@@ -101,21 +112,25 @@ func parseVec3(scanner *bufio.Scanner) *vec3.T {
 		vector[counter] = float32(f)
 		counter++
 	}
-	return &vector
+	return &vector, nil
 }
 
-func parseVec2(scanner *bufio.Scanner) *vec2.T {
+func parseVec2(scanner *bufio.Scanner) (*vec2.T, error) {
 	var vector vec2.T
 	counter := 0
 	for scanner.Scan() {
 		f, err := strconv.ParseFloat(scanner.Text(), 32)
 		if err != nil {
-			log.Printf("Could not turn into float: %v", scanner.Text())
+			return nil, err
+		}
+		if counter > 1 {
+			//log.Print("Found w-coordinate for texture, ignoring..")
+			break
 		}
 		vector[counter] = float32(f)
 		counter++
 	}
-	return &vector
+	return &vector, nil
 }
 
 func parseFace(scanner *bufio.Scanner) Face {
@@ -130,13 +145,17 @@ func parseFace(scanner *bufio.Scanner) Face {
 }
 
 // parse Face according to format: "vertex/texcoord/normal"
+// also accepted is "vertex/texcoord" or "vertex//normal"
 func parseFacePoint(data []byte) (int, int, int) {
 	scanner := bufio.NewScanner(bytes.NewReader(data))
 	scanner.Split(ScanSlashes)
 
 	vertex_id := parseId(scanner)
 	texCoord_id := parseId(scanner)
-	normal_id := parseId(scanner)
+	normal_id := - 1
+	if strings.Count(string(data), "/") == 2 {
+		normal_id = parseId(scanner)
+	}
 
 	return vertex_id, texCoord_id, normal_id
 }

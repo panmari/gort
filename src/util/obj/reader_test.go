@@ -12,7 +12,7 @@ func TestParseVertex(t *testing.T) {
 	scanner := bufio.NewScanner(strings.NewReader(line))
 	scanner.Split(bufio.ScanWords)
 	scanner.Scan()
-	vector := parseVec3(scanner)
+	vector, _ := parseVec3(scanner)
 
 	expected := vec3.T{3.4, 1.2, 4.1}
 	if *vector != expected {
@@ -30,6 +30,20 @@ func TestParseFacePoint(t *testing.T) {
 		t.Error(tc_id)
 	}
 	if n_id != 29 {
+		t.Error(n_id)
+	}
+}
+
+func TestParceFacePointNoNormal(t *testing.T) {
+	line := "32/32" 
+	v_id, tc_id, n_id := parseFacePoint([]byte(line))
+	if v_id != 31 {
+		t.Error(v_id)
+	}
+	if tc_id != 31 {
+		t.Error(tc_id)
+	}
+	if n_id != -1 {
 		t.Error(n_id)
 	}
 }
@@ -74,6 +88,18 @@ func BenchmarkParseLine(b *testing.B) {
 
 func BenchmarkTeapot(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		Read("obj/teapot.obj", 1)
+		Read("../../../obj/teapot.obj", 1)
+	}
+}
+
+func BenchmarkHeart(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Read("../../../obj/Heart.obj", 1)
+	}
+}
+
+func BenchmarkDragon(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Read("../../../obj/dragon.obj", 1)
 	}
 }
