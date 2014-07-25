@@ -95,9 +95,11 @@ func (o *Data) InsertLine(line string) {
 		o.TexCoords = append(o.TexCoords, tex_coord)
 		o.HasTexCoords = true
 	case "f":
-		o.Faces = append(o.Faces, parseFace(scanner))
+		o.Faces = append(o.Faces, parseFaces(scanner)...)
 	default:
-		log.Printf("Unknown token (ignored): %s", line)
+		if len(strings.TrimSpace(line)) > 0 {
+			log.Printf("Unknown token (ignored): %s", line)
+		}
 	}
 }
 
@@ -133,15 +135,27 @@ func parseVec2(scanner *bufio.Scanner) (*vec2.T, error) {
 	return &vector, nil
 }
 
-func parseFace(scanner *bufio.Scanner) Face {
-	var face Face
+func parseFaces(scanner *bufio.Scanner) []Face {
+	faces := make([]Face, 0, 1)
 	counter := 0
 	//TODO: convert quadrangle Faces into triangle Faces
+	var f Face
 	for scanner.Scan() {
-		face.VertexIds[counter], face.TexCoordIds[counter], face.NormalIds[counter] = parseFacePoint(scanner.Bytes())
+		f.VertexIds[counter], f.TexCoordIds[counter], f.NormalIds[counter] = parseFacePoint(scanner.Bytes())
 		counter++
+		if counter == 3 {
+			faces = append(faces, f)
+			if scanner.Scan() {
+				f = f //make a copy of f
+				f.NormalIds[1] = f.NormalIds[2]
+				f.TexCoordIds[1] = f.TexCoordIds[2]
+				f.VertexIds[1] = f.VertexIds[2]
+				f.VertexIds[2], f.TexCoordIds[2], f.NormalIds[2] = parseFacePoint(scanner.Bytes())
+				faces = append(faces, f)
+			}
+		}
 	}
-	return face
+	return faces
 }
 
 // parse Face according to format: "vertex/texcoord/normal"
