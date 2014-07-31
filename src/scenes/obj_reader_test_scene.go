@@ -45,7 +45,10 @@ func NewObjReaderTestScene() Scene {
 	heart := intersectables.NewMeshAggregate(dataHeart, materials.DiffuseDefault)
 
 	t1 := mat4.Ident
-	t1.Scale(0.5).SetTranslation(&vec3.T{0, -0.5, 0})
+	t1.Scale(0.5).SetTranslation(&vec3.T{0, -0.55, 0})
+	rotX := mat4.Zero
+	rotX.AssignXRotation(util.ToRadians(-90))
+	t1.MultMatrix(&rotX)
 	dragonInst := intersectables.NewDiffuseInstance(dragon, t1)
 
 	t2 := mat4.Ident
@@ -53,7 +56,7 @@ func NewObjReaderTestScene() Scene {
 	rot := mat4.Zero
 	rot.AssignYRotation(util.ToRadians(90))
 	t2.MultMatrix(&rot)
-	// some fun with type casting XD
+
 	heartInst := intersectables.NewDiffuseInstance(heart, t2)
 	heartInst.Material = materials.MakeDiffuseMaterial(vec3.T{0.5, 0.5, 0.5})
 	
