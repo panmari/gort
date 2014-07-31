@@ -36,11 +36,13 @@ func NewMesh(data *obj.Data, m util.Material) *Mesh {
 		for j := 0; j < 3; j++ {
 			t.vertices[j] = data.Vertices[face.VertexIds[j]]
 			t.normals[j] = data.Normals[face.NormalIds[j]]
-			if data.HasTexCoords {
+		}
+		if data.HasTexCoords {
+			for j := 0; j < 2; j++ {
 				t.texCoords[j] = data.TexCoords[face.TexCoordIds[j]]
 			}
 		}
-		// precompute matrix used for cramers rule
+		// precompute edges used for intersection algorithm
 		t.e1 = vec3.Sub(t.vertices[1], t.vertices[0])
 		t.e2 = vec3.Sub(t.vertices[2], t.vertices[0])
 		mesh.triangles[i] = &t
