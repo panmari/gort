@@ -154,23 +154,29 @@ func parseVec2(scanner *bufio.Scanner) (*vec2.T, error) {
 	return &vector, nil
 }
 
+// Takes a obj face line with arbitray many vertex information and divides it into triangle faces.
 func parseFaces(scanner *bufio.Scanner) []Face {
 	faces := make([]Face, 0, 1)
 	counter := 0
-	//TODO: convert quadrangle Faces into triangle Faces
 	var f Face
 	for scanner.Scan() {
 		f.VertexIds[counter], f.TexCoordIds[counter], f.NormalIds[counter] = parseFacePoint(scanner.Bytes())
 		counter++
-		if counter == 3 {
+		if counter >= 3 {
 			faces = append(faces, f)
-			if scanner.Scan() {
-				f = f //make a copy of f
-				f.NormalIds[1] = f.NormalIds[2]
-				f.TexCoordIds[1] = f.TexCoordIds[2]
-				f.VertexIds[1] = f.VertexIds[2]
+			first := f //make a copy of first face
+			flast := f //save last face
+			for scanner.Scan() {
+				// take data for first vertex from first face
+				f = first
+				// take data for second vertex from last face
+				f.NormalIds[1] = flast.NormalIds[2]
+				f.TexCoordIds[1] = flast.TexCoordIds[2]
+				f.VertexIds[1] = flast.VertexIds[2]
+				// get new data for third vertex
 				f.VertexIds[2], f.TexCoordIds[2], f.NormalIds[2] = parseFacePoint(scanner.Bytes())
 				faces = append(faces, f)
+				flast = f
 			}
 		}
 	}
