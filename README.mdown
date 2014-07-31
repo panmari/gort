@@ -2,6 +2,15 @@
 
 This is a raytracing framework used for educational purposes. It was developed and tested with go 1.3.
 
+## Features
+
+* [CSG Objects](http://en.wikipedia.org/wiki/Constructive_solid_geometry)
+* Triangle meshes through the [.obj format](http://en.wikipedia.org/wiki/Wavefront_OBJ)
+* Diffuse materials (incoming support for: glossy, reflective, refractive etc.)
+* Scenes are defined as go types
+* Multithreaded with goroutines
+* Pointlight integrator (incoming support for whitted integrator, pathintegrator)
+
 ## Installation
 
 Install go and dependencies. On a Debian derivative this may be done using the following command
@@ -40,4 +49,4 @@ The CPU profile can then be analyzed using
     go tool pprof renderer.test cpu.out
     
 And then typing e.g. `web` for getting an overview or the name of a method to see details. Most performance impacting
-types have performance tests of some sort in their package.
+packages have performance tests of some sort; to run them just replace `renderer/` with the package you want to test. 
