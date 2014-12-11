@@ -32,10 +32,11 @@ func main() {
 	// define the scene to be rendered here
 	//scene := scenes.NewSimpleScene()
 	//scene := scenes.NewTriangleTestScene()
-	scene := scenes.NewDodecahedronScene()
+	//scene := scenes.NewDodecahedronScene()
 	//scene := scenes.NewBoxScene()
 	//scene := scenes.NewSimpleCSGScene()
 	//scene := scenes.NewInstancingTeapotsScene()
+	scene := scenes.NewObjReaderTestScene()
 
 	renderer.StartRendering(scene, true)
 	//renderer.RenderPixel(scene, 300, 300)

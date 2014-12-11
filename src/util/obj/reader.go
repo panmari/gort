@@ -46,7 +46,11 @@ func Read(fileName string, scale float32) *Data {
 	for _, v := range data.Vertices {
 		v.Add(&trans).Scale(usedScale)
 	}
-	//TODO: possibly compute normals with cross product if not present
+	
+	//manually compute normals with cross product if not available in obj
+	if len(data.Normals) == 0 {
+		data.interpolateNormals()
+	}
 	return &data
 }
 
@@ -95,9 +99,26 @@ func (o *Data) InsertLine(line string) {
 		o.TexCoords = append(o.TexCoords, tex_coord)
 		o.HasTexCoords = true
 	case "f":
-		o.Faces = append(o.Faces, parseFace(scanner))
+		o.Faces = append(o.Faces, parseFaces(scanner)...)
 	default:
-		log.Printf("Unknown token (ignored): %s", line)
+		if len(strings.TrimSpace(line)) > 0 {
+			log.Printf("Unknown token (ignored): %s", line)
+		}
+	}
+}
+
+func (o *Data) interpolateNormals() {
+	o.Normals = make([]*vec3.T, len(o.Vertices)) 
+	for i := range o.Faces {
+		f := &o.Faces[i]
+		e1 := vec3.Sub(o.Vertices[f.VertexIds[1]], o.Vertices[f.VertexIds[0]])
+		e2 := vec3.Sub(o.Vertices[f.VertexIds[2]], o.Vertices[f.VertexIds[0]])
+		n := vec3.Cross(&e1, &e2)
+		n.Normalize()
+		for j, id := range f.VertexIds {
+			f.NormalIds[j] = id
+			o.Normals[id] = &n
+		}
 	}
 }
 
@@ -133,15 +154,33 @@ func parseVec2(scanner *bufio.Scanner) (*vec2.T, error) {
 	return &vector, nil
 }
 
-func parseFace(scanner *bufio.Scanner) Face {
-	var face Face
+// Takes a obj face line with arbitray many vertex information and divides it into triangle faces.
+func parseFaces(scanner *bufio.Scanner) []Face {
+	faces := make([]Face, 0, 1)
 	counter := 0
-	//TODO: convert quadrangle Faces into triangle Faces
+	var f Face
 	for scanner.Scan() {
-		face.VertexIds[counter], face.TexCoordIds[counter], face.NormalIds[counter] = parseFacePoint(scanner.Bytes())
+		f.VertexIds[counter], f.TexCoordIds[counter], f.NormalIds[counter] = parseFacePoint(scanner.Bytes())
 		counter++
+		if counter >= 3 {
+			faces = append(faces, f)
+			first := f //make a copy of first face
+			flast := f //save last face
+			for scanner.Scan() {
+				// take data for first vertex from first face
+				f = first
+				// take data for second vertex from last face
+				f.NormalIds[1] = flast.NormalIds[2]
+				f.TexCoordIds[1] = flast.TexCoordIds[2]
+				f.VertexIds[1] = flast.VertexIds[2]
+				// get new data for third vertex
+				f.VertexIds[2], f.TexCoordIds[2], f.NormalIds[2] = parseFacePoint(scanner.Bytes())
+				faces = append(faces, f)
+				flast = f
+			}
+		}
 	}
-	return face
+	return faces
 }
 
 // parse Face according to format: "vertex/texcoord/normal"
@@ -152,7 +191,7 @@ func parseFacePoint(data []byte) (int, int, int) {
 
 	vertex_id := parseId(scanner)
 	texCoord_id := parseId(scanner)
-	normal_id := - 1
+	normal_id := -1
 	if strings.Count(string(data), "/") == 2 {
 		normal_id = parseId(scanner)
 	}
