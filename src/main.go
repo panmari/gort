@@ -37,7 +37,7 @@ func main() {
 	//scene := scenes.NewSimpleCSGScene()
 	//scene := scenes.NewInstancingTeapotsScene()
 
-	renderer.StartRendering(scene)
+	renderer.StartRendering(scene, true)
 	//renderer.RenderPixel(scene, 300, 300)
 
 	duration := time.Since(start)
