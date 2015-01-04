@@ -17,7 +17,7 @@ func BenchmarkRenderingSimpleScene(b *testing.B) {
 		if !testing.Short() {
 			s.SPP = 64
 		}
-		StartRendering(s)
+		StartRendering(s, false)
 	}
 }
 
@@ -27,7 +27,7 @@ func BenchmarkRenderingBoxScene(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		//setting SPP doesn't change anything, has OneSampler
-		StartRendering(s)
+		StartRendering(s, false)
 	}
 }
 
@@ -37,7 +37,7 @@ func BenchmarkRenderingDodecahedronScene(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		//setting SPP doesn't change anything, has OneSampler
-		StartRendering(s)
+		StartRendering(s, false)
 	}
 }
 
@@ -51,6 +51,6 @@ func BenchmarkRenderingTeapotInstancingScene(b *testing.B) {
 	s := scenes.NewInstancingTeapotsScene()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		StartRendering(s)
+		StartRendering(s, false)
 	}
 }

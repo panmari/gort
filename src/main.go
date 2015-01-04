@@ -38,7 +38,7 @@ func main() {
 	//scene := scenes.NewInstancingTeapotsScene()
 	scene := scenes.NewObjReaderTestScene()
 
-	renderer.StartRendering(scene)
+	renderer.StartRendering(scene, true)
 	//renderer.RenderPixel(scene, 300, 300)
 
 	duration := time.Since(start)
