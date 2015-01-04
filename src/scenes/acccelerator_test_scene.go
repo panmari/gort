@@ -16,6 +16,8 @@ import (
 	"util/obj"
 )
 
+const USE_ACCELERATOR = true
+
 func NewAcceleratorTestScene() Scene {
 	var s Scene
 	s.Filename = "accelerator_test_scene"
@@ -41,7 +43,13 @@ func NewAcceleratorTestScene() Scene {
 
 	dataHeart := obj.Read("obj/Heart.obj", 1)
 	heart := intersectables.NewMeshAggregate(dataHeart, materials.DiffuseDefault)
-	heartAcc := accelerators.NewBSPAccelerator(heart)
+	// Comment the following line to disable accelerator:
+	var heart2 util.Intersectable
+	if USE_ACCELERATOR {
+		heart2 = accelerators.NewBSPAccelerator(heart)
+	} else {
+		heart2 = heart
+	}
 
 	t2 := mat4.Ident
 	t2.Scale(0.3).SetTranslation(&vec3.T{0, 0.25, 0})
@@ -49,8 +57,8 @@ func NewAcceleratorTestScene() Scene {
 	rot.AssignYRotation(util.ToRadians(90))
 	t2.MultMatrix(&rot)
 
-	heartInst := intersectables.NewDiffuseInstance(heartAcc, t2)
-	heartInst.Material = materials.MakeDiffuseMaterial(vec3.T{0.5, 0.5, 0.5})
+	heartInst := intersectables.NewDiffuseInstance(heart2, t2)
+	heartInst.Material = materials.MakeDiffuseMaterial(vec3.T{1, 0.1, 0.1})
 
 	list := intersectables.NewIntersectableList(6)
 	list.Add(p1, p2, p3, p4, p5, heartInst)
