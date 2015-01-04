@@ -38,7 +38,7 @@ func (a *Aggregate) String() string {
 	return fmt.Sprint(a.GetIntersectables())
 }
 
-func NewAggregate(a Aggregator) util.Intersectable {
+func NewAggregate(a Aggregator) *Aggregate {
 	bb := vec3.Box{}
 	intersectables := a.GetIntersectables()
 	for i := range intersectables {

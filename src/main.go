@@ -36,8 +36,9 @@ func main() {
 	//scene := scenes.NewBoxScene()
 	//scene := scenes.NewSimpleCSGScene()
 	//scene := scenes.NewInstancingTeapotsScene()
-	scene := scenes.NewObjReaderTestScene()
-
+	//scene := scenes.NewObjReaderTestScene()
+	scene := scenes.NewAcceleratorTestScene()
+	
 	renderer.StartRendering(scene, true)
 	//renderer.RenderPixel(scene, 300, 300)
 

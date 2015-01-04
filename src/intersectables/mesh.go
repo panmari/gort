@@ -54,6 +54,6 @@ func NewMesh(data *obj.Data, m util.Material) *Mesh {
 	return &mesh
 }
 
-func NewMeshAggregate(data *obj.Data, m util.Material) util.Intersectable {
+func NewMeshAggregate(data *obj.Data, m util.Material) *Aggregate {
 	return NewAggregate(NewMesh(data, m))
 }
