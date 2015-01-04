@@ -44,7 +44,7 @@ func main() {
 	duration := time.Since(start)
 	fmt.Println(duration.String())
 	scene.Film.WriteToPng(scene.Filename)
-	fmt.Printf("Printed to %s\n", scene.Filename)
+	fmt.Printf("Wrote result to to %s\n", scene.Filename)
 	if *memprofile != "" {
 		f, err := os.Create(*memprofile)
 		if err != nil {
