@@ -89,7 +89,6 @@ func NewNode(left, right *Solid, o Operation) *Solid {
 	n.right = right
 	n.operation = o
 	// TODO: Do correct thing depending on operation, not extend for every operation.
-	n.box = *left.BoundingBox()
-	n.box.ExtendBox(right.BoundingBox())
+	n.box = vec3.Joined(right.BoundingBox(), left.BoundingBox())
 	return &Solid{n}
 }

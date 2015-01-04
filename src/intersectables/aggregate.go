@@ -42,7 +42,7 @@ func NewAggregate(a Aggregator) util.Intersectable {
 	bb := vec3.Box{}
 	intersectables := a.GetIntersectables()
 	for i := range intersectables {
-		bb.ExtendBox(intersectables[i].BoundingBox())
+		bb.Join(intersectables[i].BoundingBox())
 	}
 	return &Aggregate{a, bb}
 }
