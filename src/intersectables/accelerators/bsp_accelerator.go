@@ -179,17 +179,22 @@ func (acc *BSPAccelerator) IntersectSlow(r *util.Ray) *util.Hitrecord {
 // http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-7-intersecting-simple-shapes/ray-box-intersection/
 func doesRayIntersectBox(r *util.Ray, b *vec3.Box) (tmin, tmax float32, doesIntersect bool) {
 	bounds := [2]*vec3.T{&b.Min, &b.Max}
-	invdir := vec3.T{1 / r.Direction[0], 1 / r.Direction[1], 1 / r.Direction[2]}
-	signs := [3]int{0, 0, 0}
+	signs := [3]uint32{0, 0, 0}
 	for i := 0; i < 3; i++ {
-		if invdir[i] < 0 {
+		if r.Direction[i] < 0 {
 			signs[i] = 1
 		}
+		// If statement is unexplicably faster than this:
+		//signs[i] = *(*uint32)(unsafe.Pointer(&r.Direction[i])) >> 31
 	}
-	tmin = (bounds[signs[0]][0] - r.Origin[0]) * invdir[0]
-	tmax = (bounds[1-signs[0]][0] - r.Origin[0]) * invdir[0]
-	tymin := (bounds[signs[1]][1] - r.Origin[1]) * invdir[1]
-	tymax := (bounds[1-signs[1]][1] - r.Origin[1]) * invdir[1]
+	// Intersections on X planes.
+	invdirX := 1 / r.Direction[X]
+	tmin = (bounds[signs[X]][X] - r.Origin[X]) * invdirX
+	tmax = (bounds[1-signs[X]][X] - r.Origin[X]) * invdirX
+	// Intersections on Y planes.
+	invdirY := 1 / r.Direction[Y]
+	tymin := (bounds[signs[Y]][Y] - r.Origin[Y]) * invdirY
+	tymax := (bounds[1-signs[Y]][Y] - r.Origin[Y]) * invdirY
 	if tmin > tymax || tymin > tmax {
 		return 0, 0, false
 	}
@@ -199,8 +204,10 @@ func doesRayIntersectBox(r *util.Ray, b *vec3.Box) (tmin, tmax float32, doesInte
 	if tymax < tmax {
 		tmax = tymax
 	}
-	tzmin := (bounds[signs[2]][2] - r.Origin[2]) * invdir[2]
-	tzmax := (bounds[1-signs[2]][2] - r.Origin[2]) * invdir[2]
+	// Intersections on Z planes.
+	invdirZ := 1 / r.Direction[Z]
+	tzmin := (bounds[signs[Z]][Z] - r.Origin[Z]) * invdirZ
+	tzmax := (bounds[1-signs[Z]][Z] - r.Origin[Z]) * invdirZ
 	if tmin > tzmax || tzmin > tmax {
 		return 0, 0, false
 	}
