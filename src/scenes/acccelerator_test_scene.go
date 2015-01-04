@@ -23,8 +23,8 @@ func NewAcceleratorTestScene() Scene {
 	s.Filename = "accelerator_test_scene"
 	s.SPP = 1
 
-	width := 256
-	height := 256
+	width := 1024
+	height := 1024
 
 	eye := vec3.T{0, 0, 2}
 	lookAt := vec3.T{0, 0, 0}

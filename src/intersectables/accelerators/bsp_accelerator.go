@@ -51,12 +51,14 @@ func (acc *BSPAccelerator) buildTree(node *BSPNode, inters []util.Intersectable,
 	}
 	leftInters := make([]util.Intersectable, 0, len(inters)/2)
 	rightInters := make([]util.Intersectable, 0, len(inters)/2)
+	// Save split axis in node and prepare bounding boxes.
+	node.splitAxis = splitAxis
 	b := node.box
-	splitDist := b.Center()[node.splitAxis]
+	splitDist := b.Center()[splitAxis]
 	leftBoxMax := b.Max
-	leftBoxMax[node.splitAxis] = splitDist
+	leftBoxMax[splitAxis] = splitDist
 	rightBoxMin := b.Min
-	rightBoxMin[node.splitAxis] = splitDist
+	rightBoxMin[splitAxis] = splitDist
 
 	var leftNode, rightNode BSPNode
 	leftNode.box = vec3.Box{b.Min, leftBoxMax}
