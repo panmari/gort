@@ -40,12 +40,11 @@ func NewBSPAccelerator(a *intersectables.Aggregate) *BSPAccelerator {
 	acc.max_depth = int(8 + 1.3*math.Log(float32(acc.n)) + 0.5)
 	acc.root = new(BSPNode)
 	acc.root.box = *a.BoundingBox()
-	acc.root.splitAxis = X
-	acc.buildTree(acc.root, a.GetIntersectables(), 0)
+	acc.buildTree(acc.root, a.GetIntersectables(), X, 0)
 	return acc
 }
 
-func (acc *BSPAccelerator) buildTree(node *BSPNode, inters []util.Intersectable, depth int) *BSPNode {
+func (acc *BSPAccelerator) buildTree(node *BSPNode, inters []util.Intersectable, splitAxis Axis, depth int) *BSPNode {
 	if depth > acc.max_depth || len(inters) < MIN_NR_PRIMITIVES {
 		node.inters = inters
 		return node
@@ -71,8 +70,9 @@ func (acc *BSPAccelerator) buildTree(node *BSPNode, inters []util.Intersectable,
 			rightInters = append(rightInters, inters[i])
 		}
 	}
-	node.left = acc.buildTree(&leftNode, leftInters, depth+1)
-	node.right = acc.buildTree(&rightNode, rightInters, depth+1)
+	nextSplitAxis := Axis((int(node.splitAxis) + 1) % 3)
+	node.left = acc.buildTree(&leftNode, leftInters, nextSplitAxis, depth+1)
+	node.right = acc.buildTree(&rightNode, rightInters, nextSplitAxis, depth+1)
 	return node
 }
 
