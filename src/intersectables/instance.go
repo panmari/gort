@@ -16,7 +16,7 @@ type Instance struct {
 	intersectable util.Intersectable
 }
 
-// Transform the given ray into the coordinate frame of the instance and returns the resulting intersection.
+// Transforms the given ray into the coordinate frame of this instance and returns the resulting intersection.
 func (i *Instance) Intersect(r *util.Ray) *util.Hitrecord {
 	//transform ray into coordinate system of instance
 	rTransformed := util.Ray{r.Origin, r.Direction}
