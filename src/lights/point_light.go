@@ -19,8 +19,13 @@ func (p *PointLight) Sample(sample [2]float32) *util.Hitrecord {
 	return h
 }
 
-// can not be hit
+// Can not be hit, so this returns always nil.
 func (p *PointLight) Intersect(r *util.Ray) *util.Hitrecord {
+	return nil
+}
+
+// Can not be hit, so no bounding box is necessary.
+func (p *PointLight) BoundingBox() *vec3.Box {
 	return nil
 }
 

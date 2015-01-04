@@ -8,6 +8,7 @@ import (
 
 type Shape interface {
 	GetIntervalBoundaries(r *util.Ray) ByT
+	BoundingBox() *vec3.Box
 }
 
 type Solid struct {

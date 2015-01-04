@@ -2,12 +2,14 @@ package csg
 
 import (
 	"fmt"
+	"github.com/ungerik/go3d/vec3"
 	"sort"
 	"util"
 )
 
 type Node struct {
 	left, right Shape
+	box         vec3.Box
 	operation   Operation
 }
 
@@ -61,6 +63,10 @@ func (n *Node) GetIntervalBoundaries(r *util.Ray) ByT {
 	return combined[:cleanCount]
 }
 
+func (i *Node) BoundingBox() *vec3.Box {
+	return &i.box
+}
+
 func (i *Node) String() string {
 	return fmt.Sprintf("left: %v, right: %v", i.left, i.right)
 }
@@ -78,6 +84,12 @@ func combineIntervals(left, right ByT) ByT {
 }
 
 func NewNode(left, right *Solid, o Operation) *Solid {
-	n := &Node{left, right, o}
+	n := new(Node)
+	n.left = left
+	n.right = right
+	n.operation = o
+	// TODO: Do correct thing depending on operation, not extend for every operation.
+	n.box = *left.BoundingBox()
+	n.box.ExtendBox(right.BoundingBox())
 	return &Solid{n}
 }

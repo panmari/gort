@@ -11,6 +11,7 @@ type Sphere struct {
 	Center   vec3.T
 	Radius   float32
 	Material util.Material
+	Box		 vec3.Box
 }
 
 func (s *Sphere) GetIntersections(r *util.Ray) (float32, float32, bool) {
@@ -34,6 +35,10 @@ func (s *Sphere) Intersect(r *util.Ray) *util.Hitrecord {
 	return nil
 }
 
+func (s *Sphere) BoundingBox() *vec3.Box {
+	return &s.Box
+}
+
 func (s *Sphere) MakeHitrecord(t float32, r *util.Ray) *util.Hitrecord {
 	hitPoint := r.PointAt(t)
 	normal := vec3.Sub(&hitPoint, &s.Center)
@@ -54,5 +59,9 @@ func MakeDiffuseSphere(center vec3.T, radius float32) *Sphere {
 	s.Center = center
 	s.Radius = radius
 	s.Material = materials.MakeDiffuseMaterial(vec3.T{1, 1, 1})
+	radiusVector := vec3.T{radius, radius, radius}
+	minBox := vec3.Sub(&center, &radiusVector)
+	maxBox := vec3.Add(&center, &radiusVector)
+	s.Box = vec3.Box{minBox, maxBox}
 	return s
 }

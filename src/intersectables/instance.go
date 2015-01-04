@@ -14,6 +14,7 @@ type Instance struct {
 	tinverseT     mat4.T
 	Material      util.Material
 	intersectable util.Intersectable
+	box           vec3.Box
 }
 
 // Transform the given ray into the coordinate frame of the instance and returns the resulting intersection.
@@ -39,18 +40,35 @@ func (i *Instance) Intersect(r *util.Ray) *util.Hitrecord {
 	return h
 }
 
+func (i *Instance) BoundingBox() *vec3.Box {
+	return &i.box
+}
+
 func (i *Instance) String() string {
 	return fmt.Sprintf("Instance around %v", i.intersectable)
 }
 
-func NewDiffuseInstance(intersectable util.Intersectable, transformation mat4.T) *Instance {
+func NewInstance(intersectable util.Intersectable, transformation mat4.T, m util.Material) *Instance {
 	i := new(Instance)
 	i.t = transformation
 	i.tinverse = transformation
 	i.tinverse.Invert()
 	i.tinverseT = i.tinverse
 	i.tinverseT.Transpose()
-	i.Material = materials.MakeDiffuseMaterial(vec3.T{1, 1, 1})
+	i.Material = m
 	i.intersectable = intersectable
+
+	// Transform bounding box.
+	bb := intersectable.BoundingBox()
+	minInstance := bb.Min
+	i.t.TransformVec3(&minInstance, 1)
+	maxInstance := bb.Max
+	i.t.TransformVec3(&maxInstance, 1)
+	i.box = vec3.Box{minInstance, maxInstance}
 	return i
+}
+
+// Same as above with default material.
+func NewDiffuseInstance(intersectable util.Intersectable, transformation mat4.T) *Instance {
+	return NewInstance(intersectable, transformation, materials.DiffuseDefault)
 }

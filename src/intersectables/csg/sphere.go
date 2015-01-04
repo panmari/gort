@@ -24,7 +24,12 @@ func (s *Sphere) GetIntervalBoundaries(r *util.Ray) ByT {
 	return boundaries
 }
 
+func (s *Sphere) BoundingBox() *vec3.Box {
+	return s.sphere.BoundingBox()
+}
+
 func NewDiffuseSphere(center vec3.T, radius float32) *Solid {
-	s := Solid{&Sphere{*intersectables.MakeDiffuseSphere(center, radius)}}
-	return &s
+	sphere := *intersectables.MakeDiffuseSphere(center, radius)
+	csg_sphere := Solid{&Sphere{sphere}}
+	return &csg_sphere
 }

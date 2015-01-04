@@ -3,6 +3,7 @@ package csg
 import (
 	"github.com/ungerik/go3d/vec3"
 	"intersectables"
+	"materials"
 	"math"
 	"util"
 )
@@ -38,12 +39,16 @@ func (p *Plane) GetIntervalBoundaries(r *util.Ray) ByT {
 	return boundaries
 }
 
+func (p *Plane) BoundingBox() *vec3.Box {
+	return p.plane.BoundingBox()
+}
+
 func NewDiffusePlane(normal vec3.T, dist float32) *Solid {
-	p := Solid{&Plane{*intersectables.MakeDiffusePlane(normal, dist)}}
-	return &p
+	return NewPlane(normal, dist, materials.DiffuseDefault)
 }
 
 func NewPlane(normal vec3.T, dist float32, m util.Material) *Solid {
-	p := Solid{&Plane{*intersectables.NewPlane(normal, dist, m)}}
-	return &p
+	plane := *intersectables.NewPlane(normal, dist, m)
+	csg_plane := Solid{&Plane{plane}}
+	return &csg_plane
 }
