@@ -89,7 +89,19 @@ type BSPStackNode struct {
 	tmin, tmax float32
 }
 
-func (acc *BSPAccelerator) Intersect(r *util.Ray) *util.Hitrecord {
+// A wrapper around ray that precomputes some stuff.
+type BSPRay struct {
+	*util.Ray
+	invDirection vec3.T
+}
+
+func NewBSPRay(ray *util.Ray) *BSPRay {
+	r := BSPRay{ray, vec3.T{1 / ray.Direction[0], 1 / ray.Direction[1], 1 / ray.Direction[2]}}
+	return &r
+}
+
+func (acc *BSPAccelerator) Intersect(ray *util.Ray) *util.Hitrecord {
+	r := NewBSPRay(ray)
 	tmin, tmax, doesIntersect := doesRayIntersectBox(r, &acc.root.box)
 	if !doesIntersect {
 		return nil
@@ -127,7 +139,7 @@ func (acc *BSPAccelerator) Intersect(r *util.Ray) *util.Hitrecord {
 			}
 		} else {
 			for i := range node.inters {
-				hit := node.inters[i].Intersect(r)
+				hit := node.inters[i].Intersect(r.Ray)
 				if hit != nil && hit.T < nearestT && hit.T > 0 {
 					nearestT = hit.T
 					nearestHit = hit
@@ -147,7 +159,8 @@ func (acc *BSPAccelerator) Intersect(r *util.Ray) *util.Hitrecord {
 	return nearestHit
 }
 
-func (acc *BSPAccelerator) IntersectSlow(r *util.Ray) *util.Hitrecord {
+func (acc *BSPAccelerator) IntersectSlow(ray *util.Ray) *util.Hitrecord {
+	r := NewBSPRay(ray)
 	nodeStack := make([]*BSPNode, 1)
 	nodeStack[0] = acc.root
 	var nearestHit *util.Hitrecord
@@ -157,7 +170,7 @@ func (acc *BSPAccelerator) IntersectSlow(r *util.Ray) *util.Hitrecord {
 		n, nodeStack = nodeStack[len(nodeStack)-1], nodeStack[:len(nodeStack)-1]
 		if n.inters != nil {
 			for i := range n.inters {
-				currentHit := n.inters[i].Intersect(r)
+				currentHit := n.inters[i].Intersect(r.Ray)
 				if currentHit != nil && nearestT > currentHit.T && currentHit.T > 0 {
 					nearestT = currentHit.T
 					nearestHit = currentHit
@@ -177,7 +190,7 @@ func (acc *BSPAccelerator) IntersectSlow(r *util.Ray) *util.Hitrecord {
 
 // For description of algorithm, see
 // http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-7-intersecting-simple-shapes/ray-box-intersection/
-func doesRayIntersectBox(r *util.Ray, b *vec3.Box) (tmin, tmax float32, doesIntersect bool) {
+func doesRayIntersectBox(r *BSPRay, b *vec3.Box) (tmin, tmax float32, doesIntersect bool) {
 	bounds := [2]*vec3.T{&b.Min, &b.Max}
 	signs := [3]uint32{0, 0, 0}
 	for i := 0; i < 3; i++ {
@@ -188,13 +201,11 @@ func doesRayIntersectBox(r *util.Ray, b *vec3.Box) (tmin, tmax float32, doesInte
 		//signs[i] = *(*uint32)(unsafe.Pointer(&r.Direction[i])) >> 31
 	}
 	// Intersections on X planes.
-	invdirX := 1 / r.Direction[X]
-	tmin = (bounds[signs[X]][X] - r.Origin[X]) * invdirX
-	tmax = (bounds[1-signs[X]][X] - r.Origin[X]) * invdirX
+	tmin = (bounds[signs[X]][X] - r.Origin[X]) * r.invDirection[X]
+	tmax = (bounds[1-signs[X]][X] - r.Origin[X]) * r.invDirection[X]
 	// Intersections on Y planes.
-	invdirY := 1 / r.Direction[Y]
-	tymin := (bounds[signs[Y]][Y] - r.Origin[Y]) * invdirY
-	tymax := (bounds[1-signs[Y]][Y] - r.Origin[Y]) * invdirY
+	tymin := (bounds[signs[Y]][Y] - r.Origin[Y]) * r.invDirection[Y]
+	tymax := (bounds[1-signs[Y]][Y] - r.Origin[Y]) * r.invDirection[Y]
 	if tmin > tymax || tymin > tmax {
 		return 0, 0, false
 	}
@@ -205,9 +216,8 @@ func doesRayIntersectBox(r *util.Ray, b *vec3.Box) (tmin, tmax float32, doesInte
 		tmax = tymax
 	}
 	// Intersections on Z planes.
-	invdirZ := 1 / r.Direction[Z]
-	tzmin := (bounds[signs[Z]][Z] - r.Origin[Z]) * invdirZ
-	tzmax := (bounds[1-signs[Z]][Z] - r.Origin[Z]) * invdirZ
+	tzmin := (bounds[signs[Z]][Z] - r.Origin[Z]) * r.invDirection[Z]
+	tzmax := (bounds[1-signs[Z]][Z] - r.Origin[Z]) * r.invDirection[Z]
 	if tmin > tzmax || tzmin > tmax {
 		return 0, 0, false
 	}
