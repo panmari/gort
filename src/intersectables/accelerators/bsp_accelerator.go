@@ -86,15 +86,12 @@ func (acc *BSPAccelerator) buildTree(node *BSPNode, inters []util.Intersectable,
 		}
 	}
 	nextSplitAxis := Axis((int(node.splitAxis) + 1) % 3)
-	if depth < 2 {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			node.left = acc.buildTree(&leftNode, leftInters, nextSplitAxis, depth+1, wg)
-		} ()
-	} else {
+	wg.Add(1)
+	// Very lazy way of parallelization: left branch is computed in new routine 
+	go func() {
+		defer wg.Done()
 		node.left = acc.buildTree(&leftNode, leftInters, nextSplitAxis, depth+1, wg)
-	}
+	} ()
 	node.right = acc.buildTree(&rightNode, rightInters, nextSplitAxis, depth+1, wg)
 	return node
 }
