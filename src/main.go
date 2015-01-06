@@ -43,7 +43,7 @@ func main() {
 	//renderer.RenderPixel(scene, 300, 300)
 
 	duration := time.Since(start)
-	fmt.Println(duration.String())
+	fmt.Printf("Render time: %s\n", duration.String())
 	scene.Film.WriteToPng(scene.Filename)
 	fmt.Printf("Wrote result to to %s\n", scene.Filename)
 	if *memprofile != "" {

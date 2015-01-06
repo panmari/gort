@@ -5,6 +5,8 @@ import (
 	"github.com/ungerik/go3d/vec3"
 	"intersectables"
 	"util"
+	"log"
+	"time"
 )
 
 type BSPAccelerator struct {
@@ -40,12 +42,15 @@ const (
 )
 
 func NewBSPAccelerator(a *intersectables.Aggregate) *BSPAccelerator {
+	start := time.Now()
 	acc := new(BSPAccelerator)
 	acc.n = a.Size()
 	acc.max_depth = int(8 + 1.3*math.Log(float32(acc.n)) + 0.5)
 	acc.root = new(BSPNode)
 	acc.root.box = *a.BoundingBox()
 	acc.buildTree(acc.root, a.GetIntersectables(), X, 0)
+	duration := time.Since(start)
+	log.Printf("Built accelerator in %s.\n", duration.String())
 	return acc
 }
 
