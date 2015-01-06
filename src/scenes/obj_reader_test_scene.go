@@ -7,6 +7,7 @@ import (
 	"github.com/ungerik/go3d/vec3"
 	"integrators"
 	"intersectables"
+	"intersectables/accelerators"
 	"lights"
 	"materials"
 	"samplers"
@@ -49,7 +50,7 @@ func NewObjReaderTestScene() Scene {
 	rotX := mat4.Zero
 	rotX.AssignXRotation(util.ToRadians(-90))
 	t1.MultMatrix(&rotX)
-	dragonInst := intersectables.NewDiffuseInstance(dragon, t1)
+	dragonInst := intersectables.NewDiffuseInstance(accelerators.NewBSPAccelerator(dragon), t1)
 
 	t2 := mat4.Ident
 	t2.Scale(0.3).SetTranslation(&vec3.T{0, 0.25, 0})
@@ -57,9 +58,9 @@ func NewObjReaderTestScene() Scene {
 	rot.AssignYRotation(util.ToRadians(90))
 	t2.MultMatrix(&rot)
 
-	heartInst := intersectables.NewDiffuseInstance(heart, t2)
+	heartInst := intersectables.NewDiffuseInstance(accelerators.NewBSPAccelerator(heart), t2)
 	heartInst.Material = materials.MakeDiffuseMaterial(vec3.T{0.5, 0.5, 0.5})
-	
+
 	list := intersectables.NewIntersectableList(6)
 	list.Add(p1, p2, p3, p4, p5, dragonInst, heartInst)
 

@@ -43,7 +43,6 @@ func NewAcceleratorTestScene() Scene {
 
 	dataHeart := obj.Read("obj/Heart.obj", 1)
 	heart := intersectables.NewMeshAggregate(dataHeart, materials.DiffuseDefault)
-	// Comment the following line to disable accelerator:
 	var heart2 util.Intersectable
 	if USE_ACCELERATOR {
 		heart2 = accelerators.NewBSPAccelerator(heart)

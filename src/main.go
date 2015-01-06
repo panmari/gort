@@ -27,7 +27,6 @@ func main() {
 		defer pprof.StopCPUProfile()
 	}
 	runtime.GOMAXPROCS(*maxProcs)
-	start := time.Now()
 
 	// define the scene to be rendered here
 	//scene := scenes.NewSimpleScene()
@@ -36,9 +35,11 @@ func main() {
 	//scene := scenes.NewBoxScene()
 	//scene := scenes.NewSimpleCSGScene()
 	//scene := scenes.NewInstancingTeapotsScene()
-	//scene := scenes.NewObjReaderTestScene()
-	scene := scenes.NewAcceleratorTestScene()
+	scene := scenes.NewObjReaderTestScene()
+	//scene := scenes.NewAcceleratorTestScene()
+	//scene := scenes.NewMassiveAcceleratorTestScene()
 	
+	start := time.Now()
 	renderer.StartRendering(scene, true)
 	//renderer.RenderPixel(scene, 300, 300)
 
