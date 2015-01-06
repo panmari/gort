@@ -7,6 +7,7 @@ import (
 	"util"
 	"log"
 	"time"
+	"sync"
 )
 
 type BSPAccelerator struct {
@@ -48,13 +49,15 @@ func NewBSPAccelerator(a *intersectables.Aggregate) *BSPAccelerator {
 	acc.max_depth = int(8 + 1.3*math.Log(float32(acc.n)) + 0.5)
 	acc.root = new(BSPNode)
 	acc.root.box = *a.BoundingBox()
-	acc.buildTree(acc.root, a.GetIntersectables(), X, 0)
+	var wg sync.WaitGroup
+	acc.buildTree(acc.root, a.GetIntersectables(), X, 0, &wg)
+	wg.Wait()
 	duration := time.Since(start)
 	log.Printf("Built accelerator in %s.\n", duration.String())
 	return acc
 }
 
-func (acc *BSPAccelerator) buildTree(node *BSPNode, inters []util.Intersectable, splitAxis Axis, depth int) *BSPNode {
+func (acc *BSPAccelerator) buildTree(node *BSPNode, inters []util.Intersectable, splitAxis Axis, depth int, wg *sync.WaitGroup) *BSPNode {
 	if depth > acc.max_depth || len(inters) < MIN_NR_PRIMITIVES {
 		node.inters = inters
 		return node
@@ -83,8 +86,16 @@ func (acc *BSPAccelerator) buildTree(node *BSPNode, inters []util.Intersectable,
 		}
 	}
 	nextSplitAxis := Axis((int(node.splitAxis) + 1) % 3)
-	node.left = acc.buildTree(&leftNode, leftInters, nextSplitAxis, depth+1)
-	node.right = acc.buildTree(&rightNode, rightInters, nextSplitAxis, depth+1)
+	if depth < 2 {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			node.left = acc.buildTree(&leftNode, leftInters, nextSplitAxis, depth+1, wg)
+		} ()
+	} else {
+		node.left = acc.buildTree(&leftNode, leftInters, nextSplitAxis, depth+1, wg)
+	}
+	node.right = acc.buildTree(&rightNode, rightInters, nextSplitAxis, depth+1, wg)
 	return node
 }
 
