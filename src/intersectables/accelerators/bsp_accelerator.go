@@ -4,10 +4,10 @@ import (
 	math "github.com/barnex/fmath"
 	"github.com/ungerik/go3d/vec3"
 	"intersectables"
-	"util"
 	"log"
-	"time"
 	"sync"
+	"time"
+	"util"
 )
 
 type BSPAccelerator struct {
@@ -49,6 +49,7 @@ func NewBSPAccelerator(a *intersectables.Aggregate) *BSPAccelerator {
 	acc.max_depth = int(8 + 1.3*math.Log(float32(acc.n)) + 0.5)
 	acc.root = new(BSPNode)
 	acc.root.box = *a.BoundingBox()
+	// Recursively generate nodes of tree structure
 	var wg sync.WaitGroup
 	acc.buildTree(acc.root, a.GetIntersectables(), X, 0, &wg)
 	wg.Wait()
@@ -86,13 +87,16 @@ func (acc *BSPAccelerator) buildTree(node *BSPNode, inters []util.Intersectable,
 		}
 	}
 	nextSplitAxis := Axis((int(node.splitAxis) + 1) % 3)
-	wg.Add(1)
-	// Very lazy way of parallelization: left branch is computed in new routine 
+	wg.Add(2)
+	// Very lazy way of parallelization: children are computed in new routine
 	go func() {
 		defer wg.Done()
 		node.left = acc.buildTree(&leftNode, leftInters, nextSplitAxis, depth+1, wg)
-	} ()
-	node.right = acc.buildTree(&rightNode, rightInters, nextSplitAxis, depth+1, wg)
+	}()
+	go func() {
+		defer wg.Done()
+		node.right = acc.buildTree(&rightNode, rightInters, nextSplitAxis, depth+1, wg)
+	}()
 	return node
 }
 
