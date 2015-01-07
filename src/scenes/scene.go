@@ -10,7 +10,7 @@ import (
 
 type Scene struct {
 	Camera     cameras.Camera
-	Sampler    func(seed int64) samplers.Sampler
+	Sampler    func(seed int64, maxSampleCount int) samplers.Sampler
 	Integrator integrators.Integrator
 	Film       films.Film
 	Root       util.Intersectable

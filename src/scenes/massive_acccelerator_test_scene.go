@@ -29,7 +29,7 @@ func NewMassiveAcceleratorTestScene() Scene {
 	var fov float32 = 60.0
 	var aspect float32 = float32(width) / float32(height)
 	s.Camera = cameras.MakePinholeCamera(&eye, &lookAt, &up, fov, aspect, width, height)
-	s.Sampler = samplers.MakeOneSampler
+	s.Sampler = samplers.NewOneSampler
 	s.Film = films.MakeBoxFilterFilm(width, height, tonemappers.ClampToneMap)
 
 	groundPlane := intersectables.NewPlane(vec3.UnitY, 1.5, materials.NewDiffuseMaterial(0, 0.8, 0.8))

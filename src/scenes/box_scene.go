@@ -18,7 +18,7 @@ func NewBoxScene() Scene {
 	height := 512
 	s.Camera = cameras.NewFixedCamera(width, height)
 	s.SPP = 1
-	s.Sampler = samplers.MakeOneSampler
+	s.Sampler = samplers.NewOneSampler
 	s.Film = films.MakeBoxFilterFilm(width, height, tonemappers.ClampToneMap)
 
 	// Define the root object (an intersectable) of the scene

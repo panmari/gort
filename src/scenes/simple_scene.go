@@ -21,7 +21,7 @@ func NewSimpleScene() Scene {
 	height := 360
 	c := cameras.MakePinholeCamera(&eye, &lookAt, &up, fov, aspect, width, height)
 	// pass function to create new samplers
-	s := samplers.MakeRandomSampler
+	s := samplers.NewRandomSampler
 	//s := samplers.MakeOneSampler()
 	f := films.MakeBoxFilterFilm(width, height, tonemappers.ClampToneMap)
 

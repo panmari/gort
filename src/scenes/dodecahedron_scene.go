@@ -18,7 +18,7 @@ func NewDodecahedronScene() Scene {
 	height := 512
 	s.Camera = cameras.NewFixedCamera(width, height)
 	s.SPP = 1
-	s.Sampler = samplers.MakeOneSampler
+	s.Sampler = samplers.NewOneSampler
 	s.Film = films.MakeBoxFilterFilm(width, height, tonemappers.ClampToneMap)
 
 	n1 := csg.NewNode(csg.NewDiffusePlane(vec3.T{0, 1, 0}, 1), csg.NewDodecahedron(), csg.ADD)
