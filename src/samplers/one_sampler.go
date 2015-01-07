@@ -7,6 +7,7 @@ type OneSampler struct{
 }
 
 func (o *OneSampler) Get2DSamples(n int) [][2]float32 {
+	o.samples = o.samples[0:n] // adapt size of slice
 	for i := range o.samples {
 		o.samples[i] = [2]float32{0.5, 0.5}
 	}
