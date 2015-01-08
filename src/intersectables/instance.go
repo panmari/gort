@@ -21,19 +21,19 @@ type Instance struct {
 func (i *Instance) Intersect(r *util.Ray) *util.Hitrecord {
 	//transform ray into coordinate system of instance
 	rTransformed := util.Ray{r.Origin, r.Direction}
-	i.tinverse.TransformVec3(&rTransformed.Origin, 1)
-	i.tinverse.TransformVec3(&rTransformed.Direction, 0)
+	i.tinverse.TransformVec3W(&rTransformed.Origin, 1)
+	i.tinverse.TransformVec3W(&rTransformed.Direction, 0)
 	h := i.intersectable.Intersect(&rTransformed)
 	if h == nil {
 		return nil
 	}
 	//transform back
-	i.t.TransformVec3(&h.Position, 1)
-	i.t.TransformVec3(&h.W_in, 0)
+	i.t.TransformVec3W(&h.Position, 1)
+	i.t.TransformVec3W(&h.W_in, 0)
 	h.W_in.Normalize()
 
 	//use transpose of inverse for normal
-	i.tinverseT.TransformVec3(&h.Normal, 0)
+	i.tinverseT.TransformVec3W(&h.Normal, 0)
 	//normalize again, bc may contain scaling
 	h.Normal.Normalize()
 	h.Material = i.Material
@@ -61,9 +61,9 @@ func NewInstance(intersectable util.Intersectable, transformation mat4.T, m util
 	// Transform bounding box.
 	bb := intersectable.BoundingBox()
 	minInstance := bb.Min
-	i.t.TransformVec3(&minInstance, 1)
+	i.t.TransformVec3W(&minInstance, 1)
 	maxInstance := bb.Max
-	i.t.TransformVec3(&maxInstance, 1)
+	i.t.TransformVec3W(&maxInstance, 1)
 	i.box = vec3.Box{minInstance, maxInstance}
 	return i
 }
