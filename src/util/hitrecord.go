@@ -17,7 +17,7 @@ type Hitrecord struct {
 
 type Intersectable interface {
 	Intersect(r *Ray) *Hitrecord
-	BoundingBox() 	  *vec3.Box
+	BoundingBox() *vec3.Box
 }
 
 type Material interface {

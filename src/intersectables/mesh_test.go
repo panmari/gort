@@ -75,8 +75,7 @@ func BenchmarkTeapotMesh(b *testing.B) {
 	m := NewMeshAggregate(data, materials.DiffuseDefault)
 	r := util.Ray{vec3.T{.1, .1, 1}, vec3.T{0, 0, -2}}
 	b.ResetTimer()
-	for i := 0; i < b.N; i ++ {
+	for i := 0; i < b.N; i++ {
 		m.Intersect(&r)
 	}
 }
-

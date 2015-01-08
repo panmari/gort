@@ -12,7 +12,7 @@ func StartRendering(scene scenes.Scene, draw_bar bool) {
 		panic("Invalid settings detected in scene!")
 	}
 	tasksize := 64
-	
+
 	var bar util.AbstractProgressBar
 	if draw_bar {
 		pb := pb.StartNew(scene.Film.GetWidth() * scene.Film.GetHeight())
@@ -21,12 +21,12 @@ func StartRendering(scene scenes.Scene, draw_bar bool) {
 	} else {
 		bar = &util.DummyProgressBar{}
 	}
-	
+
 	var wg sync.WaitGroup
 	for x := 0; x < scene.Film.GetWidth(); x += tasksize {
 		for y := 0; y < scene.Film.GetHeight(); y += tasksize {
-			x_border := util.Min(x + tasksize, scene.Film.GetWidth())
-			y_border := util.Min(y + tasksize, scene.Film.GetHeight())
+			x_border := util.Min(x+tasksize, scene.Film.GetWidth())
+			y_border := util.Min(y+tasksize, scene.Film.GetHeight())
 			wg.Add(1)
 			go renderWindow(scene, x, int(x_border), y, int(y_border), &wg, bar)
 		}
@@ -61,6 +61,6 @@ func RenderPixel(scene scenes.Scene, x, y int) {
 	var wg sync.WaitGroup
 	wg.Add(1)
 	bar := &util.DummyProgressBar{}
-	renderWindow(scene, x, x + 1, y, y + 1, &wg, bar) //TODO fix for progress bar
+	renderWindow(scene, x, x+1, y, y+1, &wg, bar) //TODO fix for progress bar
 	bar.Finish()
 }

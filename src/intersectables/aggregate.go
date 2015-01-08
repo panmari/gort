@@ -2,8 +2,8 @@ package intersectables
 
 import (
 	"fmt"
-	"math"
 	"github.com/ungerik/go3d/vec3"
+	"math"
 	"util"
 )
 
@@ -31,7 +31,7 @@ func (a *Aggregate) Intersect(ray *util.Ray) *util.Hitrecord {
 }
 
 func (a *Aggregate) BoundingBox() *vec3.Box {
-	return &a.box;
+	return &a.box
 }
 
 func (a *Aggregate) String() string {

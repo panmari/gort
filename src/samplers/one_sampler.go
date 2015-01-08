@@ -2,7 +2,7 @@ package samplers
 
 import ()
 
-type OneSampler struct{
+type OneSampler struct {
 	samples [][2]float32
 }
 

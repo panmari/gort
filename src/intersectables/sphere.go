@@ -11,7 +11,7 @@ type Sphere struct {
 	Center   vec3.T
 	Radius   float32
 	Material util.Material
-	Box		 vec3.Box
+	Box      vec3.Box
 }
 
 func (s *Sphere) GetIntersections(r *util.Ray) (float32, float32, bool) {

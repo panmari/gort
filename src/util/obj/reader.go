@@ -46,7 +46,7 @@ func Read(fileName string, scale float32) *Data {
 	for _, v := range data.Vertices {
 		v.Add(&trans).Scale(usedScale)
 	}
-	
+
 	//manually compute normals with cross product if not available in obj
 	if len(data.Normals) == 0 {
 		data.interpolateNormals()
@@ -108,7 +108,7 @@ func (o *Data) InsertLine(line string) {
 }
 
 func (o *Data) interpolateNormals() {
-	o.Normals = make([]*vec3.T, len(o.Vertices)) 
+	o.Normals = make([]*vec3.T, len(o.Vertices))
 	for i := range o.Faces {
 		f := &o.Faces[i]
 		e1 := vec3.Sub(o.Vertices[f.VertexIds[1]], o.Vertices[f.VertexIds[0]])

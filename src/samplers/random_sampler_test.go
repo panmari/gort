@@ -37,7 +37,7 @@ func TestRandomSamplerTwoSamplingsAreDifferent(t *testing.T) {
 	if samples_copy[0] == samples2[0] {
 		t.Error("Samples are not different:", samples, samples2)
 	}
-	
+
 	// samples and samples2 should contain the same arrays, since memory
 	// was only allocated once.
 	if samples[0] != samples2[0] {

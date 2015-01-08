@@ -56,7 +56,7 @@ func BenchmarkBoundingBoxIntersectionNoHit(b *testing.B) {
 func BenchmarkBoundingBoxIntersectionHitNegative(b *testing.B) {
 	r := util.Ray{vec3.Zero, vec3.T{-1, 0, 0}} // hits
 	box := vec3.Box{vec3.T{-3, -1, -1}, vec3.T{-2, 0, 0}}
-	
+
 	min, max, hits := doesRayIntersectBox(&r, &box)
 	if !hits {
 		b.Error("Should intersect")

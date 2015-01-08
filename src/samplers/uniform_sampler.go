@@ -16,7 +16,7 @@ func (r *UniformSampler) Get2DSamples(n int) [][2]float32 {
 	k_int := int(k)
 	dist := 1 / k
 	offset := 1 / (k * 2)
-	r.samples = r.samples[0:k_int*k_int] // adapt size of slice
+	r.samples = r.samples[0 : k_int*k_int] // adapt size of slice
 	for i := range r.samples {
 		r.samples[i][0] = offset + dist*float32(i%k_int)
 		r.samples[i][1] = offset + dist*float32(i/k_int)

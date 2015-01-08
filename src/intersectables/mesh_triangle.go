@@ -13,7 +13,7 @@ type MeshTriangle struct {
 	texCoords [2]*vec2.T
 	e1, e2    vec3.T
 	material  util.Material
-	Box 	  vec3.Box
+	Box       vec3.Box
 }
 
 const (

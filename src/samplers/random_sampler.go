@@ -5,7 +5,7 @@ import (
 )
 
 type RandomSampler struct {
-	rand rand.Rand
+	rand    rand.Rand
 	samples [][2]float32
 }
 

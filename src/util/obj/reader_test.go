@@ -35,7 +35,7 @@ func TestParseFacePoint(t *testing.T) {
 }
 
 func TestParceFacePointNoNormal(t *testing.T) {
-	line := "32/32" 
+	line := "32/32"
 	v_id, tc_id, n_id := parseFacePoint([]byte(line))
 	if v_id != 31 {
 		t.Error(v_id)

@@ -38,7 +38,7 @@ func main() {
 	scene := scenes.NewObjReaderTestScene()
 	//scene := scenes.NewAcceleratorTestScene()
 	//scene := scenes.NewMassiveAcceleratorTestScene()
-	
+
 	start := time.Now()
 	renderer.StartRendering(scene, true)
 	//renderer.RenderPixel(scene, 300, 300)
