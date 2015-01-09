@@ -12,7 +12,8 @@ type RandomSampler struct {
 func (r *RandomSampler) Get2DSamples(n int) [][2]float32 {
 	r.samples = r.samples[0:n] // adapt size of slice
 	for i := range r.samples {
-		r.samples[i] = [2]float32{r.rand.Float32(), r.rand.Float32()}
+		r.samples[i][0] = r.rand.Float32()
+		r.samples[i][0] = r.rand.Float32()
 	}
 	return r.samples
 }
