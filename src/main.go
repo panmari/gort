@@ -40,7 +40,7 @@ func main() {
 	//scene := scenes.NewMassiveAcceleratorTestScene()
 
 	start := time.Now()
-	renderer.StartRendering(scene, true)
+	renderer.StartRendering(&scene, true)
 	//renderer.RenderPixel(scene, 300, 300)
 
 	duration := time.Since(start)

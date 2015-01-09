@@ -7,7 +7,7 @@ import (
 	"util"
 )
 
-func StartRendering(scene scenes.Scene, draw_bar bool) {
+func StartRendering(scene *scenes.Scene, draw_bar bool) {
 	if scene.Film.GetWidth() == 0 || scene.Film.GetHeight() == 0 || scene.SPP == 0 {
 		panic("Invalid settings detected in scene!")
 	}
@@ -28,7 +28,7 @@ func StartRendering(scene scenes.Scene, draw_bar bool) {
 			x_border := util.Min(x+tasksize, scene.Film.GetWidth())
 			y_border := util.Min(y+tasksize, scene.Film.GetHeight())
 			wg.Add(1)
-			go renderWindow(scene, x, int(x_border), y, int(y_border), &wg, bar)
+			go renderWindow(*scene, x, int(x_border), y, int(y_border), &wg, bar)
 		}
 	}
 	wg.Wait()
