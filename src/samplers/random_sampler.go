@@ -13,9 +13,13 @@ func (r *RandomSampler) Get2DSamples(n int) [][2]float32 {
 	r.samples = r.samples[0:n] // adapt size of slice
 	for i := range r.samples {
 		r.samples[i][0] = r.rand.Float32()
-		r.samples[i][0] = r.rand.Float32()
+		r.samples[i][1] = r.rand.Float32()
 	}
 	return r.samples
+}
+
+func (r *RandomSampler) DuplicateAndSeed(seed int64) Sampler {
+	return NewRandomSampler(seed, len(r.samples))
 }
 
 func NewRandomSampler(seed int64, maxSampleCount int) Sampler {

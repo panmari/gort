@@ -24,7 +24,11 @@ func (r *UniformSampler) Get2DSamples(n int) [][2]float32 {
 	return r.samples
 }
 
-func NewUniformSampler(seed int64, maxSampleCount int) Sampler {
+func (r *UniformSampler) DuplicateAndSeed(seed int64) Sampler {
+	return NewUniformSampler(len(r.samples))
+}
+
+func NewUniformSampler(maxSampleCount int) Sampler {
 	s := new(UniformSampler)
 	s.samples = make([][2]float32, maxSampleCount)
 	return s

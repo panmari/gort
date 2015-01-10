@@ -24,7 +24,7 @@ func NewInstancingTestScene() Scene {
 	var aspect float32 = float32(width) / float32(height)
 	s.Camera = cameras.MakePinholeCamera(&eye, &lookAt, &up, fov, aspect, width, height)
 	s.SPP = 1
-	s.Sampler = samplers.NewOneSampler
+	s.Sampler = samplers.NewOneSampler(s.SPP)
 	s.Film = films.MakeBoxFilterFilm(width, height, tonemappers.ClampToneMap)
 
 	list := intersectables.NewIntersectableList(2)

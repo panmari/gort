@@ -20,8 +20,8 @@ func NewSimpleScene() Scene {
 	width := 640
 	height := 360
 	c := cameras.MakePinholeCamera(&eye, &lookAt, &up, fov, aspect, width, height)
-	// pass function to create new samplers
-	s := samplers.NewRandomSampler
+	SPP := 8
+	s := samplers.NewRandomSampler(42, SPP)
 	//s := samplers.MakeOneSampler()
 	f := films.MakeBoxFilterFilm(width, height, tonemappers.ClampToneMap)
 
@@ -39,5 +39,5 @@ func NewSimpleScene() Scene {
 	agg := intersectables.NewAggregate(root)
 	i := integrators.MakePointLightIntegrator(agg, l)
 
-	return Scene{Camera: c, Sampler: s, Integrator: i, Film: f, Root: agg, SPP: 8, Filename: "test_scene"}
+	return Scene{Camera: c, Sampler: s, Integrator: i, Film: f, Root: agg, SPP: SPP, Filename: "test_scene"}
 }

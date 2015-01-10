@@ -11,4 +11,5 @@ package samplers
 // will be overwritten.
 type Sampler interface {
 	Get2DSamples(n int) [][2]float32
+	DuplicateAndSeed(seed int64) Sampler
 }

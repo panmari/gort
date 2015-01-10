@@ -39,7 +39,8 @@ func StartRendering(scene *scenes.Scene, draw_bar bool) {
 func renderWindow(scene scenes.Scene, left, right, bottom, top int, wg *sync.WaitGroup, bar util.AbstractProgressBar) {
 	defer wg.Done()
 	seed := int64(left*scene.Film.GetWidth() + top)
-	sampler := scene.Sampler(seed, scene.SPP)
+	// Makes a copy of the sampler
+	sampler := scene.Sampler.DuplicateAndSeed(seed)
 	camera := scene.Camera
 	integrator := scene.Integrator
 	film := scene.Film

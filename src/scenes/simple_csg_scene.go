@@ -25,7 +25,7 @@ func NewSimpleCSGScene() Scene {
 	height := 360
 	s.Camera = cameras.MakePinholeCamera(&eye, &lookAt, &up, fov, aspect, width, height)
 	// pass function to create new samplers
-	s.Sampler = samplers.NewRandomSampler
+	s.Sampler = samplers.NewRandomSampler(42, s.SPP)
 	//s := samplers.MakeOneSampler()
 	s.Film = films.MakeBoxFilterFilm(width, height, tonemappers.ClampToneMap)
 
