@@ -9,15 +9,15 @@ import (
 )
 
 type PinholeCamera struct {
-	m   mat4.T
-	eye vec3.T
+	M   mat4.T
+	Eye vec3.T
 }
 
 func MakePinholeCamera(eye *vec3.T, lookat *vec3.T, up *vec3.T,
 	fov float32, aspect float32,
 	width int, height int) *PinholeCamera {
 	cam := new(PinholeCamera)
-	cam.eye = *eye
+	cam.Eye = *eye
 	w := vec3.Sub(eye, lookat)
 	w.Normalize()
 	u := vec3.Cross(up, &w)
@@ -45,7 +45,7 @@ func MakePinholeCamera(eye *vec3.T, lookat *vec3.T, up *vec3.T,
 	vp[2][1] = t
 	vp[2][2] = 1
 	vp[3][3] = 1
-	cam.m.AssignMul(&camMatrix, &vp)
+	cam.M.AssignMul(&camMatrix, &vp)
 	return cam
 }
 
@@ -53,9 +53,9 @@ func (c *PinholeCamera) MakeWorldSpaceRay(i, j int, samples [2]float32) *util.Ra
 	d := vec4.T{float32(i) + samples[0], float32(j) + samples[1], -1.0, 1.0}
 
 	// Transform it back to world coordinates
-	dTransformed := c.m.MulVec4(&d)
+	dTransformed := c.M.MulVec4(&d)
 	// Make ray consisting of origin and direction in world coordinates
 	dir := vec3.T{dTransformed[0], dTransformed[1], dTransformed[2]}
-	dir.Sub(&c.eye) //.Normalize()
-	return &util.Ray{c.eye, dir}
+	dir.Sub(&c.Eye) //.Normalize()
+	return &util.Ray{c.Eye, dir}
 }

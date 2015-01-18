@@ -8,22 +8,22 @@ import (
 )
 
 type PointLightIntegrator struct {
-	root        util.Intersectable
-	pointLights []lights.LightGeometry
+	Root        util.Intersectable
+	PointLights []lights.LightGeometry
 }
 
 func (d *PointLightIntegrator) Integrate(r *util.Ray) *vec3.T {
 	outgoing := vec3.T{}
-	if hit := d.root.Intersect(r); hit != nil {
-		for _, light := range d.pointLights {
-			lightHit := light.Sample([2]float32{0, 0})
+	if hit := d.Root.Intersect(r); hit != nil {
+		for i := range d.PointLights {
+			lightHit := d.PointLights[i].Sample([2]float32{0, 0})
 			lightDir := vec3.Sub(&lightHit.Position, &hit.Position)
 			dist2 := lightDir.LengthSqr()
 			lightDir.Normalize()
 
 			dist := fmath.Sqrt(dist2)
 			shadowRay := util.MakeEpsilonRay(&hit.Position, &lightDir)
-			if shadowHit := d.root.Intersect(shadowRay); shadowHit != nil && shadowHit.T < dist {
+			if shadowHit := d.Root.Intersect(shadowRay); shadowHit != nil && shadowHit.T < dist {
 				continue
 			}
 
@@ -43,7 +43,7 @@ func (d *PointLightIntegrator) Integrate(r *util.Ray) *vec3.T {
 
 func MakePointLightIntegrator(root util.Intersectable, pointLights []lights.LightGeometry) *PointLightIntegrator {
 	integrator := new(PointLightIntegrator)
-	integrator.root = root
-	integrator.pointLights = pointLights
+	integrator.Root = root
+	integrator.PointLights = pointLights
 	return integrator
 }

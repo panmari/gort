@@ -5,23 +5,23 @@ import (
 )
 
 type IntersectableList struct {
-	intersectables []util.Intersectable
+	Intersectables []util.Intersectable
 }
 
 func (list *IntersectableList) Add(intersectables ...util.Intersectable) {
-	list.intersectables = append(list.intersectables, intersectables...)
+	list.Intersectables = append(list.Intersectables, intersectables...)
 }
 
 func (list *IntersectableList) GetIntersectables() []util.Intersectable {
-	return list.intersectables
+	return list.Intersectables
 }
 
 func (list *IntersectableList) Size() int {
-	return len(list.intersectables)
+	return len(list.Intersectables)
 }
 
 func NewIntersectableList(initialSize int) *IntersectableList {
 	i := new(IntersectableList)
-	i.intersectables = make([]util.Intersectable, 0, initialSize)
+	i.Intersectables = make([]util.Intersectable, 0, initialSize)
 	return i
 }

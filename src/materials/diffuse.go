@@ -11,7 +11,7 @@ var (
 )
 
 type Diffuse struct {
-	kd vec3.T
+	Kd vec3.T
 }
 
 func (m *Diffuse) EvaluateEmission(hit *util.Hitrecord, wOut *vec3.T) vec3.T {
@@ -42,7 +42,7 @@ func (m *Diffuse) EvaluateSpecularReflection(hit *util.Hitrecord) vec3.T {
 }
 
 func (m *Diffuse) EvaluateBRDF(hit *util.Hitrecord, wOut, wIn *vec3.T) vec3.T {
-	return m.kd
+	return m.Kd
 }
 
 func NewDiffuseMaterial(r, g, b float32) *Diffuse {
@@ -54,6 +54,6 @@ func NewDiffuseMaterial(r, g, b float32) *Diffuse {
 
 func MakeDiffuseMaterial(diffuseReflectance vec3.T) *Diffuse {
 	m := new(Diffuse)
-	m.kd = diffuseReflectance.Scaled(1 / fmath.Pi)
+	m.Kd = diffuseReflectance.Scaled(1 / fmath.Pi)
 	return m
 }

@@ -6,11 +6,11 @@ import (
 )
 
 type PointLightMaterial struct {
-	emission vec3.T
+	Emission vec3.T
 }
 
 func (m *PointLightMaterial) EvaluateEmission(hit *util.Hitrecord, wOut *vec3.T) vec3.T {
-	return m.emission
+	return m.Emission
 }
 
 func (m *PointLightMaterial) GetEmissionSample(hit *util.Hitrecord, sample [2]float32) *vec3.T {
@@ -43,6 +43,6 @@ func (m *PointLightMaterial) EvaluateBRDF(hit *util.Hitrecord, wOut, wIn *vec3.T
 
 func MakePointLightMaterial(emission vec3.T) *PointLightMaterial {
 	m := new(PointLightMaterial)
-	m.emission = emission
+	m.Emission = emission
 	return m
 }
