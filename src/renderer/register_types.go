@@ -1,5 +1,6 @@
 package renderer
 
+// TODO: Write a script to automatically generate this file via `go generate`.
 import (
 	"cameras"
 	"encoding/gob"
