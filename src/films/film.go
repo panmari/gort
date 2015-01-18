@@ -2,6 +2,7 @@ package films
 
 import (
 	"github.com/ungerik/go3d/vec3"
+	"github.com/ungerik/go3d/vec4"
 )
 
 type Film interface {
@@ -9,4 +10,5 @@ type Film interface {
 	WriteToPng(filename string)
 	GetWidth() int
 	GetHeight() int
+	GetTonemapper() func(*vec4.T)
 }

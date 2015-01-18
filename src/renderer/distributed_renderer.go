@@ -2,11 +2,11 @@ package renderer
 
 import (
 	"encoding/gob"
+	"films"
 	"fmt"
 	"log"
 	"net"
 	"scenes"
-//	"films"
 )
 
 func handleConnection(conn net.Conn) {
@@ -17,14 +17,14 @@ func handleConnection(conn net.Conn) {
 	err := dec.Decode(s)
 	if err != nil {
 		log.Fatal("Failed: ", err)
-	} 
+	}
 	log.Println("Received scene ", s.Filename)
 	log.Println("Start rendering...")
 	StartRendering(s, false)
 	log.Println("Finished rendering.")
 	encoder := gob.NewEncoder(conn)
-    encoder.Encode(s.Film)
-    log.Println("Sent result back.")
+	encoder.Encode(s.Film)
+	log.Println("Sent result back.")
 }
 
 func StartServer() {
@@ -34,10 +34,12 @@ func StartServer() {
 		// handle error
 	}
 	log.Println("Listening for requests...")
+	registerTypes()
+
 	for {
 		conn, err := ln.Accept() // this blocks until connection or error
 		if err != nil {
-			// handle error
+			log.Println("Could not accept connection: ", err)
 			continue
 		}
 		go handleConnection(conn) // a goroutine handles conn so that the loop can accept other connections
@@ -45,20 +47,29 @@ func StartServer() {
 }
 
 func RenderOnServer(scene *scenes.Scene) {
-    conn, err := net.Dial("tcp", "localhost:8080")
-    if err != nil {
-        log.Fatal("Connection error: ", err)
-    }
-    log.Println("Connected, sending scene...")
-    encoder := gob.NewEncoder(conn)
-    encoder.Encode(scene)
-    log.Println("Waiting for server to finish rendering...")
-    
-    // Expect a BoxFilterFilm as answer.
-//    dec := gob.NewDecoder(conn)
-//	f := new(films.BoxFilterFilm)
-//	dec.Decode(f)
-//	f.WriteToPng(scene.Filename)
-    conn.Close()
-    fmt.Println("Done, wrote to ", scene.Filename);
+	conn, err := net.Dial("tcp", "localhost:8080")
+	if err != nil {
+		log.Fatal("Connection error: ", err)
+	}
+	log.Println("Connected, sending scene...")
+	registerTypes()
+	encoder := gob.NewEncoder(conn)
+
+	err = encoder.Encode(scene)
+	if err != nil {
+		log.Fatal("Failed to encode: ", err)
+	}
+	log.Println("Waiting for server to finish rendering...")
+
+	// Expect a BoxFilterFilm as answer.
+	// TODO(smoser) Find out the type of the film by reflection of scene.
+	dec := gob.NewDecoder(conn)
+	f := new(films.BoxFilterFilm)
+	dec.Decode(f)
+	// Tonemapper is a function pointer, which can not be transmitted by gob.
+	// Set it here again
+	f.Tonemapper = scene.Film.GetTonemapper()
+	f.WriteToPng(scene.Filename)
+	conn.Close()
+	fmt.Println("Done, wrote to ", scene.Filename)
 }

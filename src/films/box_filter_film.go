@@ -68,3 +68,7 @@ func (i *BoxFilterFilm) GetWidth() int {
 func (i *BoxFilterFilm) GetHeight() int {
 	return i.Height
 }
+
+func (i *BoxFilterFilm) GetTonemapper() func(*vec4.T) {
+	return i.Tonemapper
+}
