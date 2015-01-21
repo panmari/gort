@@ -5,7 +5,7 @@ import (
 )
 
 func TestUniformSamplerOneSample(t *testing.T) {
-	s := NewUniformSampler(0, 1)
+	s := NewUniformSampler(1)
 	sample := s.Get2DSamples(1)
 	if sample[0] != [2]float32{0.5, 0.5} {
 		t.Error(sample)
@@ -13,7 +13,7 @@ func TestUniformSamplerOneSample(t *testing.T) {
 }
 
 func TestUniformSamplerFourSample(t *testing.T) {
-	s := NewUniformSampler(0, 4)
+	s := NewUniformSampler(4)
 	sample := s.Get2DSamples(4)
 
 	if sample[0] != [2]float32{0.25, 0.25} {
@@ -31,7 +31,7 @@ func TestUniformSamplerFourSample(t *testing.T) {
 }
 
 func TestUniformSamplerFourSampleTwice(t *testing.T) {
-	s := NewUniformSampler(0, 4)
+	s := NewUniformSampler(4)
 	sample := s.Get2DSamples(4)
 	// Get 4 new samples.
 	sample = s.Get2DSamples(4)
@@ -52,7 +52,7 @@ func TestUniformSamplerFourSampleTwice(t *testing.T) {
 }
 
 func BenchmarkUniformSamplerOneSample(b *testing.B) {
-	s := NewUniformSampler(0, 1)
+	s := NewUniformSampler(1)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		s.Get2DSamples(1)
@@ -60,7 +60,7 @@ func BenchmarkUniformSamplerOneSample(b *testing.B) {
 }
 
 func BenchmarkUniformSamplerFourSamples(b *testing.B) {
-	s := NewUniformSampler(0, 4)
+	s := NewUniformSampler(4)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		s.Get2DSamples(4)
