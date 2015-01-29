@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"runtime"
 	"scenes"
 	"time"
 )
@@ -22,12 +23,15 @@ func handleConnection(conn net.Conn) {
 	log.Println("Received scene ", s.Filename)
 	log.Println("Start rendering...")
 	start := time.Now()
+	//RenderPixel(*s, 0, 0)
 	StartRendering(s, false)
 	duration := time.Since(start)
 	log.Println("Finished rendering in", duration.String())
 	encoder := gob.NewEncoder(conn)
 	encoder.Encode(s.Film)
 	log.Println("Sent result back.")
+	s = nil
+	runtime.GC()
 }
 
 func StartServer() {
@@ -55,6 +59,7 @@ func RenderOnServer(scene *scenes.Scene) {
 		log.Fatal("Connection error: ", err)
 	}
 	log.Println("Connected, sending scene...")
+	startSending := time.Now()
 	registerTypes()
 	encoder := gob.NewEncoder(conn)
 
@@ -62,6 +67,8 @@ func RenderOnServer(scene *scenes.Scene) {
 	if err != nil {
 		log.Fatal("Failed to encode: ", err)
 	}
+	sendDuration := time.Since(startSending)
+	log.Println("Sent in", sendDuration.String())
 	log.Println("Waiting for server to finish rendering...")
 
 	// Expect a BoxFilterFilm as answer.

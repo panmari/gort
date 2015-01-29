@@ -7,12 +7,14 @@ import (
 	"films"
 	"integrators"
 	"intersectables"
+	"intersectables/accelerators"
 	"lights"
 	"materials"
 	"samplers"
 )
 
 func registerTypes() {
+	gob.Register(&accelerators.BSPAccelerator{})
 	gob.Register(&cameras.PinholeCamera{})
 	gob.Register(&samplers.OneSampler{})
 	gob.Register(&samplers.RandomSampler{})

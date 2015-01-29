@@ -12,20 +12,20 @@ import (
 
 type BSPAccelerator struct {
 	n, max_depth int
-	root         *BSPNode
-	box          vec3.Box
+	Root         *BSPNode
+	Box          vec3.Box
 }
 
 type BSPNode struct {
-	inters      []util.Intersectable
-	box         vec3.Box
-	splitAxis   Axis
-	splitPos    float32
-	left, right *BSPNode
+	Inters      []util.Intersectable
+	Box         vec3.Box
+	SplitAxis   Axis
+	SplitPos    float32
+	Left, Right *BSPNode
 }
 
 func (n *BSPNode) isLeaf() bool {
-	return n.left == nil && n.right == nil
+	return n.Left == nil && n.Right == nil
 }
 
 func newBSPNode(box vec3.Box, axis Axis) *BSPNode {
@@ -47,11 +47,11 @@ func NewBSPAccelerator(a *intersectables.Aggregate) *BSPAccelerator {
 	acc := new(BSPAccelerator)
 	acc.n = a.Size()
 	acc.max_depth = int(8 + 1.3*math.Log(float32(acc.n)) + 0.5)
-	acc.root = new(BSPNode)
-	acc.root.box = *a.BoundingBox()
+	acc.Root = new(BSPNode)
+	acc.Root.Box = *a.BoundingBox()
 	// Recursively generate nodes of tree structure
 	var wg sync.WaitGroup
-	acc.buildTree(acc.root, a.GetIntersectables(), X, 0, &wg)
+	acc.buildTree(acc.Root, a.GetIntersectables(), X, 0, &wg)
 	wg.Wait()
 	duration := time.Since(start)
 	log.Printf("Built accelerator in %s.\n", duration.String())
@@ -60,42 +60,42 @@ func NewBSPAccelerator(a *intersectables.Aggregate) *BSPAccelerator {
 
 func (acc *BSPAccelerator) buildTree(node *BSPNode, inters []util.Intersectable, splitAxis Axis, depth int, wg *sync.WaitGroup) *BSPNode {
 	if depth > acc.max_depth || len(inters) < MIN_NR_PRIMITIVES {
-		node.inters = inters
+		node.Inters = inters
 		return node
 	}
 	leftInters := make([]util.Intersectable, 0, len(inters)/2)
 	rightInters := make([]util.Intersectable, 0, len(inters)/2)
 	// Save split axis in node and prepare bounding boxes.
-	node.splitAxis = splitAxis
-	b := node.box
-	node.splitPos = b.Center()[splitAxis]
+	node.SplitAxis = splitAxis
+	b := node.Box
+	node.SplitPos = b.Center()[splitAxis]
 	leftBoxMax := b.Max
-	leftBoxMax[splitAxis] = node.splitPos
+	leftBoxMax[splitAxis] = node.SplitPos
 	rightBoxMin := b.Min
-	rightBoxMin[splitAxis] = node.splitPos
+	rightBoxMin[splitAxis] = node.SplitPos
 
 	var leftNode, rightNode BSPNode
-	leftNode.box = vec3.Box{b.Min, leftBoxMax}
-	rightNode.box = vec3.Box{rightBoxMin, b.Max}
+	leftNode.Box = vec3.Box{b.Min, leftBoxMax}
+	rightNode.Box = vec3.Box{rightBoxMin, b.Max}
 
 	for i := range inters {
-		if leftNode.box.Intersects(inters[i].BoundingBox()) {
+		if leftNode.Box.Intersects(inters[i].BoundingBox()) {
 			leftInters = append(leftInters, inters[i])
 		}
-		if rightNode.box.Intersects(inters[i].BoundingBox()) {
+		if rightNode.Box.Intersects(inters[i].BoundingBox()) {
 			rightInters = append(rightInters, inters[i])
 		}
 	}
-	nextSplitAxis := Axis((int(node.splitAxis) + 1) % 3)
+	nextSplitAxis := Axis((int(node.SplitAxis) + 1) % 3)
 	wg.Add(2)
 	// Very lazy way of parallelization: children are computed in new routine
 	go func() {
 		defer wg.Done()
-		node.left = acc.buildTree(&leftNode, leftInters, nextSplitAxis, depth+1, wg)
+		node.Left = acc.buildTree(&leftNode, leftInters, nextSplitAxis, depth+1, wg)
 	}()
 	go func() {
 		defer wg.Done()
-		node.right = acc.buildTree(&rightNode, rightInters, nextSplitAxis, depth+1, wg)
+		node.Right = acc.buildTree(&rightNode, rightInters, nextSplitAxis, depth+1, wg)
 	}()
 	return node
 }
@@ -107,7 +107,7 @@ type BSPStackNode struct {
 }
 
 func (acc *BSPAccelerator) Intersect(r *util.Ray) *util.Hitrecord {
-	tmin, tmax, doesIntersect := doesRayIntersectBox(r, &acc.root.box)
+	tmin, tmax, doesIntersect := doesRayIntersectBox(r, &acc.Root.Box)
 	if !doesIntersect {
 		return nil
 	}
@@ -115,26 +115,26 @@ func (acc *BSPAccelerator) Intersect(r *util.Ray) *util.Hitrecord {
 
 	var nearestHit *util.Hitrecord
 	nearestT := float32(math.MaxFloat32)
-	var node *BSPNode = acc.root
+	var node *BSPNode = acc.Root
 	for node != nil {
 		if nearestT < tmin {
 			break
 		}
 		if !node.isLeaf() {
-			tSplitAxis := (node.splitPos - r.Origin[node.splitAxis]) / r.Direction[node.splitAxis]
+			tSplitAxis := (node.SplitPos - r.Origin[node.SplitAxis]) / r.Direction[node.SplitAxis]
 			var first, second *BSPNode
 
-			if r.Origin[node.splitAxis] < node.splitPos {
-				first = node.left
-				second = node.right
+			if r.Origin[node.SplitAxis] < node.SplitPos {
+				first = node.Left
+				second = node.Right
 			} else {
-				first = node.right
-				second = node.left
+				first = node.Right
+				second = node.Left
 			}
 			// process children
-			if _, _, doesIntersect := doesRayIntersectBox(r, &first.box); tSplitAxis > tmax || tSplitAxis < 0 || (math.Abs(tSplitAxis) < 1e-5 && doesIntersect) {
+			if _, _, doesIntersect := doesRayIntersectBox(r, &first.Box); tSplitAxis > tmax || tSplitAxis < 0 || (math.Abs(tSplitAxis) < 1e-5 && doesIntersect) {
 				node = first
-			} else if _, _, doesIntersect := doesRayIntersectBox(r, &second.box); tSplitAxis < tmin || (math.Abs(tSplitAxis) < 1e-5 && doesIntersect) {
+			} else if _, _, doesIntersect := doesRayIntersectBox(r, &second.Box); tSplitAxis < tmin || (math.Abs(tSplitAxis) < 1e-5 && doesIntersect) {
 				node = second
 			} else {
 				node = first
@@ -143,8 +143,8 @@ func (acc *BSPAccelerator) Intersect(r *util.Ray) *util.Hitrecord {
 				tmax = tSplitAxis
 			}
 		} else {
-			for i := range node.inters {
-				hit := node.inters[i].Intersect(r)
+			for i := range node.Inters {
+				hit := node.Inters[i].Intersect(r)
 				if hit != nil && hit.T < nearestT && hit.T > 0 {
 					nearestT = hit.T
 					nearestHit = hit
@@ -166,26 +166,27 @@ func (acc *BSPAccelerator) Intersect(r *util.Ray) *util.Hitrecord {
 
 func (acc *BSPAccelerator) IntersectSlow(r *util.Ray) *util.Hitrecord {
 	nodeStack := make([]*BSPNode, 1)
-	nodeStack[0] = acc.root
+	nodeStack[0] = acc.Root
 	var nearestHit *util.Hitrecord
 	nearestT := float32(math.MaxFloat32)
 	var n *BSPNode
 	for len(nodeStack) > 0 {
+		// Poll stack.
 		n, nodeStack = nodeStack[len(nodeStack)-1], nodeStack[:len(nodeStack)-1]
-		if n.inters != nil {
-			for i := range n.inters {
-				currentHit := n.inters[i].Intersect(r)
+		if n.Inters != nil {
+			for i := range n.Inters {
+				currentHit := n.Inters[i].Intersect(r)
 				if currentHit != nil && nearestT > currentHit.T && currentHit.T > 0 {
 					nearestT = currentHit.T
 					nearestHit = currentHit
 				}
 			}
 		} else {
-			if _, _, doesIntersect := doesRayIntersectBox(r, &n.left.box); doesIntersect {
-				nodeStack = append(nodeStack, n.left)
+			if _, _, doesIntersect := doesRayIntersectBox(r, &n.Left.Box); doesIntersect {
+				nodeStack = append(nodeStack, n.Left)
 			}
-			if _, _, doesIntersect := doesRayIntersectBox(r, &n.right.box); doesIntersect {
-				nodeStack = append(nodeStack, n.right)
+			if _, _, doesIntersect := doesRayIntersectBox(r, &n.Right.Box); doesIntersect {
+				nodeStack = append(nodeStack, n.Right)
 			}
 		}
 	}
@@ -238,5 +239,5 @@ func doesRayIntersectBox(r *util.Ray, b *vec3.Box) (tmin, tmax float32, doesInte
 }
 
 func (acc *BSPAccelerator) BoundingBox() *vec3.Box {
-	return &acc.box
+	return &acc.Box
 }
