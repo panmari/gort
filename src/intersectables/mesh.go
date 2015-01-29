@@ -45,7 +45,7 @@ func NewMesh(data *obj.Data, m util.Material) *Mesh {
 				t.texCoords[j] = data.TexCoords[face.TexCoordIds[j]]
 			}
 		}
-		// precompute edges used for intersection algorithm
+		// Precompute edges used for intersection algorithm.
 		t.e1 = vec3.Sub(t.vertices[1], t.vertices[0])
 		t.e2 = vec3.Sub(t.vertices[2], t.vertices[0])
 		t.Box = vec3.Box{min, max}

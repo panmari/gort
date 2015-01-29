@@ -35,7 +35,8 @@ func NewTriangleTestScene() Scene {
 	data.InsertLine("vn 0 0 1")
 	data.InsertLine("vn 0 0 1")
 	data.InsertLine("vn 0 0 1")
-	data.InsertLine("f 0//0 1//1 2//2")
+	// The expected .obj format uses 1 based counting.
+	data.InsertLine("f 1//1 2//2 3//3") 
 	s.Root = intersectables.NewMeshAggregate(data, materials.DiffuseDefault)
 
 	s.Integrator = integrators.MakeDebugIntegrator(s.Root)
