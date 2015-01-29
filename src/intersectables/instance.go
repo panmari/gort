@@ -9,31 +9,31 @@ import (
 )
 
 type Instance struct {
-	t             mat4.T
-	tinverse      mat4.T
-	tinverseT     mat4.T
+	T             mat4.T
+	Tinverse      mat4.T
+	TinverseTranspose     mat4.T
 	Material      util.Material
-	intersectable util.Intersectable
-	box           vec3.Box
+	Intersectable util.Intersectable
+	Box           vec3.Box
 }
 
 // Transforms the given ray into the coordinate frame of this instance and returns the resulting intersection.
 func (i *Instance) Intersect(r *util.Ray) *util.Hitrecord {
 	//transform ray into coordinate system of instance
 	rTransformed := util.Ray{r.Origin, r.Direction}
-	i.tinverse.TransformVec3W(&rTransformed.Origin, 1)
-	i.tinverse.TransformVec3W(&rTransformed.Direction, 0)
-	h := i.intersectable.Intersect(&rTransformed)
+	i.Tinverse.TransformVec3W(&rTransformed.Origin, 1)
+	i.Tinverse.TransformVec3W(&rTransformed.Direction, 0)
+	h := i.Intersectable.Intersect(&rTransformed)
 	if h == nil {
 		return nil
 	}
 	//transform back
-	i.t.TransformVec3W(&h.Position, 1)
-	i.t.TransformVec3W(&h.W_in, 0)
+	i.T.TransformVec3W(&h.Position, 1)
+	i.T.TransformVec3W(&h.W_in, 0)
 	h.W_in.Normalize()
 
 	//use transpose of inverse for normal
-	i.tinverseT.TransformVec3W(&h.Normal, 0)
+	i.TinverseTranspose.TransformVec3W(&h.Normal, 0)
 	//normalize again, bc may contain scaling
 	h.Normal.Normalize()
 	h.Material = i.Material
@@ -41,30 +41,30 @@ func (i *Instance) Intersect(r *util.Ray) *util.Hitrecord {
 }
 
 func (i *Instance) BoundingBox() *vec3.Box {
-	return &i.box
+	return &i.Box
 }
 
 func (i *Instance) String() string {
-	return fmt.Sprintf("Instance around %v", i.intersectable)
+	return fmt.Sprintf("Instance around %v", i.Intersectable)
 }
 
 func NewInstance(intersectable util.Intersectable, transformation mat4.T, m util.Material) *Instance {
 	i := new(Instance)
-	i.t = transformation
-	i.tinverse = transformation
-	i.tinverse.Invert()
-	i.tinverseT = i.tinverse
-	i.tinverseT.Transpose()
+	i.T = transformation
+	i.Tinverse = transformation
+	i.Tinverse.Invert()
+	i.TinverseTranspose = i.Tinverse
+	i.TinverseTranspose.Transpose()
 	i.Material = m
-	i.intersectable = intersectable
+	i.Intersectable = intersectable
 
 	// Transform bounding box.
 	bb := intersectable.BoundingBox()
 	minInstance := bb.Min
-	i.t.TransformVec3W(&minInstance, 1)
+	i.T.TransformVec3W(&minInstance, 1)
 	maxInstance := bb.Max
-	i.t.TransformVec3W(&maxInstance, 1)
-	i.box = vec3.Box{minInstance, maxInstance}
+	i.T.TransformVec3W(&maxInstance, 1)
+	i.Box = vec3.Box{minInstance, maxInstance}
 	return i
 }
 
