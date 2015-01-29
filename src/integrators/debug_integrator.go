@@ -6,11 +6,11 @@ import (
 )
 
 type DebugIntegrator struct {
-	root util.Intersectable
+	Root util.Intersectable
 }
 
 func (d *DebugIntegrator) Integrate(r *util.Ray) *vec3.T {
-	if hit := d.root.Intersect(r); hit != nil {
+	if hit := d.Root.Intersect(r); hit != nil {
 		return &vec3.T{1, 0, 0}
 	}
 	return &vec3.T{0, 0, 0}
@@ -18,6 +18,6 @@ func (d *DebugIntegrator) Integrate(r *util.Ray) *vec3.T {
 
 func MakeDebugIntegrator(root util.Intersectable) *DebugIntegrator {
 	integrator := new(DebugIntegrator)
-	integrator.root = root
+	integrator.Root = root
 	return integrator
 }
