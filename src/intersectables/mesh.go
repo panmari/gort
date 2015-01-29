@@ -9,19 +9,19 @@ import (
 )
 
 type Mesh struct {
-	triangles []util.Intersectable
+	Triangles []util.Intersectable
 }
 
 func (m *Mesh) Size() int {
-	return len(m.triangles)
+	return len(m.Triangles)
 }
 
 func (m *Mesh) GetIntersectables() []util.Intersectable {
-	return m.triangles
+	return m.Triangles
 }
 
 func (m *Mesh) String() string {
-	return fmt.Sprintf("Mesh: %v", m.triangles)
+	return fmt.Sprintf("Mesh: %v", m.Triangles)
 }
 
 func NewDiffuseMesh(data *obj.Data) *Mesh {
@@ -31,25 +31,26 @@ func NewDiffuseMesh(data *obj.Data) *Mesh {
 func NewMesh(data *obj.Data, m util.Material) *Mesh {
 	mesh := Mesh{make([]util.Intersectable, len(data.Faces))}
 	for i, face := range data.Faces {
-		t := MeshTriangle{material: m}
+		t := MeshTriangle{Material: m}
 		min := vec3.MaxVal
 		max := vec3.MinVal
 		for j := 0; j < 3; j++ {
-			t.vertices[j] = data.Vertices[face.VertexIds[j]]
-			t.normals[j] = data.Normals[face.NormalIds[j]]
-			min = vec3.Min(&min, t.vertices[j])
-			max = vec3.Max(&max, t.vertices[j])
+			t.Vertices[j] = *data.Vertices[face.VertexIds[j]]
+			t.Normals[j] = *data.Normals[face.NormalIds[j]]
+			min = vec3.Min(&min, &t.Vertices[j])
+			max = vec3.Max(&max, &t.Vertices[j])
 		}
 		if data.HasTexCoords {
 			for j := 0; j < 2; j++ {
-				t.texCoords[j] = data.TexCoords[face.TexCoordIds[j]]
+				t.TexCoords[j] = *data.TexCoords[face.TexCoordIds[j]]
 			}
 		}
+		// TODO: Set flag if TexCoords are not available.
 		// Precompute edges used for intersection algorithm.
-		t.e1 = vec3.Sub(t.vertices[1], t.vertices[0])
-		t.e2 = vec3.Sub(t.vertices[2], t.vertices[0])
+		t.E1 = vec3.Sub(&t.Vertices[1], &t.Vertices[0])
+		t.E2 = vec3.Sub(&t.Vertices[2], &t.Vertices[0])
 		t.Box = vec3.Box{min, max}
-		mesh.triangles[i] = &t
+		mesh.Triangles[i] = &t
 	}
 	return &mesh
 }
