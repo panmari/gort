@@ -20,6 +20,7 @@ var startClient = flag.Bool("client", false, "Start in client mode")
 
 func main() {
 	flag.Parse()
+	runtime.GOMAXPROCS(*maxProcs)
 	if *startServer {
 		renderer.StartServer()
 		return
@@ -33,7 +34,6 @@ func main() {
 		pprof.StartCPUProfile(f)
 		defer pprof.StopCPUProfile()
 	}
-	runtime.GOMAXPROCS(*maxProcs)
 	// define the scene to be rendered here
 	//scene := scenes.NewSimpleScene()
 	//scene := scenes.NewTriangleTestScene()
