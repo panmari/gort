@@ -7,7 +7,7 @@ This is a raytracing framework used for educational purposes. It was developed a
 * [CSG Objects](http://en.wikipedia.org/wiki/Constructive_solid_geometry)
 * Triangle meshes through the [.obj format](http://en.wikipedia.org/wiki/Wavefront_OBJ)
 * Diffuse materials (incoming support for: glossy, reflective, refractive etc.)
-* Scenes are defined as go types
+* Scenes are defined as go structs
 * Multithreaded with goroutines
 * Pointlight integrator (incoming support for whitted integrator, pathintegrator)
 
@@ -17,7 +17,7 @@ Install go and dependencies. On a Debian derivative this may be done using the f
 
      sudo apt-get install golang golang-go.tools gocode
 
-Configure your GOPATH by changing your inserting the following line into your `.bashrc` file
+Configure your GOPATH by inserting the following line into your `.bashrc` file
 
      export GOPATH={go_workspace}/{local clone of repositry}
 
@@ -26,7 +26,7 @@ https://github.com/GoClipse/goclipse/blob/latest/documentation/Installation.md
 Go to window -> preferences -> go and enter the following settings
 
 * GOROOT: `/usr/lib/go`
-* GOPATH: todo
+* GOPATH: As above
 * Go tool path (go): `/usr/bin/go`
 * Go formatter (gofmt):  `/usr/bin/gofmt`
 * Go documentor (godoc): `/usr/bin/godoc`
