@@ -42,7 +42,7 @@ func BenchmarkRenderingDodecahedronScene(b *testing.B) {
 
 func ChangeDirForReadingMeshes(b *testing.B) {
 	if wd, _ := os.Getwd(); path.Base(wd) == "renderer" {
-		if err := os.Chdir("../../"); err != nil {
+		if err := os.Chdir("../"); err != nil {
 			b.Error(err)
 		}
 	}
