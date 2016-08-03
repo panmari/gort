@@ -30,8 +30,8 @@ func halton(index, base int) float32 {
 	return result
 }
 
-func (ld *LowDiscrepancySampler) DuplicateAndSeed(seed int64) Sampler {
-	return NewLowDiscrepancySampler(len(ld.Samples))
+func (ld *LowDiscrepancySampler) DuplicateAndSeed(seed int64, maxSampleCount int) Sampler {
+	return NewLowDiscrepancySampler(maxSampleCount)
 }
 
 func NewLowDiscrepancySampler(maxSampleCount int) Sampler {

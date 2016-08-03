@@ -18,8 +18,8 @@ func (r *RandomSampler) Get2DSamples(n int) [][2]float32 {
 	return r.Samples
 }
 
-func (r *RandomSampler) DuplicateAndSeed(seed int64) Sampler {
-	return NewRandomSampler(seed, len(r.Samples))
+func (r *RandomSampler) DuplicateAndSeed(seed int64, maxSampleCount int) Sampler {
+	return NewRandomSampler(seed, maxSampleCount)
 }
 
 func NewRandomSampler(seed int64, maxSampleCount int) Sampler {

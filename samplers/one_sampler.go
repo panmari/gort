@@ -15,8 +15,8 @@ func (o *OneSampler) Get2DSamples(n int) [][2]float32 {
 	return o.samples
 }
 
-func (o *OneSampler) DuplicateAndSeed(seed int64) Sampler {
-	return NewOneSampler(len(o.samples))
+func (o *OneSampler) DuplicateAndSeed(seed int64, maxSampleCount int) Sampler {
+	return NewOneSampler(maxSampleCount)
 }
 
 func NewOneSampler(maxSampleCount int) Sampler {

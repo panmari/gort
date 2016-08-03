@@ -24,8 +24,8 @@ func (r *UniformSampler) Get2DSamples(n int) [][2]float32 {
 	return r.Samples
 }
 
-func (r *UniformSampler) DuplicateAndSeed(seed int64) Sampler {
-	return NewUniformSampler(len(r.Samples))
+func (r *UniformSampler) DuplicateAndSeed(seed int64, maxSampleCount int) Sampler {
+	return NewUniformSampler(maxSampleCount)
 }
 
 func NewUniformSampler(maxSampleCount int) Sampler {

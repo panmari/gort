@@ -40,7 +40,7 @@ func renderWindow(scene scenes.Scene, left, right, bottom, top int, wg *sync.Wai
 	defer wg.Done()
 	seed := int64(left*scene.Film.GetWidth() + top)
 	// Makes a copy of the sampler
-	sampler := scene.Sampler.DuplicateAndSeed(seed)
+	sampler := scene.Sampler.DuplicateAndSeed(seed, scene.SPP)
 	camera := scene.Camera
 	integrator := scene.Integrator
 	film := scene.Film
