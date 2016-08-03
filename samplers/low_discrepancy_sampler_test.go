@@ -1,7 +1,6 @@
 package samplers
 
 import (
-	math "github.com/barnex/fmath"
 	"testing"
 )
 

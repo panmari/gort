@@ -45,7 +45,7 @@ func TestSingleTrianglesAdded(t *testing.T) {
 }
 
 func TestTeapotMesh(t *testing.T) {
-	data := obj.Read("../../obj/teapot.obj", 1)
+	data := obj.Read("../obj/teapot.obj", 1)
 	if len(data.Vertices) != 302 {
 		t.Errorf("Wrong number of vertices: %d", len(data.Vertices))
 	}
@@ -70,7 +70,7 @@ func TestTeapotMesh(t *testing.T) {
 }
 
 func BenchmarkTeapotMesh(b *testing.B) {
-	data := obj.Read("../../obj/teapot.obj", 1)
+	data := obj.Read("../obj/teapot.obj", 1)
 
 	m := NewMeshAggregate(data, materials.DiffuseDefault)
 	r := util.Ray{vec3.T{.1, .1, 1}, vec3.T{0, 0, -2}}

@@ -147,18 +147,18 @@ func BenchmarkParseLine(b *testing.B) {
 
 func BenchmarkTeapot(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		Read("../../../obj/teapot.obj", 1)
+		Read("../../obj/teapot.obj", 1)
 	}
 }
 
 func BenchmarkHeart(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		Read("../../../obj/Heart.obj", 1)
+		Read("../../obj/Heart.obj", 1)
 	}
 }
 
 func BenchmarkDragon(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		Read("../../../obj/dragon.obj", 1)
+		Read("../../obj/dragon.obj", 1)
 	}
 }
