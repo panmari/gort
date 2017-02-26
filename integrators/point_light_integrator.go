@@ -19,7 +19,7 @@ func (d *PointLightIntegrator) Integrate(r *util.Ray) *vec3.T {
 			lightHit := d.PointLights[i].Sample([2]float32{0, 0})
 			lightDir := vec3.Sub(&lightHit.Position, &hit.Position)
 			dist2 := lightDir.LengthSqr()
-			lightDir.Normalize()
+			lightDir.Scale(1.0 / fmath.Sqrt(dist2))
 
 			dist := fmath.Sqrt(dist2)
 			shadowRay := util.MakeEpsilonRay(&hit.Position, &lightDir)
@@ -33,8 +33,7 @@ func (d *PointLightIntegrator) Integrate(r *util.Ray) *vec3.T {
 			lightValue := lightHit.Material.EvaluateEmission(lightHit, &inverseLightDir)
 			brdfValue.Mul(&lightValue)
 			ndotl := fmath.Max(vec3.Dot(&hit.Normal, &lightDir), 0)
-			brdfValue.Scale(ndotl)
-			brdfValue.Scale(1 / dist2)
+			brdfValue.Scale(ndotl / dist2)
 			outgoing.Add(&brdfValue)
 		}
 	}
