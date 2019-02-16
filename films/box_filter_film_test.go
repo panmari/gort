@@ -46,9 +46,6 @@ func TestBoxFilterFilmAddsDiagonalOfDifferentValues(t *testing.T) {
 			t.Errorf("Unexpected value at (%d, %d), got %v, want %v", tc.x, tc.y, got, tc.want)
 		}
 	}
-
-	f.AddSample(51, 51, &vec3.T{0, 0, 1})
-	f.AddSample(51, 51, &vec3.T{0, 0, 1})
 }
 
 func TestBoxFilterFilmSumsValuesFromMultipleSamples(t *testing.T) {
