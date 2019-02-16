@@ -4,6 +4,9 @@ import (
 	"github.com/barnex/fmath"
 )
 
+// SolveQuadratic solves the quadratic equation
+// ax^2 + bx + c = 0
+// Returns both solutions and true if a solution exists. Otherwise false.
 func SolveQuadratic(a, b, c float32) (float32, float32, bool) {
 	disc := b*b - 4*a*c
 	if disc <= 0 {
@@ -12,7 +15,7 @@ func SolveQuadratic(a, b, c float32) (float32, float32, bool) {
 
 	rootDisc := fmath.Sqrt(disc)
 
-	// numerical magic copied from PBRT:
+	// Numerical magic copied from PBRT.
 	var q float32
 	if b < 0 {
 		q = (b - rootDisc) / -2
@@ -23,7 +26,8 @@ func SolveQuadratic(a, b, c float32) (float32, float32, bool) {
 	t0 := q / a
 	t1 := c / q
 
-	//make t0 always the intersection closer to the camera
+	// Make t0 always the intersection closer to the camera, i.e. the smaller
+	// value.
 	if t0 > t1 {
 		t0, t1 = t1, t0
 	}

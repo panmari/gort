@@ -23,15 +23,17 @@ func (s *Sphere) GetIntersections(r *util.Ray) (float32, float32, bool) {
 }
 
 func (s *Sphere) Intersect(r *util.Ray) *util.Hitrecord {
-	t0, t1, hasSolution := s.GetIntersections(r)
-	if hasSolution {
-		if t0 > 0 {
-			return s.MakeHitrecord(t0, r)
-		}
-		if t1 > 0 {
-			return s.MakeHitrecord(t1, r)
-		}
+	t0, t1, ok := s.GetIntersections(r)
+	if !ok {
+		return nil
 	}
+	if t0 > 0 {
+		return s.MakeHitrecord(t0, r)
+	}
+	if t1 > 0 {
+		return s.MakeHitrecord(t1, r)
+	}
+	// Hits are behind camera.
 	return nil
 }
 
