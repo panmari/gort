@@ -11,23 +11,33 @@ import (
 func TestPlaneIntersection(t *testing.T) {
 	s := NewDiffusePlane(vec3.UnitX, 1)
 
-	parallelRay := util.Ray{vec3.Zero, vec3.UnitY}
-	if hit := s.Intersect(&parallelRay); hit != nil {
-		t.Errorf("s.Intersect(parallelRay): want nil, got %v", hit)
+	testCases := []struct {
+		name string
+		ray  util.Ray
+		wantHit bool
+	}{
+		{
+			name: "parallel ray",
+			ray:  util.Ray{vec3.Zero, vec3.UnitY},
+			wantHit: false,
+		},
+		{
+			name: "pointing away from plane ray",
+			ray:  util.Ray{vec3.Zero, vec3.UnitX},
+			wantHit: false,
+		},
+		{
+			name: "pointing towards plane ray",
+			ray:  util.Ray{vec3.Zero, vec3.T{-1, 0, 0}},
+			wantHit: true,
+		},
 	}
-
-	pointingAwayRay := util.Ray{vec3.Zero, vec3.UnitX}
-	if hit := s.Intersect(&pointingAwayRay); hit != nil {
-		t.Errorf("s.Intersect(pointingAwayRay): want nil, got %v", hit)
-	}
-
-	pointingTowardsRay := util.Ray{vec3.Zero, vec3.T{-1, 0, 0}}
-	hit := s.Intersect(&pointingTowardsRay)
-	if hit == nil {
-		t.Errorf("s.Intersect(pointingTowardsRay): want not nil, got %v", hit)
-	}
-	if hit.T != 1 {
-		t.Errorf("Ray pointing towards plane hits at strange T: %f", hit.T)
+	for _, tc := range testCases {
+	  got := s.Intersect(&tc.ray)
+		if gotHit := got != nil; gotHit != tc.wantHit {
+			t.Errorf("s.Intersect(%q), got %v, want %v", tc.name, got, tc.wantHit)
+		}
+		// TODO(panmari): Also check attributes of hitrecord.
 	}
 }
 
