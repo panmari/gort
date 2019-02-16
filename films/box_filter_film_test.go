@@ -3,44 +3,76 @@ package films
 import (
 	"github.com/panmari/gort/tonemappers"
 	"github.com/ungerik/go3d/vec3"
+	"image/color"
 	"testing"
 )
 
-func TestBoxFilterFilm(t *testing.T) {
+func TestBoxFilterFilmAddsDiagonalOfDifferentValues(t *testing.T) {
 	f := MakeBoxFilterFilm(100, 100, tonemappers.ClampToneMap)
 	f.AddSample(49, 49, &vec3.Red)
 	f.AddSample(50, 50, &vec3.Green)
 	f.AddSample(51, 51, &vec3.Blue)
-	// Y axis is inverted!
-	col := f.At(49, 99-49)
-	if R, _, _, _ := col.RGBA(); R != 65535 {
-		t.Errorf("Got wrong color of first pixel: ", R, col)
-	}
-	col = f.At(49, 99-49)
-	if R, _, _, _ := col.RGBA(); R != 65535 {
-		t.Errorf("Got wrong color of first pixel when polling second time: ", R, col)
-	}
-	col = f.At(50, 99-50)
-	if _, G, _, _ := col.RGBA(); G != 65535 {
-		t.Errorf("Got wrong color: ", G, col)
-	}
-	col = f.At(51, 99-51)
-	if _, _, B, _ := col.RGBA(); B != 65535 {
-		t.Errorf("Got wrong color: ", B, col)
-	}
-	col = f.At(52, 99-52)
-	if R, G, B, A := col.RGBA(); R != 0 || G != 0 || B != 0 || A != 65535 {
-		t.Errorf("Is not dark: ", R, G, B, A, col)
-	}
-	f.AddSample(51, 51, &vec3.T{0, 0, 1})
-	f.AddSample(51, 51, &vec3.T{0, 0, 1})
-	col = f.At(51, 99-51)
-	if _, _, B, _ := col.RGBA(); B != 65535 {
-		t.Errorf("Got wrong color after adding 3 samples: ", B, col)
+
+	testCases := []struct {
+		x int
+		// Y axis is inverted for reading out values.
+		y    int
+		want color.RGBA
+	}{
+		{
+			x:    49,
+			y:    99 - 49,
+			want: color.RGBA{255, 0, 0, 255},
+		},
+		{
+			x:    50,
+			y:    99 - 50,
+			want: color.RGBA{0, 255, 0, 255},
+		},
+		{
+			x:    51,
+			y:    99 - 51,
+			want: color.RGBA{0, 0, 255, 255},
+		},
+		{
+			x:    52,
+			y:    99 - 52,
+			want: color.RGBA{0, 0, 0, 255},
+		},
 	}
 
-	f.AddSample(50, 50, &vec3.T{0, 0, 0})
-	if _, G, _, _ := f.At(50, 99-50).RGBA(); G != 32639 {
-		t.Errorf("Got wrong color after adding 2 different samples: ", G, col)
+	for _, tc := range testCases {
+		if got := f.At(tc.x, tc.y); got != tc.want {
+			t.Errorf("Unexpected value at (%d, %d), got %v, want %v", tc.x, tc.y, got, tc.want)
+		}
+	}
+
+	f.AddSample(51, 51, &vec3.T{0, 0, 1})
+	f.AddSample(51, 51, &vec3.T{0, 0, 1})
+}
+
+func TestBoxFilterFilmSumsValuesFromMultipleSamples(t *testing.T) {
+	f := MakeBoxFilterFilm(1, 1, tonemappers.ClampToneMap)
+	f.AddSample(0, 0, &vec3.T{0, 0, 1})
+	f.AddSample(0, 0, &vec3.T{0, 0, 1})
+	f.AddSample(0, 0, &vec3.T{1, 0, 0})
+
+	testCases := []struct {
+		x int
+		// Y axis is inverted for reading out values.
+		y    int
+		want color.RGBA
+	}{
+		{
+			x:    0,
+			y:    0,
+			want: color.RGBA{1 * 255 / 3, 0, 2 * 255 / 3, 255},
+		},
+	}
+
+	for _, tc := range testCases {
+		if got := f.At(tc.x, tc.y); got != tc.want {
+			t.Errorf("Unexpected value at (%d, %d), got %v, want %v", tc.x, tc.y, got, tc.want)
+		}
 	}
 }
