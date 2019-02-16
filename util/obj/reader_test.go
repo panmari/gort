@@ -118,12 +118,12 @@ func TestNormalInterpolation(t *testing.T) {
 	o.InsertLine("v 170.897228 77.953877 -1.212034")
 	o.InsertLine("v 170.893054 198.184678 -0.928379")
 	o.InsertLine("v 173.441402 79.129056 -1.212072")
-	if len(o.Normals) != 0 {
-		t.Fatalf("Expected 0 normals before interpolating, but had", len(o.Normals))
+	if got := len(o.Normals); got != 0 {
+		t.Fatalf("Normals before interpolating: got %d, want 0", got)
 	}
 	o.interpolateNormals()
-	if len(o.Normals) != 3 {
-		t.Fatalf("Expected 3 normals, but had", len(o.Normals))
+	if got := len(o.Normals); got != 3 {
+		t.Fatalf("Normals after interpolating: got %d, want 3", got)
 	}
 	expected := &vec3.T{-0.0011047, 0.0023592, -0.9999966}
 	if n := o.Normals[0]; vec3.Distance(n, expected) > EPSILON {

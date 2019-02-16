@@ -15,7 +15,7 @@ import (
 // Reads the given obj file, centers it at origin and scales it by the given amount.
 func Read(fileName string, scale float32) *Data {
 	if scale <= 0 {
-		log.Fatal("Invalid scale factor %f for %s: must be >= 0", scale, fileName)
+		log.Fatalf("Invalid scale factor %f for %s: must be >= 0", scale, fileName)
 	}
 	data := Data{min: vec3.MaxVal, max: vec3.MinVal}
 	file, err := os.Open(fileName)
@@ -102,7 +102,7 @@ func (o *Data) InsertLine(line string) {
 		o.Faces = append(o.Faces, parseFaces(scanner)...)
 	default:
 		if len(strings.TrimSpace(line)) > 0 {
-			log.Printf("Unknown token (ignored): %s", line)
+			//log.Printf("Unknown token (ignored): %s", line)
 		}
 	}
 }
@@ -207,7 +207,7 @@ func parseId(scanner *bufio.Scanner) int {
 	}
 	id, err := strconv.Atoi(t)
 	if err != nil {
-		log.Print("Failed to parse %v", err)
+		log.Printf("Failed to parse %v", err)
 	}
 	// minus one bc one based counting system in obj
 	return id - 1
