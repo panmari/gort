@@ -1,39 +1,79 @@
 package csg
 
 import (
+	"math"
+	"testing"
+
 	"github.com/panmari/gort/intersectables"
 	"github.com/panmari/gort/util"
 	"github.com/ungerik/go3d/vec3"
-	"math"
-	"testing"
 )
 
 func TestPlaneIntersection(t *testing.T) {
 	s := NewDiffusePlane(vec3.UnitX, 1)
 
 	testCases := []struct {
-		name string
-		ray  util.Ray
+		name    string
+		ray     util.Ray
 		wantHit bool
 	}{
 		{
-			name: "parallel ray",
-			ray:  util.Ray{vec3.Zero, vec3.UnitY},
+			name:    "parallel ray",
+			ray:     util.Ray{vec3.Zero, vec3.UnitY},
 			wantHit: false,
 		},
 		{
-			name: "pointing away from plane ray",
-			ray:  util.Ray{vec3.Zero, vec3.UnitX},
+			name:    "pointing away from plane ray",
+			ray:     util.Ray{vec3.Zero, vec3.UnitX},
 			wantHit: false,
 		},
 		{
-			name: "pointing towards plane ray",
-			ray:  util.Ray{vec3.Zero, vec3.T{-1, 0, 0}},
+			name:    "pointing towards plane ray",
+			ray:     util.Ray{vec3.Zero, vec3.T{-1, 0, 0}},
+			wantHit: true,
+		},
+		{
+			// TODO(panmari): Might be a bug?
+			name:    "ray from behind plane",
+			ray:     util.Ray{vec3.T{-2, 0, 0}, vec3.T{1, 0, 0}},
+			wantHit: false,
+		},
+	}
+	for _, tc := range testCases {
+		got := s.Intersect(&tc.ray)
+		if gotHit := got != nil; gotHit != tc.wantHit {
+			t.Errorf("s.Intersect(%q), got %v, want %v", tc.name, got, tc.wantHit)
+		}
+		// TODO(panmari): Also check attributes of hitrecord.
+	}
+}
+
+func TestPlaneIntersectionInverse(t *testing.T) {
+	s := NewDiffusePlane(vec3.T{-1, 0, 0}, -2)
+
+	testCases := []struct {
+		name    string
+		ray     util.Ray
+		wantHit bool
+	}{
+		{
+			name:    "parallel ray",
+			ray:     util.Ray{vec3.Zero, vec3.UnitY},
+			wantHit: false,
+		},
+		{
+			name:    "pointing away from plane ray",
+			ray:     util.Ray{vec3.T{}, vec3.T{-1, 0, 0}},
+			wantHit: false,
+		},
+		{
+			name:    "pointing towards plane ray",
+			ray:     util.Ray{vec3.Zero, vec3.T{1, 0, 0}},
 			wantHit: true,
 		},
 	}
 	for _, tc := range testCases {
-	  got := s.Intersect(&tc.ray)
+		got := s.Intersect(&tc.ray)
 		if gotHit := got != nil; gotHit != tc.wantHit {
 			t.Errorf("s.Intersect(%q), got %v, want %v", tc.name, got, tc.wantHit)
 		}

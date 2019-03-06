@@ -1,9 +1,10 @@
 package csg
 
 import (
+	"testing"
+
 	"github.com/panmari/gort/util"
 	"github.com/ungerik/go3d/vec3"
-	"testing"
 )
 
 func TestNodeAdd(t *testing.T) {
@@ -12,49 +13,50 @@ func TestNodeAdd(t *testing.T) {
 	s := NewDiffuseSphere(vec3.Zero, 2)
 	n := NewNode(p, s, ADD)
 
-	parallelRay := util.Ray{vec3.T{0, 3, 0}, vec3.UnitY}
-	if hit := n.Intersect(&parallelRay); hit != nil {
-		t.Errorf("Parallel ray hit plane: %v", hit)
+	testCases := []struct {
+		name    string
+		ray     util.Ray
+		wantHit bool
+		wantT   float32
+	}{
+		{
+			name:    "parallel ray",
+			ray:     util.Ray{Origin: vec3.T{0, 3, 0}, Direction: vec3.UnitY},
+			wantHit: false,
+		},
+		{
+			name:    "parallel ray hitting sphere",
+			ray:     util.Ray{Origin: vec3.T{0, -3, 0}, Direction: vec3.UnitY},
+			wantHit: true,
+			wantT:   1,
+		},
+		{
+			name:    "pointing away ray inside sphere",
+			ray:     util.Ray{Origin: vec3.Zero, Direction: vec3.UnitX},
+			wantHit: true,
+			wantT:   2,
+		},
+		{
+			name:    "pointing towards plane ray",
+			ray:     util.Ray{Origin: vec3.T{4, 0, 0}, Direction: vec3.T{-1, 0, 0}},
+			wantHit: true,
+			wantT:   2,
+		},
+		{
+			name:    "pointing towards plane ray far from origin",
+			ray:     util.Ray{Origin: vec3.T{10, 10, 10}, Direction: vec3.T{-1, 0, 0}},
+			wantHit: true,
+			wantT:   11,
+		},
 	}
-
-	parallelRaySphereHit := util.Ray{vec3.T{0, -3, 0}, vec3.UnitY}
-	hitPar := n.Intersect(&parallelRaySphereHit)
-	if hitPar == nil {
-		t.Errorf("Does not hit added sphere: %v", hitPar)
-	}
-	if hitPar.T != 1 {
-		t.Errorf("Strange T for hit: %f", hitPar.T)
-	}
-	expected := vec3.T{0, -2, 0}
-	if hitPar.Position != expected {
-		t.Errorf("Strange hit Position for hit: %v", hitPar.Position)
-	}
-
-	pointingAwayRay := util.Ray{vec3.Zero, vec3.UnitX}
-	if hit := n.Intersect(&pointingAwayRay); hit == nil {
-		t.Errorf("Ray didn't hit inside of sphere: %v", hit)
-	}
-
-	pointingTowardsRay := util.Ray{vec3.T{4, 0, 0}, vec3.T{-1, 0, 0}}
-	hit := n.Intersect(&pointingTowardsRay)
-	if hit == nil {
-		t.Errorf("Ray pointing towards plane does not hit plane: %v", hit)
-	}
-	if hit.T != 2 {
-		t.Errorf("Ray doesnt hit sphere when shot from inside, T: %f", hit.T)
-	}
-
-	shouldHitPlane := util.Ray{vec3.T{10, 10, 10}, vec3.T{-1, 0, 0}}
-	hitPlane := n.Intersect(&shouldHitPlane)
-	if hitPlane == nil {
-		t.Errorf("ray does not hit plane: %v", hit)
-	}
-	if hitPlane.T != 11 {
-		t.Errorf("ray does not hit plane at correct T: %f", hitPlane.T)
-	}
-	expected = vec3.T{-1, 10, 10}
-	if hitPlane.Position != expected {
-		t.Errorf("ray does not hit plane at correct Position: %v", hitPlane.Position)
+	for _, tc := range testCases {
+		got := n.Intersect(&tc.ray)
+		if gotHit := got != nil; gotHit != tc.wantHit {
+			t.Errorf("n.Intersect(%q), got %v, want %v", tc.name, got, tc.wantHit)
+		}
+		if got != nil && got.T != tc.wantT {
+			t.Errorf("n.Intersect(%q) unexpeded T value, got %v, want %v", tc.name, got.T, tc.wantT)
+		}
 	}
 }
 
