@@ -13,7 +13,7 @@ This is a raytracing framework used for educational purposes. It was developed a
 
 ## Examples
 
-TODO(panmari): Dump images of example scenes.
+![CSG example scene](/output/test_scene_csg.png)
 
 ## Profiling
 
