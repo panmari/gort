@@ -1,6 +1,8 @@
 package util
 
 import (
+	"fmt"
+
 	"github.com/ungerik/go3d/vec3"
 )
 
@@ -13,6 +15,10 @@ type Hitrecord struct {
 	V             float32
 	Intersectable Intersectable
 	Material      Material
+}
+
+func (h *Hitrecord) String() string {
+	return fmt.Sprintf("Position: %v", h.Position)
 }
 
 type Intersectable interface {

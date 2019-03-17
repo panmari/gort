@@ -45,7 +45,7 @@ func (s *Sphere) MakeHitrecord(t float32, r *util.Ray) *util.Hitrecord {
 	normal := vec3.Sub(&hitPoint, &s.Center)
 	normal.Normalize()
 
-	//TODO: use a copy of this?
+	// Makes a copy.
 	wIn := r.Direction
 	wIn.Normalize().Invert()
 

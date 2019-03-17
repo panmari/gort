@@ -45,25 +45,41 @@ func TestSphereIntersection(t *testing.T) {
 }
 
 func TestPlaneIntersection(t *testing.T) {
-	parallelRay := util.Ray{vec3.Zero, vec3.UnitX}
-	s := MakeDiffusePlane(vec3.UnitX, 1)
+	s := NewPlane(vec3.UnitX, 1, materials.DiffuseDefault)
 
-	if hit := s.Intersect(&parallelRay); hit != nil {
-		t.Errorf("s.Intersect(paralelRay): wanted nil, got %v", hit)
+	testCases := []struct {
+		name    string
+		ray     util.Ray
+		wantHit bool
+	}{
+		{
+			name:    "parallel ray",
+			ray:     util.Ray{vec3.Zero, vec3.UnitY},
+			wantHit: false,
+		},
+		{
+			name:    "pointing away from plane ray",
+			ray:     util.Ray{vec3.Zero, vec3.UnitX},
+			wantHit: false,
+		},
+		{
+			name:    "pointing towards plane ray",
+			ray:     util.Ray{vec3.Zero, vec3.T{-1, 0, 0}},
+			wantHit: true,
+		},
+		{
+			name:    "ray from behind plane",
+			ray:     util.Ray{vec3.T{-2, 0, 0}, vec3.T{1, 0, 0}},
+			wantHit: true,
+		},
 	}
-
-	pointingAwayRay := util.Ray{vec3.Zero, vec3.UnitX}
-	if hit := s.Intersect(&pointingAwayRay); hit != nil {
-		t.Errorf("s.Intersect(pointingAwayRay): wanted nil, got %v", hit)
-	}
-
-	pointingTowardsRay := util.Ray{vec3.Zero, vec3.T{-1, 0, 0}}
-	hit := s.Intersect(&pointingTowardsRay)
-	if hit == nil {
-		t.Errorf("s.Intersect(pointingTowardsRay): got %v, wanted not nil", hit)
-	}
-	if hit.T != 1 {
-		t.Errorf("Ray pointing towards plane hits at strange T: %f", hit.T)
+	for _, tc := range testCases {
+		got := s.Intersect(&tc.ray)
+		if gotHit := got != nil; gotHit != tc.wantHit {
+			t.Errorf("s.Intersect(%q), got %v, want %v", tc.name, got, tc.wantHit)
+			t.Logf("Hitrecord: %v", got)
+		}
+		// TODO(panmari): Also check attributes of hitrecord.
 	}
 }
 
@@ -71,7 +87,7 @@ func BenchmarkPlaneIntersection(b *testing.B) {
 	pointingTowardsRay := util.Ray{vec3.Zero, vec3.T{-1, 0, 0}}
 	pointingAwayRay := util.Ray{vec3.Zero, vec3.UnitX}
 	parallelRay := util.Ray{vec3.Zero, vec3.UnitX}
-	s := MakeDiffusePlane(vec3.UnitX, 1)
+	s := NewPlane(vec3.UnitX, 1, materials.DiffuseDefault)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {

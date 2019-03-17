@@ -11,8 +11,7 @@ import (
 
 func TestSphereIntersection(t *testing.T) {
 	r := util.Ray{vec3.Zero, vec3.UnitX}
-	m := materials.MakeDiffuseMaterial(vec3.T{1, 1, 1})
-	s := NewSphere(vec3.Zero, 2, m)
+	s := NewSphere(vec3.Zero, 2, materials.DiffuseDefault)
 	hit := s.Intersect(&r)
 	expected := vec3.T{2, 0, 0}
 	if hit == nil {

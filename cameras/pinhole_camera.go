@@ -55,7 +55,8 @@ func (c *PinholeCamera) MakeWorldSpaceRay(i, j int, samples [2]float32) *util.Ra
 	// Transform it back to world coordinates
 	dTransformed := c.M.MulVec4(&d)
 	// Make ray consisting of origin and direction in world coordinates
-	dir := vec3.T{dTransformed[0], dTransformed[1], dTransformed[2]}
+
+	dir := dTransformed.Vec3()
 	dir.Sub(&c.Eye) //.Normalize()
 	return &util.Ray{c.Eye, dir}
 }

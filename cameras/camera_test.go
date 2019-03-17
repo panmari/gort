@@ -1,8 +1,9 @@
 package cameras
 
 import (
-	"github.com/ungerik/go3d/vec3"
 	"testing"
+
+	"github.com/ungerik/go3d/vec3"
 )
 
 func TestCameraRay(t *testing.T) {
@@ -10,7 +11,7 @@ func TestCameraRay(t *testing.T) {
 	lookAt := vec3.T{0, -5, 0}
 	up := vec3.T{0, 1, 0}
 	fov := float32(60.0)
-	var aspect float32 = 16.0 / 9.0
+	aspect := float32(16.0 / 9.0)
 	width := 640
 	height := 360
 	c := MakePinholeCamera(&eye, &lookAt, &up, fov, aspect, width, height)
