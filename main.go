@@ -3,24 +3,22 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/panmari/gort/renderer"
-	"github.com/panmari/gort/scenes"
 	"log"
 	"os"
-	"runtime"
 	"runtime/pprof"
 	"time"
+
+	"github.com/panmari/gort/renderer"
+	"github.com/panmari/gort/scenes"
 )
 
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
 var memprofile = flag.String("memprofile", "", "write memory profile to this file")
-var maxProcs = flag.Int("procs", runtime.NumCPU(), "set the number of processors to use")
 var startServer = flag.Bool("server", false, "Start in server mode")
 var startClient = flag.Bool("client", false, "Start in client mode")
 
 func main() {
 	flag.Parse()
-	runtime.GOMAXPROCS(*maxProcs)
 	if *startServer {
 		renderer.StartServer()
 		return
@@ -39,10 +37,10 @@ func main() {
 	//scene := scenes.NewTriangleTestScene()
 	//scene := scenes.NewDodecahedronScene()
 	//scene := scenes.NewBoxScene()
-	//scene := scenes.NewSimpleCSGScene()
+	scene := scenes.NewSimpleCSGScene()
 	//scene := scenes.NewInstancingTeapotsScene()
-	scene := scenes.NewObjReaderTestScene()
-	//scene := scenes.NewAcceleratorTestScene()
+	//scene := scenes.NewObjReaderTestScene()
+	// scene := scenes.NewAcceleratorTestScene()
 	//scene := scenes.NewMassiveAcceleratorTestScene()
 
 	if *startClient {
