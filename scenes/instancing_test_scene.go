@@ -21,8 +21,8 @@ func NewInstancingTestScene() Scene {
 	eye := vec3.T{0, 0, 3}
 	lookAt := vec3.T{0, 0, 0}
 	up := vec3.T{0, 1, 0}
-	var fov float32 = 60.0
-	var aspect float32 = float32(width) / float32(height)
+	fov := float32(60.0)
+	aspect := float32(width) / float32(height)
 	s.Camera = cameras.MakePinholeCamera(&eye, &lookAt, &up, fov, aspect, width, height)
 	s.SPP = 1
 	s.Sampler = samplers.NewOneSampler(s.SPP)

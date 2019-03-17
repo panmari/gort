@@ -9,7 +9,7 @@ func TestCameraRay(t *testing.T) {
 	eye := vec3.T{0, 0, 5}
 	lookAt := vec3.T{0, -5, 0}
 	up := vec3.T{0, 1, 0}
-	var fov float32 = 60.0
+	fov := float32(60.0)
 	var aspect float32 = 16.0 / 9.0
 	width := 640
 	height := 360
