@@ -46,11 +46,12 @@ func NewObjReaderTestScene() Scene {
 	heart := intersectables.NewMeshAggregate(dataHeart, materials.DiffuseDefault)
 
 	t1 := mat4.Ident
-	t1.Scale(0.5).SetTranslation(&vec3.T{0, -0.55, 0})
+	t1.Scale(0.7).SetTranslation(&vec3.T{0, -0.55, 0})
 	rotX := mat4.Zero
-	rotX.AssignXRotation(util.ToRadians(-90))
+	rotX.AssignYRotation(util.ToRadians(5))
 	t1.MultMatrix(&rotX)
-	dragonInst := intersectables.NewDiffuseInstance(accelerators.NewBSPAccelerator(dragon), t1)
+	goldMaterial := materials.NewBlinn(vec3.T{0.5, 0.2, 0.03}, vec3.T{0.3, 0.3, 0.3}, 55)
+	dragonInst := intersectables.NewInstance(accelerators.NewBSPAccelerator(dragon), t1, goldMaterial)
 
 	t2 := mat4.Ident
 	t2.Scale(0.3).SetTranslation(&vec3.T{0, 0.25, 0})
@@ -58,8 +59,8 @@ func NewObjReaderTestScene() Scene {
 	rot.AssignYRotation(util.ToRadians(90))
 	t2.MultMatrix(&rot)
 
-	heartInst := intersectables.NewDiffuseInstance(accelerators.NewBSPAccelerator(heart), t2)
-	heartInst.Material = materials.MakeDiffuseMaterial(vec3.T{0.5, 0.5, 0.5})
+	redMaterial := materials.NewBlinn(vec3.T{0.5, 0.1, 0.0}, vec3.T{0.2, 0.2, 0.01}, 100)
+	heartInst := intersectables.NewInstance(accelerators.NewBSPAccelerator(heart), t2, redMaterial)
 
 	list := intersectables.NewIntersectableList(6)
 	list.Add(p1, p2, p3, p4, p5, dragonInst, heartInst)
