@@ -21,7 +21,7 @@ This is a raytracing framework used for educational purposes. It was developed a
 
 To optimize code, you may want to profile it once in a while. This can be done using the performance test
 
-   go test -bench github.com/panmari/gort/...
+    go test -bench github.com/panmari/gort/...
  
 To do more in-depth analysis, also dump a profile:
 
