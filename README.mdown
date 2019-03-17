@@ -1,6 +1,8 @@
+[![Build Status](https://travis-ci.com/panmari/gort.svg?branch=master)](https://travis-ci.com/panmari/gort)
+
 # gort - A ray tracer in go
 
-This is a raytracing framework used for educational purposes. It was developed and tested with go 1.4.
+This is a raytracing framework used for educational purposes. It was developed and tested with go 1.11.
 
 ## Features
 
