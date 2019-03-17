@@ -6,6 +6,7 @@ import (
 	"github.com/panmari/gort/integrators"
 	"github.com/panmari/gort/intersectables"
 	"github.com/panmari/gort/intersectables/csg"
+	"github.com/panmari/gort/materials"
 	"github.com/panmari/gort/samplers"
 	"github.com/panmari/gort/tonemappers"
 	"github.com/ungerik/go3d/mat4"
@@ -28,7 +29,7 @@ func NewInstancingTestScene() Scene {
 	s.Film = films.MakeBoxFilterFilm(width, height, tonemappers.ClampToneMap)
 
 	list := intersectables.NewIntersectableList(2)
-	sphere := csg.NewDiffuseSphere(vec3.T{0, 0, 0}, 1.0)
+	sphere := csg.NewSphere(vec3.T{0, 0, 0}, 1.0, materials.DiffuseDefault)
 	//assemble the first instance
 	trans := mat4.Ident
 	trans.SetTranslation(&vec3.T{2, 0, 0})

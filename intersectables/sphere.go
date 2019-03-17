@@ -2,7 +2,6 @@ package intersectables
 
 import (
 	"github.com/barnex/fmath"
-	"github.com/panmari/gort/materials"
 	"github.com/panmari/gort/util"
 	"github.com/ungerik/go3d/vec3"
 )
@@ -10,7 +9,7 @@ import (
 type Sphere struct {
 	Center   vec3.T
 	Radius   float32
-	Material util.Material
+	material util.Material
 	Box      vec3.Box
 }
 
@@ -53,14 +52,14 @@ func (s *Sphere) MakeHitrecord(t float32, r *util.Ray) *util.Hitrecord {
 	u := 0.5 + fmath.Atan2(hitPoint[2], hitPoint[0])/(2*fmath.Pi)
 	v := 0.5 - fmath.Asin(hitPoint[1])/fmath.Pi
 
-	return &util.Hitrecord{t, hitPoint, normal, wIn, u, v, s, s.Material}
+	return &util.Hitrecord{t, hitPoint, normal, wIn, u, v, s, s.material}
 }
 
-func MakeDiffuseSphere(center vec3.T, radius float32) *Sphere {
+func NewSphere(center vec3.T, radius float32, m util.Material) *Sphere {
 	s := new(Sphere)
 	s.Center = center
 	s.Radius = radius
-	s.Material = materials.MakeDiffuseMaterial(vec3.T{1, 1, 1})
+	s.material = m
 	radiusVector := vec3.T{radius, radius, radius}
 	minBox := vec3.Sub(&center, &radiusVector)
 	maxBox := vec3.Add(&center, &radiusVector)

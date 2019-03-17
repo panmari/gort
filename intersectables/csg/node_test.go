@@ -3,14 +3,15 @@ package csg
 import (
 	"testing"
 
+	"github.com/panmari/gort/materials"
 	"github.com/panmari/gort/util"
 	"github.com/ungerik/go3d/vec3"
 )
 
 func TestNodeAdd(t *testing.T) {
 
-	p := NewDiffusePlane(vec3.UnitX, 1)
-	s := NewDiffuseSphere(vec3.Zero, 2)
+	p := NewPlane(vec3.UnitX, 1, materials.DiffuseDefault)
+	s := NewSphere(vec3.Zero, 2, materials.DiffuseDefault)
 	n := NewNode(p, s, ADD)
 
 	testCases := []struct {
@@ -61,8 +62,8 @@ func TestNodeAdd(t *testing.T) {
 }
 
 func TestNodeSubtract(t *testing.T) {
-	p := NewDiffusePlane(vec3.UnitX, 1)
-	s := NewDiffuseSphere(vec3.Zero, 2)
+	p := NewPlane(vec3.UnitX, 1, materials.DiffuseDefault)
+	s := NewSphere(vec3.Zero, 2, materials.DiffuseDefault)
 	n := NewNode(s, p, SUBTRACT)
 	r := util.Ray{vec3.T{4, 0, 0}, vec3.T{-1, 0, 0}}
 	ibs := n.GetIntervalBoundaries(&r)
@@ -90,9 +91,8 @@ func TestNodeSubtract(t *testing.T) {
 }
 
 func TestNodeIntersect(t *testing.T) {
-
-	p := NewDiffusePlane(vec3.UnitX, 1)
-	s := NewDiffuseSphere(vec3.Zero, 2)
+	p := NewPlane(vec3.UnitX, 1, materials.DiffuseDefault)
+	s := NewSphere(vec3.Zero, 2, materials.DiffuseDefault)
 	n := NewNode(s, p, INTERSECT)
 	r := util.Ray{vec3.T{4, 0, 0}, vec3.T{-1, 0, 0}}
 	ibs := n.GetIntervalBoundaries(&r)
@@ -120,8 +120,8 @@ func TestNodeIntersect(t *testing.T) {
 }
 
 func BenchmarkNodeIntersection(b *testing.B) {
-	p := NewDiffusePlane(vec3.UnitX, 1)
-	s := NewDiffuseSphere(vec3.Zero, 2)
+	p := NewPlane(vec3.UnitX, 1, materials.DiffuseDefault)
+	s := NewSphere(vec3.Zero, 2, materials.DiffuseDefault)
 	nInt := NewNode(s, p, INTERSECT)
 	nSub := NewNode(s, p, SUBTRACT)
 	nAdd := NewNode(s, p, ADD)

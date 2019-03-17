@@ -28,8 +28,8 @@ func (s *Sphere) BoundingBox() *vec3.Box {
 	return s.sphere.BoundingBox()
 }
 
-func NewDiffuseSphere(center vec3.T, radius float32) *Solid {
-	sphere := *intersectables.MakeDiffuseSphere(center, radius)
-	csg_sphere := Solid{&Sphere{sphere}}
-	return &csg_sphere
+func NewSphere(center vec3.T, radius float32, m util.Material) *Solid {
+	sphere := *intersectables.NewSphere(center, radius, m)
+	csgSphere := Solid{&Sphere{sphere}}
+	return &csgSphere
 }

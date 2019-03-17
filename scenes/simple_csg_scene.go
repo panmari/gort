@@ -7,6 +7,7 @@ import (
 	"github.com/panmari/gort/intersectables"
 	"github.com/panmari/gort/intersectables/csg"
 	"github.com/panmari/gort/lights"
+	"github.com/panmari/gort/materials"
 	"github.com/panmari/gort/samplers"
 	"github.com/panmari/gort/tonemappers"
 	"github.com/ungerik/go3d/vec3"
@@ -24,13 +25,14 @@ func NewSimpleCSGScene() Scene {
 	width := 640
 	height := 360
 	s.Camera = cameras.MakePinholeCamera(&eye, &lookAt, &up, fov, aspect, width, height)
-	// pass function to create new samplers
 	s.Sampler = samplers.NewRandomSampler(42, s.SPP)
-	//s := samplers.MakeOneSampler()
 	s.Film = films.MakeBoxFilterFilm(width, height, tonemappers.ClampToneMap)
 
+	redMaterial := materials.MakeDiffuseMaterial(vec3.T{1, 0, 0})
+	yellowMaterial := materials.MakeDiffuseMaterial(vec3.T{0, 1, 1})
+
 	list := intersectables.NewIntersectableList(2)
-	sphere := csg.NewDiffuseSphere(vec3.T{0, 0, 0}, 1.0)
+	sphere := csg.NewSphere(vec3.T{0, 0, 0}, 1.0, redMaterial)
 	cutNormal := vec3.T{0.3, .5, .1}
 	cutNormal.Normalize()
 	plane := csg.NewDiffusePlane(cutNormal, -.5)
@@ -39,12 +41,12 @@ func NewSimpleCSGScene() Scene {
 	plane2 := csg.NewDiffusePlane(cut2Normal, -.5)
 	node2 := csg.NewNode(node1, plane2, csg.INTERSECT)
 	list.Add(node2)
-	list.Add(intersectables.MakeDiffuseSphere(vec3.T{2, 1, 0}, 1.0))
-	sphere1 := csg.NewDiffuseSphere(vec3.T{-3, 0, 0}, 1.0)
-	sphere2 := csg.NewDiffuseSphere(vec3.T{-3, 1, 0}, 1.0)
+	list.Add(intersectables.NewSphere(vec3.T{2, 1, 0}, 1.0, yellowMaterial))
+	sphere1 := csg.NewSphere(vec3.T{-3, 0, 0}, 1.0, redMaterial)
+	sphere2 := csg.NewSphere(vec3.T{-3, 1, 0}, 1.0, redMaterial)
 	list.Add(csg.NewNode(sphere1, sphere2, csg.INTERSECT))
-	list.Add(intersectables.MakeDiffusePlane(vec3.T{0, 0, 1}, 4))
-	list.Add(intersectables.MakeDiffusePlane(vec3.T{0, 1, 0}, 2))
+	list.Add(intersectables.NewPlane(vec3.T{0, 0, 1}, 4, materials.DiffuseDefault))
+	list.Add(intersectables.NewPlane(vec3.T{0, 1, 0}, 2, materials.DiffuseDefault))
 	s.Root = intersectables.NewAggregate(list)
 
 	//s.Integrator := integrators.MakeDebugIntegrator(s.Root)

@@ -6,6 +6,7 @@ import (
 	"github.com/panmari/gort/integrators"
 	"github.com/panmari/gort/intersectables"
 	"github.com/panmari/gort/lights"
+	"github.com/panmari/gort/materials"
 	"github.com/panmari/gort/samplers"
 	"github.com/panmari/gort/tonemappers"
 	"github.com/ungerik/go3d/vec3"
@@ -26,9 +27,9 @@ func NewSimpleScene() Scene {
 	f := films.MakeBoxFilterFilm(width, height, tonemappers.ClampToneMap)
 
 	root := intersectables.NewIntersectableList(2)
-	root.Add(intersectables.MakeDiffuseSphere(vec3.T{0, 0, 0}, 1.0))
-	root.Add(intersectables.MakeDiffuseSphere(vec3.T{2, 1, 0}, 1.0))
-	root.Add(intersectables.MakeDiffuseSphere(vec3.T{-3, 0, 0}, 1.0))
+	root.Add(intersectables.NewSphere(vec3.T{0, 0, 0}, 1.0, materials.DiffuseDefault))
+	root.Add(intersectables.NewSphere(vec3.T{2, 1, 0}, 1.0, materials.DiffuseDefault))
+	root.Add(intersectables.NewSphere(vec3.T{-3, 0, 0}, 1.0, materials.DiffuseDefault))
 	root.Add(intersectables.MakeDiffusePlane(vec3.T{0, 0, 1}, 4))
 	root.Add(intersectables.MakeDiffusePlane(vec3.T{0, 1, 0}, 2))
 

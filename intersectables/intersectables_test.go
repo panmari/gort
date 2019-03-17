@@ -1,9 +1,11 @@
 package intersectables
 
 import (
+	"testing"
+
+	"github.com/panmari/gort/materials"
 	"github.com/panmari/gort/util"
 	"github.com/ungerik/go3d/vec3"
-	"testing"
 )
 
 func TestRayScaling(t *testing.T) {
@@ -31,7 +33,7 @@ func TestSolvingQuadraticFunction(t *testing.T) {
 
 func TestSphereIntersection(t *testing.T) {
 	r := util.Ray{vec3.Zero, vec3.UnitX}
-	s := MakeDiffuseSphere(vec3.Zero, 2)
+	s := NewSphere(vec3.Zero, 2, materials.DiffuseDefault)
 	hit := s.Intersect(&r)
 	expected := vec3.T{2, 0, 0}
 	if hit == nil {
@@ -83,7 +85,7 @@ func BenchmarkSphereIntersection(b *testing.B) {
 	pointingTowardsRay := util.Ray{vec3.Zero, vec3.T{-1, 0, 0}}
 	pointingAwayRay := util.Ray{vec3.Zero, vec3.UnitX}
 	parallelRay := util.Ray{vec3.Zero, vec3.UnitX}
-	s := MakeDiffuseSphere(vec3.UnitX, 1)
+	s := NewSphere(vec3.UnitX, 1, materials.DiffuseDefault)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
