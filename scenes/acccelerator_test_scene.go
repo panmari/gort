@@ -16,7 +16,7 @@ import (
 	"github.com/ungerik/go3d/vec3"
 )
 
-const USE_ACCELERATOR = true
+const useAccelerator = true
 
 func NewAcceleratorTestScene() Scene {
 	var s Scene
@@ -44,7 +44,7 @@ func NewAcceleratorTestScene() Scene {
 	dataHeart := obj.Read("obj/Heart.obj", 1)
 	heart := intersectables.NewMeshAggregate(dataHeart, materials.DiffuseDefault)
 	var heart2 util.Intersectable
-	if USE_ACCELERATOR {
+	if useAccelerator {
 		heart2 = accelerators.NewBSPAccelerator(heart)
 	} else {
 		heart2 = heart
