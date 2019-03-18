@@ -47,8 +47,10 @@ func NewSimpleCSGScene() Scene {
 	sphere2 := csg.NewSphere(vec3.T{-3, 1, 0}, 1.0, blueMaterial)
 	pill := csg.NewNode(sphere1, sphere2, csg.INTERSECT)
 	list.Add(pill)
-	list.Add(intersectables.NewPlane(vec3.T{0, 0, 1}, 4, materials.DiffuseDefault))
-	list.Add(intersectables.NewPlane(vec3.T{0, 1, 0}, 2, materials.DiffuseDefault))
+
+	gridMaterial := materials.NewGrid(materials.DiffuseDefault, materials.NewDiffuseMaterial(0.1, 0.1, 0.1), 0.9, 0.1)
+	list.Add(intersectables.NewPlane(vec3.T{0, 0, 1}, 4, gridMaterial))
+	list.Add(intersectables.NewPlane(vec3.T{0, 1, 0}, 2, gridMaterial))
 	s.Root = intersectables.NewAggregate(list)
 
 	//s.Integrator := integrators.MakeDebugIntegrator(s.Root)
