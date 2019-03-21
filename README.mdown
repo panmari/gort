@@ -1,8 +1,9 @@
 [![Build Status](https://travis-ci.com/panmari/gort.svg?branch=master)](https://travis-ci.com/panmari/gort)
 
-# gort - A *go* *r*ay*t*racer
+# gort 
 
-This is a raytracing framework used for educational purposes. It was developed and tested with go 1.11.
+A **go** **r**ay**t**racer writen for educational purposes. It was developed and tested with go 1.11 with a focus on
+performance.
 
 ## Features
 
