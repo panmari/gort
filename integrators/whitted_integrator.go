@@ -7,14 +7,32 @@ import (
 	"github.com/ungerik/go3d/vec3"
 )
 
-type PointLightIntegrator struct {
+const maxDepth = 10
+
+type WhittedIntegrator struct {
 	Root        util.Intersectable
 	PointLights []lights.LightGeometry
 }
 
-func (d *PointLightIntegrator) Integrate(r *util.Ray, _ int) *vec3.T {
+func (d *WhittedIntegrator) Integrate(ray *util.Ray, depth int) *vec3.T {
 	outgoing := vec3.T{}
-	if hit := d.Root.Intersect(r); hit != nil {
+	if hit := d.Root.Intersect(ray); hit != nil {
+		if depth < maxDepth {
+			reflected := vec3.Zero
+			refracted := vec3.Zero
+			s, hasReflection := hit.Material.EvaluateSpecularReflection(hit)
+			if hasReflection {
+				reflected = s.BRDF
+				recursiveRay := util.MakeEpsilonRay(&hit.Position, &s.W)
+				spec := d.Integrate(recursiveRay, depth+1)
+				reflected.Mul(spec)
+			}
+			// TODO: Refracted part.
+			hasRefraction := false
+			if hasReflection || hasRefraction {
+				return reflected.Add(&refracted)
+			}
+		}
 		for i := range d.PointLights {
 			lightHit := d.PointLights[i].Sample([2]float32{0, 0})
 			lightDir := vec3.Sub(&lightHit.Position, &hit.Position)
@@ -40,9 +58,6 @@ func (d *PointLightIntegrator) Integrate(r *util.Ray, _ int) *vec3.T {
 	return &outgoing
 }
 
-func MakePointLightIntegrator(root util.Intersectable, pointLights []lights.LightGeometry) *PointLightIntegrator {
-	integrator := new(PointLightIntegrator)
-	integrator.Root = root
-	integrator.PointLights = pointLights
-	return integrator
+func MakeWhittedIntegrator(root util.Intersectable, pointLights []lights.LightGeometry) *WhittedIntegrator {
+	return &WhittedIntegrator{Root: root, PointLights: pointLights}
 }

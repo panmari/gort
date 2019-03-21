@@ -52,7 +52,16 @@ func (s *Sphere) MakeHitrecord(t float32, r *util.Ray) *util.Hitrecord {
 	u := 0.5 + fmath.Atan2(hitPoint[2], hitPoint[0])/(2*fmath.Pi)
 	v := 0.5 - fmath.Asin(hitPoint[1])/fmath.Pi
 
-	return &util.Hitrecord{t, hitPoint, normal, wIn, u, v, s, s.material}
+	return &util.Hitrecord{
+		T:             t,
+		Position:      hitPoint,
+		Normal:        normal,
+		W_in:          wIn,
+		U:             u,
+		V:             v,
+		Intersectable: s,
+		Material:      s.material,
+	}
 }
 
 func NewSphere(center vec3.T, radius float32, m util.Material) *Sphere {

@@ -6,5 +6,5 @@ import (
 )
 
 type Integrator interface {
-	Integrate(r *util.Ray) *vec3.T
+	Integrate(r *util.Ray, depth int) *vec3.T
 }

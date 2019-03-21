@@ -2,6 +2,7 @@ package util
 
 import (
 	"github.com/barnex/fmath"
+	"github.com/ungerik/go3d/vec3"
 )
 
 // SolveQuadratic solves the quadratic equation
@@ -41,7 +42,16 @@ func ToRadians(degrees float32) float32 {
 func Min(a, b int) int {
 	if a < b {
 		return a
-	} else {
-		return b
 	}
+	return b
+}
+
+// Reflect returns a vector reflected along normal.
+// Assumes normal has size 1.
+func Reflect(normal, incoming *vec3.T) vec3.T {
+	dot := vec3.Dot(incoming, normal)
+	reflected := incoming.Inverted()
+	nScaled := normal.Scaled(2.0 * dot)
+	reflected.Add(&nScaled)
+	return reflected
 }

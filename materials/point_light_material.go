@@ -33,8 +33,8 @@ func (m *PointLightMaterial) HasSpecularRefraction() bool {
 	return false
 }
 
-func (m *PointLightMaterial) EvaluateSpecularReflection(hit *util.Hitrecord) vec3.T {
-	return vec3.T{}
+func (m *PointLightMaterial) EvaluateSpecularReflection(hit *util.Hitrecord) (util.ShadingSample, bool) {
+	return util.ShadingSample{}, false
 }
 
 func (m *PointLightMaterial) EvaluateBRDF(hit *util.Hitrecord, wOut, wIn *vec3.T) vec3.T {

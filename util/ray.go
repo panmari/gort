@@ -16,10 +16,7 @@ func (R *Ray) PointAt(t float32) vec3.T {
 }
 
 func MakeEpsilonRay(origin, direction *vec3.T) *Ray {
-	r := new(Ray)
 	epsilonOrig := direction.Scaled(0.0001)
 	epsilonOrig.Add(origin)
-	r.Origin = epsilonOrig
-	r.Direction = *direction
-	return r
+	return &Ray{Origin: epsilonOrig, Direction: *direction}
 }

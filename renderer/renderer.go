@@ -1,10 +1,11 @@
 package renderer
 
 import (
+	"sync"
+
 	"github.com/cheggaaa/pb"
 	"github.com/panmari/gort/scenes"
 	"github.com/panmari/gort/util"
-	"sync"
 )
 
 func StartRendering(scene *scenes.Scene, draw_bar bool) {
@@ -49,7 +50,7 @@ func renderWindow(scene scenes.Scene, left, right, bottom, top int, wg *sync.Wai
 			samples := sampler.Get2DSamples(scene.SPP)
 			for s := range samples {
 				ray := camera.MakeWorldSpaceRay(x, y, samples[s])
-				color := integrator.Integrate(ray)
+				color := integrator.Integrate(ray, 0)
 				film.AddSample(x, y, color)
 			}
 			bar.Increment()

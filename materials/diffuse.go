@@ -29,16 +29,8 @@ func (m *Diffuse) DoesCastShadows() bool {
 	return true
 }
 
-func (m *Diffuse) HasSpecularReflection() bool {
-	return false
-}
-
-func (m *Diffuse) HasSpecularRefraction() bool {
-	return false
-}
-
-func (m *Diffuse) EvaluateSpecularReflection(hit *util.Hitrecord) vec3.T {
-	return vec3.T{}
+func (m *Diffuse) EvaluateSpecularReflection(hit *util.Hitrecord) (util.ShadingSample, bool) {
+	return util.ShadingSample{}, false
 }
 
 func (m *Diffuse) EvaluateBRDF(hit *util.Hitrecord, wOut, wIn *vec3.T) vec3.T {

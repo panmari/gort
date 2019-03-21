@@ -17,6 +17,13 @@ type Hitrecord struct {
 	Material      Material
 }
 
+type ShadingSample struct {
+	BRDF vec3.T
+	// Sampled direction.
+	W           vec3.T
+	Probability float32
+}
+
 func (h *Hitrecord) String() string {
 	return fmt.Sprintf("Position: %v", h.Position)
 }
@@ -24,17 +31,4 @@ func (h *Hitrecord) String() string {
 type Intersectable interface {
 	Intersect(r *Ray) *Hitrecord
 	BoundingBox() *vec3.Box
-}
-
-type Material interface {
-	EvaluateEmission(hit *Hitrecord, wOut *vec3.T) vec3.T
-	GetEmissionSample(hit *Hitrecord, sample [2]float32) *vec3.T
-	GetShadingSample(hit *Hitrecord, sample [2]float32) *vec3.T
-	DoesCastShadows() bool
-	HasSpecularReflection() bool
-	HasSpecularRefraction() bool
-
-	// these pass a copy back
-	EvaluateSpecularReflection(hit *Hitrecord) vec3.T
-	EvaluateBRDF(hit *Hitrecord, wOut, wIn *vec3.T) vec3.T
 }

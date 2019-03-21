@@ -26,16 +26,8 @@ func (m *grid) DoesCastShadows() bool {
 	return true
 }
 
-func (m *grid) HasSpecularReflection() bool {
-	return false
-}
-
-func (m *grid) HasSpecularRefraction() bool {
-	return false
-}
-
-func (m *grid) EvaluateSpecularReflection(hit *util.Hitrecord) vec3.T {
-	return vec3.T{}
+func (m *grid) EvaluateSpecularReflection(hit *util.Hitrecord) (util.ShadingSample, bool) {
+	return util.ShadingSample{}, false
 }
 
 func (m *grid) EvaluateBRDF(hit *util.Hitrecord, wOut, wIn *vec3.T) vec3.T {

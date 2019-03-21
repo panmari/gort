@@ -28,16 +28,8 @@ func (m *blinn) DoesCastShadows() bool {
 	return true
 }
 
-func (m *blinn) HasSpecularReflection() bool {
-	return false
-}
-
-func (m *blinn) HasSpecularRefraction() bool {
-	return false
-}
-
-func (m *blinn) EvaluateSpecularReflection(hit *util.Hitrecord) vec3.T {
-	return vec3.Zero
+func (m *blinn) EvaluateSpecularReflection(hit *util.Hitrecord) (util.ShadingSample, bool) {
+	return util.ShadingSample{}, false
 }
 
 func (m *blinn) EvaluateBRDF(hit *util.Hitrecord, wOut, wIn *vec3.T) vec3.T {

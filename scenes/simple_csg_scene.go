@@ -31,8 +31,14 @@ func NewSimpleCSGScene() Scene {
 	redMaterial := materials.MakeDiffuseMaterial(vec3.T{1, 0, 0})
 	blueMaterial := materials.MakeDiffuseMaterial(vec3.T{0, 0, 1})
 	yellowMaterial := materials.MakeDiffuseMaterial(vec3.T{1, 1, 0})
+	reflectiveMaterial := materials.NewReflective(vec3.T{1, 1, 1})
 
 	list := intersectables.NewIntersectableList(2)
+	sphere1 := csg.NewSphere(vec3.T{-3, 0, 0}, 1.0, blueMaterial)
+	sphere2 := csg.NewSphere(vec3.T{-3, 1, 0}, 1.0, blueMaterial)
+	pill := csg.NewNode(sphere1, sphere2, csg.INTERSECT)
+	list.Add(pill)
+
 	sphere := csg.NewSphere(vec3.T{0, 0, 0}, 1.0, redMaterial)
 	cutNormal := vec3.T{0.3, .5, .1}
 	cutNormal.Normalize()
@@ -42,23 +48,20 @@ func NewSimpleCSGScene() Scene {
 	plane2 := csg.NewPlane(cut2Normal, -.5, redMaterial)
 	drum := csg.NewNode(node1, plane2, csg.INTERSECT)
 	list.Add(drum)
-	list.Add(intersectables.NewSphere(vec3.T{2, 1, 0}, 1.0, yellowMaterial))
-	sphere1 := csg.NewSphere(vec3.T{-3, 0, 0}, 1.0, blueMaterial)
-	sphere2 := csg.NewSphere(vec3.T{-3, 1, 0}, 1.0, blueMaterial)
-	pill := csg.NewNode(sphere1, sphere2, csg.INTERSECT)
-	list.Add(pill)
 
+	list.Add(intersectables.NewSphere(vec3.T{2.5, -0.1, 0}, 1.0, reflectiveMaterial))
+	list.Add(intersectables.NewSphere(vec3.T{2.6, -0.8, 2}, 0.5, yellowMaterial))
 	porcelanMaterial := materials.NewBlinn(vec3.T{0.5, 0.5, 0.5}, vec3.T{0.5, 0.6, 0.6}, 80)
-	gridMaterial := materials.NewGrid(porcelanMaterial, materials.NewDiffuseMaterial(1, 1, 1), 0.9, 0.1)
+	gridMaterial := materials.NewGrid(porcelanMaterial, materials.NewDiffuseMaterial(1, 1, 1), 0.95, 0.05)
 	list.Add(intersectables.NewPlane(vec3.T{0, 0, 1}, 4, gridMaterial))
 	list.Add(intersectables.NewPlane(vec3.T{0, 1, 0}, 2, gridMaterial))
 	s.Root = intersectables.NewAggregate(list)
 
-	//s.Integrator := integrators.MakeDebugIntegrator(s.Root)
+	// s.Integrator = integrators.MakeDebugIntegrator(s.Root)
 	l := make([]lights.LightGeometry, 0, 2)
 	l = append(l, lights.MakePointLight(vec3.T{0, 2, 0}, vec3.T{10, 10, 10}))
 	l = append(l, lights.MakePointLight(vec3.T{-3, 2, 0}, vec3.T{10, 10, 10}))
-	s.Integrator = integrators.MakePointLightIntegrator(s.Root, l)
+	s.Integrator = integrators.MakeWhittedIntegrator(s.Root, l)
 
 	return s
 }

@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.com/panmari/gort.svg?branch=master)](https://travis-ci.com/panmari/gort)
 
-# gort - A ray tracer in go
+# gort - A *go* *r*ay*t*racer
 
 This is a raytracing framework used for educational purposes. It was developed and tested with go 1.11.
 
@@ -8,7 +8,7 @@ This is a raytracing framework used for educational purposes. It was developed a
 
 * [CSG Objects](http://en.wikipedia.org/wiki/Constructive_solid_geometry)
 * Triangle meshes through the [.obj format](http://en.wikipedia.org/wiki/Wavefront_OBJ)
-* Diffuse materials (incoming support for: glossy, reflective, refractive etc.)
+* Diffuse materials (incoming support for: refractive)
 * Scenes are defined as go structs
 * Multithreaded with goroutines
 * Pointlight integrator (incoming support for whitted integrator, pathintegrator)
