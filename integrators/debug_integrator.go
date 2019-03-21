@@ -9,7 +9,7 @@ type DebugIntegrator struct {
 	root util.Intersectable
 }
 
-func (d *DebugIntegrator) Integrate(r *util.Ray) *vec3.T {
+func (d *DebugIntegrator) Integrate(r *util.Ray, _ int) *vec3.T {
 	if hit := d.root.Intersect(r); hit != nil {
 		return &vec3.T{1, 0, 0}
 	}
