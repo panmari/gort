@@ -3,16 +3,17 @@ package obj
 import (
 	"bufio"
 	"bytes"
-	"github.com/ungerik/go3d/vec2"
-	"github.com/ungerik/go3d/vec3"
 	"log"
 	"math"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/ungerik/go3d/vec2"
+	"github.com/ungerik/go3d/vec3"
 )
 
-// Reads the given obj file, centers it at origin and scales it by the given amount.
+// Read returns the given obj file as *obj.Data, centering it at origin and scaling it by the given amount.
 func Read(fileName string, scale float32) *Data {
 	if scale <= 0 {
 		log.Fatalf("Invalid scale factor %f for %s: must be >= 0", scale, fileName)
@@ -47,7 +48,7 @@ func Read(fileName string, scale float32) *Data {
 		v.Add(&trans).Scale(usedScale)
 	}
 
-	//manually compute normals with cross product if not available in obj
+	// Manually compute normals with cross product if not available in obj
 	if len(data.Normals) == 0 {
 		data.interpolateNormals()
 	}
@@ -158,7 +159,7 @@ func parseVec2(scanner *bufio.Scanner) (*vec2.T, error) {
 func parseFaces(scanner *bufio.Scanner) []Face {
 	faces := make([]Face, 0, 1)
 	counter := 0
-	var f Face
+	f := Face{}
 	for scanner.Scan() {
 		f.VertexIds[counter], f.TexCoordIds[counter], f.NormalIds[counter] = parseFacePoint(scanner.Bytes())
 		counter++
@@ -187,7 +188,7 @@ func parseFaces(scanner *bufio.Scanner) []Face {
 // also accepted is "vertex/texcoord" or "vertex//normal"
 func parseFacePoint(data []byte) (int, int, int) {
 	scanner := bufio.NewScanner(bytes.NewReader(data))
-	scanner.Split(ScanSlashes)
+	scanner.Split(scanSlashes)
 
 	vertex_id := parseId(scanner)
 	texCoord_id := parseId(scanner)
@@ -213,7 +214,7 @@ func parseId(scanner *bufio.Scanner) int {
 	return id - 1
 }
 
-func ScanSlashes(data []byte, atEOF bool) (advance int, token []byte, err error) {
+func scanSlashes(data []byte, atEOF bool) (advance int, token []byte, err error) {
 	if atEOF && len(data) == 0 {
 		return 0, nil, nil
 	}
