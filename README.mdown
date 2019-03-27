@@ -9,7 +9,7 @@ performance.
 
 * [CSG Objects](http://en.wikipedia.org/wiki/Constructive_solid_geometry)
 * Triangle meshes through the [.obj format](http://en.wikipedia.org/wiki/Wavefront_OBJ)
-* Diffuse materials (incoming support for: refractive)
+* Diffuse, Blinn and reflective materials (incoming support for: refractive)
 * Scenes are defined as go structs
 * Multithreaded with goroutines
 * Pointlight integrator (incoming support for whitted integrator, pathintegrator)
