@@ -2,25 +2,38 @@ package renderer
 
 import (
 	"sync"
+	"time"
 
+	"fyne.io/fyne"
+	"fyne.io/fyne/app"
+	"fyne.io/fyne/canvas"
 	"github.com/cheggaaa/pb"
+	"github.com/panmari/gort/films"
 	"github.com/panmari/gort/scenes"
 	"github.com/panmari/gort/util"
 )
 
-func StartRendering(scene *scenes.Scene, draw_bar bool) {
+func StartRendering(scene *scenes.Scene, enableProgressbar bool, enablePreviewWindow bool) {
 	if scene.Film.GetWidth() == 0 || scene.Film.GetHeight() == 0 || scene.SPP == 0 {
 		panic("Invalid settings detected in scene!")
 	}
 	const taskSize = 64
 
 	var bar util.AbstractProgressBar
-	if draw_bar {
+	if enableProgressbar {
 		pb := pb.StartNew(scene.Film.GetWidth() * scene.Film.GetHeight())
 		pb.ShowSpeed = true
 		bar = pb
 	} else {
 		bar = &util.DummyProgressBar{}
+	}
+	if enablePreviewWindow {
+		p := PreviewWindow{film: scene.Film}
+		go p.init()
+		go func() {
+			time.Sleep(1 * time.Second)
+			p.update()
+		}()
 	}
 
 	var wg sync.WaitGroup
@@ -34,6 +47,30 @@ func StartRendering(scene *scenes.Scene, draw_bar bool) {
 	}
 	wg.Wait()
 	bar.Finish()
+}
+
+type PreviewWindow struct {
+	film films.Film
+	w    fyne.Window
+	c    fyne.Canvas
+}
+
+func (pw *PreviewWindow) init() {
+	a := app.New()
+	w := a.NewWindow("Rendering...")
+	c := canvas.NewImageFromImage(pw.film)
+	c.SetMinSize(fyne.NewSize(pw.film.GetWidth(), pw.film.GetHeight()))
+
+	w.SetContent(c)
+	w.SetFixedSize(true)
+	go w.ShowAndRun()
+	pw.w = w
+}
+
+func (pw *PreviewWindow) update() {
+	c := canvas.NewImageFromImage(pw.film)
+	c.SetMinSize(fyne.NewSize(pw.film.GetWidth(), pw.film.GetHeight()))
+	pw.w.SetContent(c)
 }
 
 // renders a window of the given scene

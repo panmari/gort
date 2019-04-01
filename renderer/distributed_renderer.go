@@ -3,11 +3,12 @@ package renderer
 import (
 	"encoding/gob"
 	"fmt"
-	"github.com/panmari/gort/films"
-	"github.com/panmari/gort/scenes"
 	"log"
 	"net"
 	"time"
+
+	"github.com/panmari/gort/films"
+	"github.com/panmari/gort/scenes"
 )
 
 func handleConnection(conn net.Conn) {
@@ -22,7 +23,7 @@ func handleConnection(conn net.Conn) {
 	log.Println("Received scene ", s.Filename)
 	log.Println("Start rendering...")
 	start := time.Now()
-	StartRendering(s, false)
+	StartRendering(s, false, false)
 	duration := time.Since(start)
 	log.Println("Finished rendering in", duration.String())
 	encoder := gob.NewEncoder(conn)

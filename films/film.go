@@ -1,6 +1,9 @@
 package films
 
 import (
+	"image"
+	"image/color"
+
 	"github.com/ungerik/go3d/vec3"
 	"github.com/ungerik/go3d/vec4"
 )
@@ -17,4 +20,9 @@ type Film interface {
 	GetHeight() int
 	// GetToneMapper returns the function used for tone mapping each pixel.
 	GetTonemapper() func(*vec4.T)
+
+	// For satisfying image.Image interface.
+	At(x, y int) color.Color
+	Bounds() image.Rectangle
+	ColorModel() color.Model
 }
