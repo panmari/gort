@@ -1,6 +1,7 @@
 package renderer
 
 import (
+	"sort"
 	"sync"
 	"time"
 
@@ -11,6 +12,7 @@ import (
 	"github.com/panmari/gort/films"
 	"github.com/panmari/gort/scenes"
 	"github.com/panmari/gort/util"
+	"github.com/ungerik/go3d/vec2"
 )
 
 func StartRendering(scene *scenes.Scene, enableProgressbar bool, enablePreviewWindow bool) {
@@ -27,23 +29,40 @@ func StartRendering(scene *scenes.Scene, enableProgressbar bool, enablePreviewWi
 	} else {
 		bar = &util.DummyProgressBar{}
 	}
+
 	if enablePreviewWindow {
 		p := PreviewWindow{film: scene.Film}
-		go p.init()
+		p.init()
+		go p.w.ShowAndRun()
 		go func() {
-			time.Sleep(1 * time.Second)
-			p.update()
+			for {
+				time.Sleep(2 * time.Second)
+				p.update()
+			}
 		}()
 	}
 
-	var wg sync.WaitGroup
-	for x := 0; x < scene.Film.GetWidth(); x += taskSize {
-		for y := 0; y < scene.Film.GetHeight(); y += taskSize {
-			x_border := util.Min(x+taskSize, scene.Film.GetWidth())
-			y_border := util.Min(y+taskSize, scene.Film.GetHeight())
-			wg.Add(1)
-			go renderWindow(*scene, x, int(x_border), y, int(y_border), &wg, bar)
+	tasks := make([]task, 0) // TODO(panmari): Pre-allocate.
+	for x := 0; x < scene.Film.GetWidth(); x += tasksize {
+		for y := 0; y < scene.Film.GetHeight(); y += tasksize {
+			tasks = append(tasks, task{minX: x, minY: y})
 		}
+	}
+	sort.Slice(tasks, func(i, j int) bool {
+		center := &vec2.T{float32(scene.Film.GetWidth() / 2), float32(scene.Film.GetHeight() / 2)}
+		a := &vec2.T{float32(tasks[i].minX), float32(tasks[i].minY)}
+		b := &vec2.T{float32(tasks[j].minX), float32(tasks[j].minY)}
+		return a.Sub(center).LengthSqr() < b.Sub(center).LengthSqr()
+	})
+	var wg sync.WaitGroup
+	for _, t := range tasks {
+		maxX := util.Min(t.minX+tasksize, scene.Film.GetWidth())
+		maxY := util.Min(t.minY+tasksize, scene.Film.GetHeight())
+		wg.Add(1)
+		go renderWindow(*scene, t.minX, int(maxX), t.minY, int(maxY), &wg, bar)
+		// TODO(panmari): Instead of throttling submission of tasks here, make
+		// render windows block when preview window wants to update.
+		time.Sleep(100 * time.Millisecond)
 	}
 	wg.Wait()
 	bar.Finish()
@@ -58,19 +77,16 @@ type PreviewWindow struct {
 func (pw *PreviewWindow) init() {
 	a := app.New()
 	w := a.NewWindow("Rendering...")
+	w.SetFixedSize(true)
 	c := canvas.NewImageFromImage(pw.film)
 	c.SetMinSize(fyne.NewSize(pw.film.GetWidth(), pw.film.GetHeight()))
 
 	w.SetContent(c)
-	w.SetFixedSize(true)
-	go w.ShowAndRun()
 	pw.w = w
 }
 
 func (pw *PreviewWindow) update() {
-	c := canvas.NewImageFromImage(pw.film)
-	c.SetMinSize(fyne.NewSize(pw.film.GetWidth(), pw.film.GetHeight()))
-	pw.w.SetContent(c)
+	pw.w.Canvas().Refresh(pw.w.Content())
 }
 
 // renders a window of the given scene
@@ -82,6 +98,7 @@ func renderWindow(scene scenes.Scene, left, right, bottom, top int, wg *sync.Wai
 	camera := scene.Camera
 	integrator := scene.Integrator
 	film := scene.Film
+	// TODO(panmari): Change iteration order (every pixel 1 sample first) for preview to work better.
 	for x := left; x < right; x++ {
 		for y := bottom; y < top; y++ {
 			samples := sampler.Get2DSamples(scene.SPP)
