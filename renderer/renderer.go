@@ -1,6 +1,8 @@
 package renderer
 
 import (
+	"fmt"
+	"runtime"
 	"sort"
 	"sync"
 	"time"
@@ -62,7 +64,8 @@ func StartRendering(scene *scenes.Scene, enableProgressbar bool, enablePreviewWi
 		go renderWindow(*scene, t.minX, int(maxX), t.minY, int(maxY), &wg, bar)
 		// TODO(panmari): Instead of throttling submission of tasks here, make
 		// render windows block when preview window wants to update.
-		time.Sleep(100 * time.Millisecond)
+		runtime.Gosched()
+		time.Sleep(500 * time.Millisecond)
 	}
 	wg.Wait()
 	bar.Finish()
@@ -71,22 +74,26 @@ func StartRendering(scene *scenes.Scene, enableProgressbar bool, enablePreviewWi
 type PreviewWindow struct {
 	film films.Film
 	w    fyne.Window
-	c    fyne.Canvas
+	img  *canvas.Raster
 }
 
 func (pw *PreviewWindow) init() {
 	a := app.New()
 	w := a.NewWindow("Rendering...")
 	w.SetFixedSize(true)
-	c := canvas.NewImageFromImage(pw.film)
-	c.SetMinSize(fyne.NewSize(pw.film.GetWidth(), pw.film.GetHeight()))
+	img := canvas.NewRasterFromImage(pw.film)
+	// TODO(panmari): Window is not shown if img size is not set.
+	img.SetMinSize(fyne.NewSize(pw.film.GetWidth(), pw.film.GetHeight()))
 
-	w.SetContent(c)
+	w.SetContent(img)
 	pw.w = w
+	pw.img = img
 }
 
 func (pw *PreviewWindow) update() {
-	pw.w.Canvas().Refresh(pw.w.Content())
+	fmt.Println("Updating...")
+	canvas.Refresh(pw.img)
+	fmt.Println("Done")
 }
 
 // renders a window of the given scene
