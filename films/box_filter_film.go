@@ -1,12 +1,13 @@
 package films
 
 import (
-	"github.com/ungerik/go3d/vec3"
-	"github.com/ungerik/go3d/vec4"
 	"image"
 	"image/color"
 	"image/png"
 	"os"
+
+	"github.com/ungerik/go3d/vec3"
+	"github.com/ungerik/go3d/vec4"
 )
 
 type BoxFilterFilm struct {
@@ -31,6 +32,9 @@ func (i *BoxFilterFilm) At(x, y int) color.Color {
 	// invert y axis here
 	y = i.Height - y - 1
 	s := i.Film[y*i.Width+x]
+	if s[3] == 0 {
+		return color.RGBA{0, 0, 0, 255}
+	}
 	s.Scale(255.0 / s[3])
 	i.Tonemapper(&s)
 	return color.RGBA{uint8(s[0]), uint8(s[1]), uint8(s[2]), 255}
