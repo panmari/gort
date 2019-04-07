@@ -17,7 +17,5 @@ func (d *DebugIntegrator) Integrate(r *util.Ray, _ int) *vec3.T {
 }
 
 func MakeDebugIntegrator(root util.Intersectable) *DebugIntegrator {
-	integrator := new(DebugIntegrator)
-	integrator.root = root
-	return integrator
+	return &DebugIntegrator{root: root}
 }
