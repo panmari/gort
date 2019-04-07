@@ -12,7 +12,7 @@ func StartRendering(scene *scenes.Scene, draw_bar bool) {
 	if scene.Film.GetWidth() == 0 || scene.Film.GetHeight() == 0 || scene.SPP == 0 {
 		panic("Invalid settings detected in scene!")
 	}
-	tasksize := 64
+	const taskSize = 64
 
 	var bar util.AbstractProgressBar
 	if draw_bar {
@@ -24,10 +24,10 @@ func StartRendering(scene *scenes.Scene, draw_bar bool) {
 	}
 
 	var wg sync.WaitGroup
-	for x := 0; x < scene.Film.GetWidth(); x += tasksize {
-		for y := 0; y < scene.Film.GetHeight(); y += tasksize {
-			x_border := util.Min(x+tasksize, scene.Film.GetWidth())
-			y_border := util.Min(y+tasksize, scene.Film.GetHeight())
+	for x := 0; x < scene.Film.GetWidth(); x += taskSize {
+		for y := 0; y < scene.Film.GetHeight(); y += taskSize {
+			x_border := util.Min(x+taskSize, scene.Film.GetWidth())
+			y_border := util.Min(y+taskSize, scene.Film.GetHeight())
 			wg.Add(1)
 			go renderWindow(*scene, x, int(x_border), y, int(y_border), &wg, bar)
 		}
