@@ -1,10 +1,11 @@
 package films
 
 import (
-	"github.com/panmari/gort/tonemappers"
-	"github.com/ungerik/go3d/vec3"
 	"image/color"
 	"testing"
+
+	"github.com/panmari/gort/tonemappers"
+	"github.com/ungerik/go3d/vec3"
 )
 
 func TestBoxFilterFilmAddsDiagonalOfDifferentValues(t *testing.T) {
@@ -71,5 +72,21 @@ func TestBoxFilterFilmSumsValuesFromMultipleSamples(t *testing.T) {
 		if got := f.At(tc.x, tc.y); got != tc.want {
 			t.Errorf("Unexpected value at (%d, %d), got %v, want %v", tc.x, tc.y, got, tc.want)
 		}
+	}
+}
+
+func BenchmarkBoxFilterFilm(b *testing.B) {
+	f := MakeBoxFilterFilm(100, 100, tonemappers.ClampToneMap)
+	f.AddSample(49, 49, &vec3.Red)
+	f.AddSample(50, 50, &vec3.Green)
+	f.AddSample(51, 51, &vec3.Blue)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		f.At(99, 99)
+		f.At(30, 30)
+		f.At(50, 50)
+		f.At(12, 82)
+		f.At(33, 1)
 	}
 }
