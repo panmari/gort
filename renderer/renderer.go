@@ -2,7 +2,6 @@ package renderer
 
 import (
 	"fmt"
-	"runtime"
 	"sort"
 	"sync"
 	"time"
@@ -36,6 +35,7 @@ func StartRendering(scene *scenes.Scene, enableProgressbar bool, enablePreviewWi
 		p := PreviewWindow{film: scene.Film}
 		p.init()
 		go p.w.ShowAndRun()
+		// TODO(panmari): Move to render task, trigger update there.
 		go func() {
 			for {
 				time.Sleep(2 * time.Second)
@@ -45,8 +45,8 @@ func StartRendering(scene *scenes.Scene, enableProgressbar bool, enablePreviewWi
 	}
 
 	tasks := make([]task, 0) // TODO(panmari): Pre-allocate.
-	for x := 0; x < scene.Film.GetWidth(); x += tasksize {
-		for y := 0; y < scene.Film.GetHeight(); y += tasksize {
+	for x := 0; x < scene.Film.GetWidth(); x += taskSize {
+		for y := 0; y < scene.Film.GetHeight(); y += taskSize {
 			tasks = append(tasks, task{minX: x, minY: y})
 		}
 	}
@@ -58,17 +58,17 @@ func StartRendering(scene *scenes.Scene, enableProgressbar bool, enablePreviewWi
 	})
 	var wg sync.WaitGroup
 	for _, t := range tasks {
-		maxX := util.Min(t.minX+tasksize, scene.Film.GetWidth())
-		maxY := util.Min(t.minY+tasksize, scene.Film.GetHeight())
+		maxX := util.Min(t.minX+taskSize, scene.Film.GetWidth())
+		maxY := util.Min(t.minY+taskSize, scene.Film.GetHeight())
 		wg.Add(1)
 		go renderWindow(*scene, t.minX, int(maxX), t.minY, int(maxY), &wg, bar)
-		// TODO(panmari): Instead of throttling submission of tasks here, make
-		// render windows block when preview window wants to update.
-		runtime.Gosched()
-		time.Sleep(500 * time.Millisecond)
 	}
 	wg.Wait()
 	bar.Finish()
+}
+
+type task struct {
+	minX, minY int
 }
 
 type PreviewWindow struct {
