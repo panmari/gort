@@ -6,7 +6,7 @@ import (
 	"github.com/ungerik/go3d/vec3"
 )
 
-// This is actually not a type, since it only is a helper that intersects planes and nodes
+// NewDodecahedron returns a CSG object in the shape of a regular Dodecahedron with center at Origin and fits the unit cube.
 func NewDodecahedron() *Solid {
 	var planes [12]*Solid
 	m := materials.MakeDiffuseMaterial(vec3.Red)
