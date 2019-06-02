@@ -1,7 +1,6 @@
 package renderer
 
 import (
-	"fmt"
 	"sort"
 	"sync"
 	"time"
@@ -34,8 +33,7 @@ func StartRendering(scene *scenes.Scene, enableProgressbar bool, enablePreviewWi
 	if enablePreviewWindow {
 		p := PreviewWindow{film: scene.Film}
 		p.init()
-		go p.w.ShowAndRun()
-		// TODO(panmari): Move to render task, trigger update there.
+		p.w.Show()
 		go func() {
 			for {
 				time.Sleep(2 * time.Second)
@@ -44,7 +42,7 @@ func StartRendering(scene *scenes.Scene, enableProgressbar bool, enablePreviewWi
 		}()
 	}
 
-	tasks := make([]task, 0) // TODO(panmari): Pre-allocate.
+	tasks := make([]task, 0, scene.Film.GetWidth()*scene.Film.GetHeight()/(taskSize*taskSize)+1)
 	for x := 0; x < scene.Film.GetWidth(); x += taskSize {
 		for y := 0; y < scene.Film.GetHeight(); y += taskSize {
 			tasks = append(tasks, task{minX: x, minY: y})
@@ -62,6 +60,9 @@ func StartRendering(scene *scenes.Scene, enableProgressbar bool, enablePreviewWi
 		maxY := util.Min(t.minY+taskSize, scene.Film.GetHeight())
 		wg.Add(1)
 		go renderWindow(*scene, t.minX, int(maxX), t.minY, int(maxY), &wg, bar)
+	}
+	if enablePreviewWindow {
+		fyne.CurrentApp().Driver().Run()
 	}
 	wg.Wait()
 	bar.Finish()
@@ -91,9 +92,7 @@ func (pw *PreviewWindow) init() {
 }
 
 func (pw *PreviewWindow) update() {
-	fmt.Println("Updating...")
 	canvas.Refresh(pw.img)
-	fmt.Println("Done")
 }
 
 // renders a window of the given scene
