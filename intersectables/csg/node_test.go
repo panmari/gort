@@ -94,7 +94,7 @@ func TestNodeIntersect(t *testing.T) {
 	p := NewPlane(vec3.UnitX, 1, materials.DiffuseDefault)
 	s := NewSphere(vec3.Zero, 2, materials.DiffuseDefault)
 	n := NewNode(s, p, INTERSECT)
-	r := util.Ray{vec3.T{4, 0, 0}, vec3.T{-1, 0, 0}}
+	r := util.Ray{Origin: vec3.T{4, 0, 0}, Direction: vec3.T{-1, 0, 0}}
 	ibs := n.GetIntervalBoundaries(&r)
 
 	if len(ibs) < 2 {
@@ -116,6 +116,54 @@ func TestNodeIntersect(t *testing.T) {
 	}
 	if ibs[1].isStart {
 		t.Error("Second intersection is not exiting")
+	}
+}
+
+func TestInfinitePlaneIntersection(t *testing.T) {
+	p1 := NewDiffusePlane(vec3.T{1, 0, 0}, -1)
+	p2 := NewDiffusePlane(vec3.T{-1, 0, 0}, -1)
+
+	c := NewNode(p1, p2, INTERSECT)
+
+	testCases := []struct {
+		name    string
+		ray     util.Ray
+		wantHit bool
+	}{
+		{
+			name:    "ray from left",
+			ray:     util.Ray{Origin: vec3.T{-3, 0, 0}, Direction: vec3.T{1, 0, 0}},
+			wantHit: true,
+		},
+		{
+			name:    "ray from right",
+			ray:     util.Ray{Origin: vec3.T{3, 0, 0}, Direction: vec3.T{-1, 0, 0}},
+			wantHit: true,
+		},
+		{
+			name:    "ray from within parallel to planes",
+			ray:     util.Ray{Origin: vec3.T{0, 5, 0}, Direction: vec3.T{0, -1, 0}},
+			wantHit: false,
+		},
+		{
+			name:    "ray diagonal",
+			ray:     util.Ray{Origin: vec3.T{5, 5, 5}, Direction: vec3.T{-1, -1, -1}},
+			wantHit: true,
+		},
+		{
+			name:    "ray from within",
+			ray:     util.Ray{Origin: vec3.Zero, Direction: vec3.T{-1, 0, 0}},
+			wantHit: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		got := c.Intersect(&tc.ray)
+		// t.Log(tc.name, got)
+		if gotHit := got != nil; gotHit != tc.wantHit {
+			t.Errorf("s.Intersect(%q), got %v, want %v", tc.name, got, tc.wantHit)
+		}
+		// TODO(panmari): Also check attributes of hitrecord.
 	}
 }
 
