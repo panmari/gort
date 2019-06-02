@@ -2,9 +2,10 @@ package csg
 
 import (
 	"fmt"
+	"sort"
+
 	"github.com/panmari/gort/util"
 	"github.com/ungerik/go3d/vec3"
-	"sort"
 )
 
 type Node struct {
@@ -30,8 +31,7 @@ func (n *Node) GetIntervalBoundaries(r *util.Ray) ByT {
 	previousWasStart := false
 
 	cleanCount := 0
-	for i := range combined {
-		b := &combined[i]
+	for _, b := range combined {
 		if b.belongsToLeft {
 			inLeft = b.isStart
 		} else {
@@ -54,12 +54,12 @@ func (n *Node) GetIntervalBoundaries(r *util.Ray) ByT {
 		}
 		// remove start - start or end - end combinations by only adding good ones back
 		if previousWasStart != b.isStart {
-			combined[cleanCount] = *b
+			combined[cleanCount] = b
 			cleanCount++
 		}
 		previousWasStart = b.isStart
 	}
-	// only return 0..cleanCount entries, the others are garbage
+	// Only return 0..cleanCount entries, the others are garbage.
 	return combined[:cleanCount]
 }
 
