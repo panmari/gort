@@ -14,30 +14,25 @@ type Plane struct {
 }
 
 func (p *Plane) GetIntervalBoundaries(r *util.Ray) ByT {
-	boundaries := make(ByT, 0, 2)
 	if hit := p.plane.IntersectHelper(r, true); hit != nil {
 		b1 := IntervalBoundary{t: hit.T, hit: hit}
 		b2 := IntervalBoundary{}
 		if vec3.Dot(&p.plane.Normal, &r.Direction) < 0 {
+			// The ray is pointing towards the plane, so it will exit at infinity.
 			b1.isStart = true
 			b2.isStart = false
-			if hit.T > 0 {
-				b2.t = float32(math.Inf(1))
-			} else {
-				b2.t = float32(math.Inf(-1))
-			}
+			b2.t = float32(math.Inf(1))
 		} else {
+			// The ray is pointing away from the plane, so it entered at -infinity.
 			b1.isStart = false
 			b2.isStart = true
-			if hit.T > 0 {
-				b2.t = float32(math.Inf(-1))
-			} else {
-				b2.t = float32(math.Inf(1))
-			}
+			b2.t = float32(math.Inf(-1))
 		}
-		boundaries = append(boundaries, b1, b2)
+		return ByT{b1, b2}
+	} else {
+		// The ray is parallel to the plane. Check if it's fully contained.
 	}
-	return boundaries
+	return ByT{}
 }
 
 func (p *Plane) BoundingBox() *vec3.Box {

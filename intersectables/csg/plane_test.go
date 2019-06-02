@@ -4,7 +4,7 @@ import (
 	"math"
 	"testing"
 
-	"github.com/panmari/gort/intersectables"
+	"github.com/google/go-cmp/cmp"
 	"github.com/panmari/gort/materials"
 	"github.com/panmari/gort/util"
 	"github.com/ungerik/go3d/vec3"
@@ -83,16 +83,75 @@ func TestCSGPlaneIntersectionInverse(t *testing.T) {
 }
 
 func TestCSGPlaneGetIntervalboundaries(t *testing.T) {
-	r := util.Ray{vec3.Zero, vec3.T{-1, 0, 0}}
-	s := Plane{*intersectables.MakeDiffusePlane(vec3.UnitX, 1)}
-	ibs := s.GetIntervalBoundaries(&r)
-	if ibs[0].t != 1 {
-		t.Errorf("First intersection not correct: %f", ibs[0].t)
-	}
-	if ibs[1].t != float32(math.Inf(1)) {
-		t.Errorf("Second intersection not correct: %f", ibs[1].t)
+	s := NewPlane(vec3.UnitX, 0, materials.DiffuseDefault)
+
+	testCases := []struct {
+		name string
+		ray  util.Ray
+		want ByT
+	}{
+		{
+			name: "orthogonal ray starting on edge",
+			ray:  util.Ray{Origin: vec3.Zero, Direction: vec3.T{1, 0, 0}},
+			want: ByT{
+				{t: 0},
+				{t: float32(math.Inf(-1))},
+			},
+		},
+		{
+			name: "orthogonal ray starting inside",
+			ray:  util.Ray{Origin: vec3.T{-1, 0, 0}, Direction: vec3.T{1, 0, 0}},
+			want: ByT{
+				{t: 1},
+				{t: float32(math.Inf(-1))},
+			},
+		},
+		{
+			name: "orthogonal ray starting outside",
+			ray:  util.Ray{Origin: vec3.T{1, 0, 0}, Direction: vec3.T{1, 0, 0}},
+			want: ByT{
+				{t: -1},
+				{t: float32(math.Inf(-1))},
+			},
+		},
+		{
+			name: "orthogonal inverse ray starting on edge",
+			ray:  util.Ray{Origin: vec3.Zero, Direction: vec3.T{-1, 0, 0}},
+			want: ByT{
+				{t: 0},
+				{t: float32(math.Inf(1))},
+			},
+		},
+		// TODO(panmari): Needs fixing.
+		// {
+		// 	name: "parallel ray inside",
+		// 	ray:  util.Ray{Origin: vec3.Zero, Direction: vec3.T{0, 1, 0}},
+		// 	want: ByT{
+		// 		{t: float32(math.Inf(-1))},
+		// 		{t: float32(math.Inf(1))},
+		// 	},
+		// },
+		{
+			name: "parallel ray outside",
+			ray:  util.Ray{Origin: vec3.T{1, 0, 0}, Direction: vec3.T{0, 1, 0}},
+			want: ByT{},
+		},
 	}
 
+	trans := cmp.Transformer("ExtractTs", func(in ByT) []float32 {
+		out := make([]float32, 0, len(in))
+		for _, ib := range in {
+			out = append(out, ib.t)
+		}
+		return out
+	})
+	for _, tc := range testCases {
+		got := s.GetIntervalBoundaries(&tc.ray)
+
+		if diff := cmp.Diff(got, tc.want, trans); diff != "" {
+			t.Errorf("s.GetIntervalBoundaries(%q), got %v, want %v, diff %s", tc.name, got, tc.want, diff)
+		}
+	}
 }
 
 func BenchmarkCSGPlaneIntersection(b *testing.B) {
