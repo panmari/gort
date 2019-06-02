@@ -123,22 +123,25 @@ func TestInfinitePlaneIntersection(t *testing.T) {
 	p1 := NewDiffusePlane(vec3.T{1, 0, 0}, -1)
 	p2 := NewDiffusePlane(vec3.T{-1, 0, 0}, -1)
 
-	c := NewNode(p1, p2, INTERSECT)
+	n := NewNode(p1, p2, INTERSECT)
 
 	testCases := []struct {
 		name    string
 		ray     util.Ray
 		wantHit bool
+		wantT   float32
 	}{
 		{
 			name:    "ray from left",
 			ray:     util.Ray{Origin: vec3.T{-3, 0, 0}, Direction: vec3.T{1, 0, 0}},
 			wantHit: true,
+			wantT:   2,
 		},
 		{
 			name:    "ray from right",
 			ray:     util.Ray{Origin: vec3.T{3, 0, 0}, Direction: vec3.T{-1, 0, 0}},
 			wantHit: true,
+			wantT:   2,
 		},
 		{
 			name:    "ray from within parallel to planes",
@@ -149,21 +152,24 @@ func TestInfinitePlaneIntersection(t *testing.T) {
 			name:    "ray diagonal",
 			ray:     util.Ray{Origin: vec3.T{5, 5, 5}, Direction: vec3.T{-1, -1, -1}},
 			wantHit: true,
+			wantT:   4,
 		},
 		{
 			name:    "ray from within",
 			ray:     util.Ray{Origin: vec3.Zero, Direction: vec3.T{-1, 0, 0}},
 			wantHit: true,
+			wantT:   1,
 		},
 	}
 
 	for _, tc := range testCases {
-		got := c.Intersect(&tc.ray)
-		// t.Log(tc.name, got)
+		got := n.Intersect(&tc.ray)
 		if gotHit := got != nil; gotHit != tc.wantHit {
-			t.Errorf("s.Intersect(%q), got %v, want %v", tc.name, got, tc.wantHit)
+			t.Errorf("n.Intersect(%q), got %v, want %v", tc.name, got, tc.wantHit)
 		}
-		// TODO(panmari): Also check attributes of hitrecord.
+		if got != nil && got.T != tc.wantT {
+			t.Errorf("n.Intersect(%q) unexpeded T value, got %v, want %v", tc.name, got.T, tc.wantT)
+		}
 	}
 }
 
