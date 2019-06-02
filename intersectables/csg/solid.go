@@ -2,12 +2,15 @@ package csg
 
 import (
 	"fmt"
+
 	"github.com/panmari/gort/util"
 	"github.com/ungerik/go3d/vec3"
 )
 
 type Shape interface {
+	// GetIntervalBoundaries returns ALL intersections of a ray with Shape.
 	GetIntervalBoundaries(r *util.Ray) ByT
+	// BoundingBox returns a bounding box encompassing Shape.
 	BoundingBox() *vec3.Box
 }
 
@@ -49,7 +52,7 @@ func (i *IntervalBoundary) String() string {
 	return fmt.Sprintf("At %f, %s, %s", i.t, startEnd, belonging)
 }
 
-// A slice of interval boundaries that is sortable by the T of their hitpoints
+// ByT is a slice of interval boundaries that is sortable by the T of their hitpoints
 type ByT []IntervalBoundary
 
 func (a ByT) Len() int           { return len(a) }
