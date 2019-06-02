@@ -1,11 +1,12 @@
 package csg
 
 import (
+	"math"
+
 	"github.com/panmari/gort/intersectables"
 	"github.com/panmari/gort/materials"
 	"github.com/panmari/gort/util"
 	"github.com/ungerik/go3d/vec3"
-	"math"
 )
 
 type Plane struct {
@@ -43,12 +44,13 @@ func (p *Plane) BoundingBox() *vec3.Box {
 	return p.plane.BoundingBox()
 }
 
-func NewDiffusePlane(normal vec3.T, dist float32) *Solid {
-	return NewPlane(normal, dist, materials.DiffuseDefault)
-}
-
+// NewPlane creates a new plane with the given normal and the given distance to origin (measured along normal).
 func NewPlane(normal vec3.T, dist float32, m util.Material) *Solid {
 	plane := *intersectables.NewPlane(normal, dist, m)
-	csg_plane := Solid{&Plane{plane}}
-	return &csg_plane
+	return &Solid{&Plane{plane}}
+}
+
+// NewDiffusePlane a plane the same way as NewPlane, with a default diffuse material.
+func NewDiffusePlane(normal vec3.T, dist float32) *Solid {
+	return NewPlane(normal, dist, materials.DiffuseDefault)
 }

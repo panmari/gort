@@ -54,7 +54,7 @@ func NewPlane(normal vec3.T, distanceOrigin float32, m util.Material) *Plane {
 	return p
 }
 
-// Same as above but with default diffuse material.
+// Same as NewPlane, but with default diffuse material.
 func MakeDiffusePlane(normal vec3.T, distanceOrigin float32) *Plane {
 	return NewPlane(normal, distanceOrigin, materials.DiffuseDefault)
 }

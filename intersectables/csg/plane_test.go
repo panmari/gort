@@ -10,7 +10,7 @@ import (
 	"github.com/ungerik/go3d/vec3"
 )
 
-func TestPlaneIntersection(t *testing.T) {
+func TestCSGPlaneIntersection(t *testing.T) {
 	s := NewPlane(vec3.UnitX, 1, materials.DiffuseDefault)
 
 	testCases := []struct {
@@ -34,6 +34,7 @@ func TestPlaneIntersection(t *testing.T) {
 			wantHit: true,
 		},
 		{
+
 			name:    "ray from behind plane",
 			ray:     util.Ray{vec3.T{-2, 0, 0}, vec3.T{1, 0, 0}},
 			wantHit: true,
@@ -43,13 +44,12 @@ func TestPlaneIntersection(t *testing.T) {
 		got := s.Intersect(&tc.ray)
 		if gotHit := got != nil; gotHit != tc.wantHit {
 			t.Errorf("s.Intersect(%q), got %v, want %v", tc.name, got, tc.wantHit)
-			t.Logf("Hitrecord: %v", got)
 		}
 		// TODO(panmari): Also check attributes of hitrecord.
 	}
 }
 
-func TestPlaneIntersectionInverse(t *testing.T) {
+func TestCSGPlaneIntersectionInverse(t *testing.T) {
 	s := NewPlane(vec3.T{-1, 0, 0}, 2, materials.DiffuseDefault)
 
 	testCases := []struct {
@@ -82,7 +82,7 @@ func TestPlaneIntersectionInverse(t *testing.T) {
 	}
 }
 
-func TestPlaneGetIntervalboundaries(t *testing.T) {
+func TestCSGPlaneGetIntervalboundaries(t *testing.T) {
 	r := util.Ray{vec3.Zero, vec3.T{-1, 0, 0}}
 	s := Plane{*intersectables.MakeDiffusePlane(vec3.UnitX, 1)}
 	ibs := s.GetIntervalBoundaries(&r)
@@ -95,7 +95,7 @@ func TestPlaneGetIntervalboundaries(t *testing.T) {
 
 }
 
-func BenchmarkPlaneIntersection(b *testing.B) {
+func BenchmarkCSGPlaneIntersection(b *testing.B) {
 	pointingTowardsRay := util.Ray{vec3.Zero, vec3.T{-1, 0, 0}}
 	pointingAwayRay := util.Ray{vec3.Zero, vec3.UnitX}
 	parallelRay := util.Ray{vec3.Zero, vec3.UnitX}

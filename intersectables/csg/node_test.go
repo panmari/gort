@@ -8,8 +8,7 @@ import (
 	"github.com/ungerik/go3d/vec3"
 )
 
-func TestNodeAdd(t *testing.T) {
-
+func TestCSGNodeAdd(t *testing.T) {
 	p := NewPlane(vec3.UnitX, 1, materials.DiffuseDefault)
 	s := NewSphere(vec3.Zero, 2, materials.DiffuseDefault)
 	n := NewNode(p, s, ADD)
@@ -61,7 +60,7 @@ func TestNodeAdd(t *testing.T) {
 	}
 }
 
-func TestNodeSubtract(t *testing.T) {
+func TestCSGNodeSubtract(t *testing.T) {
 	p := NewPlane(vec3.UnitX, 1, materials.DiffuseDefault)
 	s := NewSphere(vec3.Zero, 2, materials.DiffuseDefault)
 	n := NewNode(s, p, SUBTRACT)
@@ -90,7 +89,7 @@ func TestNodeSubtract(t *testing.T) {
 	}
 }
 
-func TestNodeIntersect(t *testing.T) {
+func TestCSGNodeIntersect(t *testing.T) {
 	p := NewPlane(vec3.UnitX, 1, materials.DiffuseDefault)
 	s := NewSphere(vec3.Zero, 2, materials.DiffuseDefault)
 	n := NewNode(s, p, INTERSECT)
@@ -119,9 +118,9 @@ func TestNodeIntersect(t *testing.T) {
 	}
 }
 
-func TestInfinitePlaneIntersection(t *testing.T) {
-	p1 := NewDiffusePlane(vec3.T{1, 0, 0}, -1)
-	p2 := NewDiffusePlane(vec3.T{-1, 0, 0}, -1)
+func TestTwoInfiniteCSGPlaneIntersection(t *testing.T) {
+	p1 := NewPlane(vec3.T{1, 0, 0}, -1, materials.DiffuseDefault)
+	p2 := NewPlane(vec3.T{-1, 0, 0}, -1, materials.DiffuseDefault)
 
 	n := NewNode(p1, p2, INTERSECT)
 
@@ -173,7 +172,63 @@ func TestInfinitePlaneIntersection(t *testing.T) {
 	}
 }
 
-func BenchmarkNodeIntersection(b *testing.B) {
+func TestThreeInfiniteCSGPlaneIntersection(t *testing.T) {
+	p1 := NewPlane(vec3.T{1, 0, 0}, -1, materials.DiffuseDefault)
+	p2 := NewPlane(vec3.T{-1, 0, 0}, -1, materials.DiffuseDefault)
+
+	nTmp := NewNode(p1, p2, INTERSECT)
+	p3 := NewPlane(vec3.T{0, 1, 0}, 1, materials.DiffuseDefault)
+	n := NewNode(p3, nTmp, INTERSECT)
+
+	testCases := []struct {
+		name    string
+		ray     util.Ray
+		wantHit bool
+		wantT   float32
+	}{
+		{
+			name:    "ray from left",
+			ray:     util.Ray{Origin: vec3.T{-3, 0, 0}, Direction: vec3.T{1, 0, 0}},
+			wantHit: true,
+			wantT:   2,
+		},
+		{
+			name:    "ray from right",
+			ray:     util.Ray{Origin: vec3.T{3, 0, 0}, Direction: vec3.T{-1, 0, 0}},
+			wantHit: true,
+			wantT:   2,
+		},
+		{
+			name:    "ray from within parallel to planes",
+			ray:     util.Ray{Origin: vec3.T{0, 5, 0}, Direction: vec3.T{0, -1, 0}},
+			wantHit: false,
+		},
+		{
+			name:    "ray diagonal",
+			ray:     util.Ray{Origin: vec3.T{5, 5, 5}, Direction: vec3.T{-1, -1, -1}},
+			wantHit: true,
+			wantT:   4,
+		},
+		{
+			name:    "ray from within",
+			ray:     util.Ray{Origin: vec3.Zero, Direction: vec3.T{-1, 0, 0}},
+			wantHit: true,
+			wantT:   1,
+		},
+	}
+
+	for _, tc := range testCases {
+		got := n.Intersect(&tc.ray)
+		if gotHit := got != nil; gotHit != tc.wantHit {
+			t.Errorf("n.Intersect(%q), got %v, want %v", tc.name, got, tc.wantHit)
+		}
+		if got != nil && got.T != tc.wantT {
+			t.Errorf("n.Intersect(%q) unexpeded T value, got %v, want %v", tc.name, got.T, tc.wantT)
+		}
+	}
+}
+
+func BenchmarkCSGNodeIntersection(b *testing.B) {
 	p := NewPlane(vec3.UnitX, 1, materials.DiffuseDefault)
 	s := NewSphere(vec3.Zero, 2, materials.DiffuseDefault)
 	nInt := NewNode(s, p, INTERSECT)
