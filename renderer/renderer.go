@@ -1,6 +1,7 @@
 package renderer
 
 import (
+	"runtime"
 	"sort"
 	"sync"
 	"time"
@@ -15,11 +16,12 @@ import (
 	"github.com/ungerik/go3d/vec2"
 )
 
+const taskSize = 64
+
 func StartRendering(scene *scenes.Scene, enableProgressbar bool, enablePreviewWindow bool) {
 	if scene.Film.GetWidth() == 0 || scene.Film.GetHeight() == 0 || scene.SPP == 0 {
 		panic("Invalid settings detected in scene!")
 	}
-	const taskSize = 64
 
 	var bar util.AbstractProgressBar
 	if enableProgressbar {
@@ -45,7 +47,7 @@ func StartRendering(scene *scenes.Scene, enableProgressbar bool, enablePreviewWi
 	tasks := make([]task, 0, scene.Film.GetWidth()*scene.Film.GetHeight()/(taskSize*taskSize)+1)
 	for x := 0; x < scene.Film.GetWidth(); x += taskSize {
 		for y := 0; y < scene.Film.GetHeight(); y += taskSize {
-			tasks = append(tasks, task{minX: x, minY: y})
+			tasks = append(tasks, task{scene: scene, minX: x, minY: y})
 		}
 	}
 	sort.Slice(tasks, func(i, j int) bool {
@@ -55,11 +57,15 @@ func StartRendering(scene *scenes.Scene, enableProgressbar bool, enablePreviewWi
 		return a.Sub(center).LengthSqr() < b.Sub(center).LengthSqr()
 	})
 	var wg sync.WaitGroup
+	wg.Add(len(tasks))
+	taskChan := make(chan task, 128)
+
+	for w := 0; w < runtime.NumCPU(); w++ {
+		go worker(taskChan, &wg, bar)
+	}
+
 	for _, t := range tasks {
-		maxX := util.Min(t.minX+taskSize, scene.Film.GetWidth())
-		maxY := util.Min(t.minY+taskSize, scene.Film.GetHeight())
-		wg.Add(1)
-		go renderWindow(*scene, t.minX, int(maxX), t.minY, int(maxY), &wg, bar)
+		taskChan <- t
 	}
 	if enablePreviewWindow {
 		fyne.CurrentApp().Driver().Run()
@@ -68,7 +74,16 @@ func StartRendering(scene *scenes.Scene, enableProgressbar bool, enablePreviewWi
 	bar.Finish()
 }
 
+func worker(taskChan <-chan task, wg *sync.WaitGroup, bar util.AbstractProgressBar) {
+	for t := range taskChan {
+		maxX := util.Min(t.minX+taskSize, t.scene.Film.GetWidth())
+		maxY := util.Min(t.minY+taskSize, t.scene.Film.GetHeight())
+		renderWindow(t.scene, t.minX, int(maxX), t.minY, int(maxY), wg, bar)
+	}
+}
+
 type task struct {
+	scene      *scenes.Scene
 	minX, minY int
 }
 
@@ -96,7 +111,7 @@ func (pw *PreviewWindow) update() {
 }
 
 // renders a window of the given scene
-func renderWindow(scene scenes.Scene, left, right, bottom, top int, wg *sync.WaitGroup, bar util.AbstractProgressBar) {
+func renderWindow(scene *scenes.Scene, left, right, bottom, top int, wg *sync.WaitGroup, bar util.AbstractProgressBar) {
 	defer wg.Done()
 	seed := int64(left*scene.Film.GetWidth() + top)
 	// Makes a copy of the sampler
@@ -119,7 +134,7 @@ func renderWindow(scene scenes.Scene, left, right, bottom, top int, wg *sync.Wai
 }
 
 // mainly used for debugging
-func RenderPixel(scene scenes.Scene, x, y int) {
+func RenderPixel(scene *scenes.Scene, x, y int) {
 	var wg sync.WaitGroup
 	wg.Add(1)
 	bar := &util.DummyProgressBar{}

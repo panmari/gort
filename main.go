@@ -47,7 +47,7 @@ func main() {
 		renderer.RenderOnServer(&scene)
 	} else {
 		start := time.Now()
-		renderer.StartRendering(&scene, true, true)
+		renderer.StartRendering(&scene, true, false)
 		//renderer.RenderPixel(scene, 300, 300)
 
 		duration := time.Since(start)
