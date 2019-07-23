@@ -18,7 +18,7 @@ import (
 
 const taskSize = 64
 
-func StartRendering(scene *scenes.Scene, enableProgressbar bool, enablePreviewWindow bool) {
+func StartRendering(scene *scenes.Scene, enableProgressbar bool, previewUpdateInterval time.Duration) {
 	if scene.Film.GetWidth() == 0 || scene.Film.GetHeight() == 0 || scene.SPP == 0 {
 		panic("Invalid settings detected in scene!")
 	}
@@ -32,13 +32,13 @@ func StartRendering(scene *scenes.Scene, enableProgressbar bool, enablePreviewWi
 		bar = &util.DummyProgressBar{}
 	}
 
-	if enablePreviewWindow {
+	if previewUpdateInterval > 0*time.Second {
 		p := PreviewWindow{film: scene.Film}
 		p.init()
 		p.w.Show()
 		go func() {
 			for {
-				time.Sleep(2 * time.Second)
+				time.Sleep(previewUpdateInterval)
 				p.update()
 			}
 		}()
@@ -67,7 +67,8 @@ func StartRendering(scene *scenes.Scene, enableProgressbar bool, enablePreviewWi
 	for _, t := range tasks {
 		taskChan <- t
 	}
-	if enablePreviewWindow {
+	if previewUpdateInterval > 0*time.Second {
+		// TODO: Blocking on window closing should happen in main, not here.
 		fyne.CurrentApp().Driver().Run()
 	}
 	wg.Wait()

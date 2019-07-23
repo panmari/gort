@@ -16,6 +16,8 @@ var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
 var memprofile = flag.String("memprofile", "", "write memory profile to this file")
 var startServer = flag.Bool("server", false, "Start in server mode")
 var startClient = flag.Bool("client", false, "Start in client mode")
+var progressBar = flag.Bool("progress_bar", true, "If true, shows a progress bar")
+var previewUpdateInterval = flag.Duration("preview_update_interval", 0*time.Second, "If non 0, shows a preview window that updates in the given interval. E.g. 2s")
 
 func main() {
 	flag.Parse()
@@ -47,7 +49,7 @@ func main() {
 		renderer.RenderOnServer(&scene)
 	} else {
 		start := time.Now()
-		renderer.StartRendering(&scene, true, false)
+		renderer.StartRendering(&scene, *progressBar, *previewUpdateInterval)
 		//renderer.RenderPixel(scene, 300, 300)
 
 		duration := time.Since(start)
