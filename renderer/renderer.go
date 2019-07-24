@@ -7,10 +7,8 @@ import (
 	"time"
 
 	"fyne.io/fyne"
-	"fyne.io/fyne/app"
-	"fyne.io/fyne/canvas"
 	"github.com/cheggaaa/pb"
-	"github.com/panmari/gort/films"
+	"github.com/panmari/gort/gui"
 	"github.com/panmari/gort/scenes"
 	"github.com/panmari/gort/util"
 	"github.com/ungerik/go3d/vec2"
@@ -33,13 +31,11 @@ func StartRendering(scene *scenes.Scene, enableProgressbar bool, previewUpdateIn
 	}
 
 	if previewUpdateInterval > 0*time.Second {
-		p := PreviewWindow{film: scene.Film}
-		p.init()
-		p.w.Show()
+		p := gui.Create(scene.Film)
 		go func() {
 			for {
 				time.Sleep(previewUpdateInterval)
-				p.update()
+				p.Update()
 			}
 		}()
 	}
@@ -50,6 +46,7 @@ func StartRendering(scene *scenes.Scene, enableProgressbar bool, previewUpdateIn
 			tasks = append(tasks, task{scene: scene, minX: x, minY: y})
 		}
 	}
+	// Re-order tasks so the center of the image is rendered first.
 	sort.Slice(tasks, func(i, j int) bool {
 		center := &vec2.T{float32(scene.Film.GetWidth() / 2), float32(scene.Film.GetHeight() / 2)}
 		a := &vec2.T{float32(tasks[i].minX), float32(tasks[i].minY)}
@@ -92,28 +89,6 @@ func worker(taskChan <-chan task, wg *sync.WaitGroup, bar util.AbstractProgressB
 type task struct {
 	scene      *scenes.Scene
 	minX, minY int
-}
-
-type PreviewWindow struct {
-	film films.Film
-	w    fyne.Window
-	img  *canvas.Raster
-}
-
-func (pw *PreviewWindow) init() {
-	a := app.New()
-	w := a.NewWindow("Rendering...")
-	w.SetFixedSize(true)
-	img := canvas.NewRasterFromImage(pw.film)
-	// TODO(panmari): Window is not shown if img size is not set.
-	img.SetMinSize(fyne.NewSize(pw.film.GetWidth(), pw.film.GetHeight()))
-	w.SetContent(img)
-	pw.w = w
-	pw.img = img
-}
-
-func (pw *PreviewWindow) update() {
-	canvas.Refresh(pw.img)
 }
 
 // renderWindow renders all pixels in the rectangle ((left, bottom), (top, right)) of the given scene.
