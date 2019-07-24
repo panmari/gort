@@ -82,7 +82,8 @@ func worker(taskChan <-chan task, wg *sync.WaitGroup, bar util.AbstractProgressB
 	for t := range taskChan {
 		maxX := util.Min(t.minX+taskSize, t.scene.Film.GetWidth())
 		maxY := util.Min(t.minY+taskSize, t.scene.Film.GetHeight())
-		renderWindow(t.scene, t.minX, int(maxX), t.minY, int(maxY), wg, bar)
+		renderWindow(t.scene, t.minX, int(maxX), t.minY, int(maxY), bar)
+		wg.Done()
 	}
 }
 
@@ -92,8 +93,7 @@ type task struct {
 }
 
 // renderWindow renders all pixels in the rectangle ((left, bottom), (top, right)) of the given scene.
-func renderWindow(scene *scenes.Scene, left, right, bottom, top int, wg *sync.WaitGroup, bar util.AbstractProgressBar) {
-	defer wg.Done()
+func renderWindow(scene *scenes.Scene, left, right, bottom, top int, bar util.AbstractProgressBar) {
 	seed := int64(left*scene.Film.GetWidth() + top)
 	// Sampler might have internal state, so make a copy here.
 	sampler := scene.Sampler.DuplicateAndSeed(seed, scene.SPP)
