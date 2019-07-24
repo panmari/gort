@@ -67,10 +67,16 @@ func StartRendering(scene *scenes.Scene, enableProgressbar bool, previewUpdateIn
 	for _, t := range tasks {
 		taskChan <- t
 	}
+	// Either block on rendering finishing or the UI closing.
 	if previewUpdateInterval > 0*time.Second {
-		// TODO: Blocking on window closing should happen in main, not here.
+		go blockOnRendering(&wg, bar)
 		fyne.CurrentApp().Driver().Run()
+	} else {
+		blockOnRendering(&wg, bar)
 	}
+}
+
+func blockOnRendering(wg *sync.WaitGroup, bar util.AbstractProgressBar) {
 	wg.Wait()
 	bar.Finish()
 }
@@ -101,7 +107,6 @@ func (pw *PreviewWindow) init() {
 	img := canvas.NewRasterFromImage(pw.film)
 	// TODO(panmari): Window is not shown if img size is not set.
 	img.SetMinSize(fyne.NewSize(pw.film.GetWidth(), pw.film.GetHeight()))
-
 	w.SetContent(img)
 	pw.w = w
 	pw.img = img
@@ -111,11 +116,11 @@ func (pw *PreviewWindow) update() {
 	canvas.Refresh(pw.img)
 }
 
-// renders a window of the given scene
+// renderWindow renders all pixels in the rectangle ((left, bottom), (top, right)) of the given scene.
 func renderWindow(scene *scenes.Scene, left, right, bottom, top int, wg *sync.WaitGroup, bar util.AbstractProgressBar) {
 	defer wg.Done()
 	seed := int64(left*scene.Film.GetWidth() + top)
-	// Makes a copy of the sampler
+	// Sampler might have internal state, so make a copy here.
 	sampler := scene.Sampler.DuplicateAndSeed(seed, scene.SPP)
 	camera := scene.Camera
 	integrator := scene.Integrator
@@ -134,7 +139,7 @@ func renderWindow(scene *scenes.Scene, left, right, bottom, top int, wg *sync.Wa
 	}
 }
 
-// mainly used for debugging
+// RenderPixel renders only one single pixel at (x, y). Useful for debugging.
 func RenderPixel(scene *scenes.Scene, x, y int) {
 	var wg sync.WaitGroup
 	wg.Add(1)
