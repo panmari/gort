@@ -2,3 +2,9 @@ language: go
 go:
 - 1.11.x
 - master
+
+addons:
+  apt:
+    packages:
+      - libgl1-mesa-dev
+      - xorg-dev
