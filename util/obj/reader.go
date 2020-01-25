@@ -7,7 +7,6 @@ import (
 	"math"
 	"os"
 	"strconv"
-	"strings"
 
 	"github.com/ungerik/go3d/vec2"
 	"github.com/ungerik/go3d/vec3"
@@ -192,16 +191,15 @@ func parseFacePoint(data []byte) (int, int, int) {
 
 	vertex_id := parseId(scanner)
 	texCoord_id := parseId(scanner)
-	normal_id := -1
-	if strings.Count(string(data), "/") == 2 {
-		normal_id = parseId(scanner)
-	}
+	normal_id := parseId(scanner)
 
 	return vertex_id, texCoord_id, normal_id
 }
 
 func parseId(scanner *bufio.Scanner) int {
-	scanner.Scan()
+	if !scanner.Scan() {
+		return -1
+	}
 	t := scanner.Text()
 	if t == "" {
 		return -1
