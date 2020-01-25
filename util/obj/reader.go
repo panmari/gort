@@ -28,7 +28,7 @@ func Read(fileName string, scale float32) *Data {
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		data.InsertLine(scanner.Text())
+		data.InsertLine(scanner.Bytes())
 	}
 	if scanner.Err() != nil {
 		panic(scanner.Err())
@@ -71,8 +71,8 @@ type Data struct {
 	max          vec3.T
 }
 
-func (o *Data) InsertLine(line string) {
-	scanner := bufio.NewScanner(strings.NewReader(line))
+func (o *Data) InsertLine(line []byte) {
+	scanner := bufio.NewScanner(bytes.NewReader(line))
 	scanner.Split(bufio.ScanWords)
 	scanner.Scan()
 	switch scanner.Text() {
@@ -102,7 +102,7 @@ func (o *Data) InsertLine(line string) {
 	case "f":
 		o.Faces = append(o.Faces, parseFaces(scanner)...)
 	default:
-		if len(strings.TrimSpace(line)) > 0 {
+		if len(line) > 0 {
 			//log.Printf("Unknown token (ignored): %s", line)
 		}
 	}
