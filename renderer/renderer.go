@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"fyne.io/fyne"
-	"github.com/cheggaaa/pb"
+	"github.com/cheggaaa/pb/v3"
 	"github.com/panmari/gort/gui"
 	"github.com/panmari/gort/scenes"
 	"github.com/panmari/gort/util"
@@ -24,7 +24,6 @@ func StartRendering(scene *scenes.Scene, enableProgressbar bool, previewUpdateIn
 	var bar util.AbstractProgressBar
 	if enableProgressbar {
 		pb := pb.StartNew(scene.Film.GetWidth() * scene.Film.GetHeight())
-		pb.ShowSpeed = true
 		bar = pb
 	} else {
 		bar = &util.DummyProgressBar{}

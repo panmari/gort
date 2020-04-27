@@ -1,11 +1,14 @@
 package util
 
+import "github.com/cheggaaa/pb/v3"
+
 type AbstractProgressBar interface {
-	Finish()
-	Increment() int
+	Finish() *pb.ProgressBar
+	Increment() *pb.ProgressBar
 }
 
+// DummyProgressBar does nothing.
 type DummyProgressBar struct{}
 
-func (pb *DummyProgressBar) Finish()        {}
-func (pb *DummyProgressBar) Increment() int { return 0 }
+func (pb *DummyProgressBar) Finish() *pb.ProgressBar    { return nil }
+func (pb *DummyProgressBar) Increment() *pb.ProgressBar { return nil }
