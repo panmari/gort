@@ -6,9 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"fyne.io/fyne"
 	"github.com/cheggaaa/pb/v3"
-	"github.com/panmari/gort/gui"
 	"github.com/panmari/gort/scenes"
 	"github.com/panmari/gort/util"
 	"github.com/ungerik/go3d/vec2"
@@ -16,29 +14,52 @@ import (
 
 const taskSize = 64
 
-func StartRendering(scene *scenes.Scene, enableProgressbar bool, previewUpdateInterval time.Duration) {
+type Handle struct {
+	started, finished time.Time
+	tasks             []task
+	taskChan          chan task
+	wg                sync.WaitGroup
+
+	bar util.AbstractProgressBar
+}
+
+func (h *Handle) Start() {
+	h.started = time.Now()
+	h.wg.Add(len(h.tasks))
+	for w := 0; w < runtime.NumCPU(); w++ {
+		go worker(h.taskChan, &h.wg, h.bar)
+	}
+	for _, t := range h.tasks {
+		h.taskChan <- t
+	}
+}
+
+func (h *Handle) Wait() time.Duration {
+	h.wg.Wait()
+	h.bar.Finish()
+	h.finished = time.Now()
+	return h.finished.Sub(h.started)
+}
+
+func StartRendering(scene *scenes.Scene, enableProgressbar bool) *Handle {
 	if scene.Film.GetWidth() == 0 || scene.Film.GetHeight() == 0 || scene.SPP == 0 {
 		panic("Invalid settings detected in scene!")
 	}
+	handle := &Handle{
+		started:  time.Now(),
+		taskChan: make(chan task, 128),
+		bar:      &util.DummyProgressBar{},
+	}
 
-	var bar util.AbstractProgressBar
 	if enableProgressbar {
-		pb := pb.StartNew(scene.Film.GetWidth() * scene.Film.GetHeight())
-		bar = pb
-	} else {
-		bar = &util.DummyProgressBar{}
+		handle.bar = pb.StartNew(scene.Film.GetWidth() * scene.Film.GetHeight())
 	}
 
-	if previewUpdateInterval > 0*time.Second {
-		p := gui.Create(scene.Film)
-		go func() {
-			for {
-				time.Sleep(previewUpdateInterval)
-				p.Update()
-			}
-		}()
-	}
+	handle.tasks = createTasks(scene)
+	return handle
+}
 
+func createTasks(scene *scenes.Scene) []task {
 	tasks := make([]task, 0, scene.Film.GetWidth()*scene.Film.GetHeight()/(taskSize*taskSize)+1)
 	for x := 0; x < scene.Film.GetWidth(); x += taskSize {
 		for y := 0; y < scene.Film.GetHeight(); y += taskSize {
@@ -52,29 +73,7 @@ func StartRendering(scene *scenes.Scene, enableProgressbar bool, previewUpdateIn
 		b := &vec2.T{float32(tasks[j].minX), float32(tasks[j].minY)}
 		return a.Sub(center).LengthSqr() < b.Sub(center).LengthSqr()
 	})
-	var wg sync.WaitGroup
-	wg.Add(len(tasks))
-	taskChan := make(chan task, 128)
-
-	for w := 0; w < runtime.NumCPU(); w++ {
-		go worker(taskChan, &wg, bar)
-	}
-
-	for _, t := range tasks {
-		taskChan <- t
-	}
-	// Either block on rendering finishing or the UI closing.
-	if previewUpdateInterval > 0*time.Second {
-		go blockOnRendering(&wg, bar)
-		fyne.CurrentApp().Driver().Run()
-	} else {
-		blockOnRendering(&wg, bar)
-	}
-}
-
-func blockOnRendering(wg *sync.WaitGroup, bar util.AbstractProgressBar) {
-	wg.Wait()
-	bar.Finish()
+	return tasks
 }
 
 func worker(taskChan <-chan task, wg *sync.WaitGroup, bar util.AbstractProgressBar) {

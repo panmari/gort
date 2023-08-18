@@ -8,6 +8,8 @@ import (
 	"runtime/pprof"
 	"time"
 
+	"fyne.io/fyne"
+	"github.com/panmari/gort/gui"
 	"github.com/panmari/gort/renderer"
 	"github.com/panmari/gort/scenes"
 )
@@ -47,23 +49,34 @@ func main() {
 
 	if *startClient {
 		renderer.RenderOnServer(&scene)
-	} else {
-		start := time.Now()
-		renderer.StartRendering(&scene, *progressBar, *previewUpdateInterval)
-		//renderer.RenderPixel(scene, 300, 300)
+		return
+	}
+	handle := renderer.StartRendering(&scene, *progressBar)
+	handle.Start()
 
-		duration := time.Since(start)
-		fmt.Printf("Render time: %s\n", duration.String())
-		scene.Film.WriteToPng(scene.Filename)
-		fmt.Printf("Wrote result to to %s\n", scene.Filename)
-		if *memprofile != "" {
-			f, err := os.Create(*memprofile)
-			if err != nil {
-				log.Fatal(err)
+	if *previewUpdateInterval > 0*time.Second {
+		p := gui.Create(scene.Film)
+		go func() {
+			for {
+				time.Sleep(*previewUpdateInterval)
+				p.Update()
 			}
-			pprof.WriteHeapProfile(f)
-			f.Close()
-			return
+		}()
+		fyne.CurrentApp().Driver().Run()
+	}
+	//renderer.RenderPixel(scene, 300, 300)
+
+	renderTime := handle.Wait()
+	fmt.Printf("Render time: %s\n", renderTime)
+	scene.Film.WriteToPng(scene.Filename)
+	fmt.Printf("Wrote result to to %s\n", scene.Filename)
+	if *memprofile != "" {
+		f, err := os.Create(*memprofile)
+		if err != nil {
+			log.Fatal(err)
 		}
+		pprof.WriteHeapProfile(f)
+		f.Close()
+		return
 	}
 }
