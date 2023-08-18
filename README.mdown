@@ -24,14 +24,14 @@ performance.
 To optimize code, you may want to profile it once in a while. This can be done using the performance test
 
     go test -bench github.com/panmari/gort/...
- 
+
 To do more in-depth analysis, also dump a profile:
 
     go test -bench -cpuprofile cpu.out -short github.com/panmari/gort/renderer
-    
+
 The CPU profile can then be analyzed using
 
     go tool pprof renderer.test cpu.out
-    
+
 And then typing e.g. `web` for getting an overview or the name of a method to see details. Most performance impacting
 packages have performance tests of some sort; to run them just replace `renderer/` with the package you want to test. 
