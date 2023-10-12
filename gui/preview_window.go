@@ -5,8 +5,8 @@ package gui
 import (
 	"github.com/panmari/gort/films"
 
-	"fyne.io/fyne"
-	"fyne.io/fyne/canvas"
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/canvas"
 )
 
 type previewWindow struct {

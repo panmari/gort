@@ -8,7 +8,7 @@ import (
 	"runtime/pprof"
 	"time"
 
-	"fyne.io/fyne"
+	"fyne.io/fyne/v2"
 	"github.com/panmari/gort/gui"
 	"github.com/panmari/gort/renderer"
 	"github.com/panmari/gort/scenes"

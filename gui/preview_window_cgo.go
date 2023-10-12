@@ -4,9 +4,9 @@
 package gui
 
 import (
-	"fyne.io/fyne"
-	"fyne.io/fyne/app"
-	"fyne.io/fyne/canvas"
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/canvas"
 	"github.com/panmari/gort/films"
 )
 
@@ -21,7 +21,7 @@ func Create(film films.Film) *previewWindow {
 	img := canvas.NewRasterFromImage(pw.film)
 	// TODO(panmari): Window is not shown if img size is not set.
 	// TODO(panmari): GUI-scaling in gnome/wayland isn't taken properly into account here.
-	img.SetMinSize(fyne.NewSize(pw.film.GetWidth(), pw.film.GetHeight()))
+	img.SetMinSize(fyne.NewSize(float32(pw.film.GetWidth()), float32(pw.film.GetHeight())))
 	w.SetContent(img)
 	w.Show()
 	pw.w = w
