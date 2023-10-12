@@ -7,9 +7,7 @@ import (
 	"github.com/panmari/gort/films"
 )
 
-// Create returns a new preview window. Clients need to call
-// fyne.CurrentApp().Driver().Run()
-// to enter the application loop.
+// Create returns a dummy preview window. It does nothing.
 func Create(film films.Film) *previewWindow {
 	pw := previewWindow{film: film}
 	return &pw
