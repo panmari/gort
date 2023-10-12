@@ -35,3 +35,7 @@ The CPU profile can then be analyzed using
 
 And then typing e.g. `web` for getting an overview or the name of a method to see details. Most performance impacting
 packages have performance tests of some sort; to run them just replace `renderer/` with the package you want to test. 
+
+## Dependencies
+
+For showing a progress window, dependencies for fyne need to be installed. See https://developer.fyne.io/started/#prerequisites.
