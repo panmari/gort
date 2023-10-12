@@ -52,7 +52,8 @@ func main() {
 		return
 	}
 	handle := renderer.StartRendering(&scene, *progressBar)
-	handle.Start()
+	done := make(chan bool)
+	go waitForRendering(&scene, handle, done)
 
 	if *previewUpdateInterval > 0*time.Second {
 		p := gui.Create(scene.Film)
@@ -64,8 +65,11 @@ func main() {
 		}()
 		fyne.CurrentApp().Driver().Run()
 	}
-	//renderer.RenderPixel(scene, 300, 300)
+	<-done
+}
 
+func waitForRendering(scene *scenes.Scene, handle *renderer.Handle, done chan bool) {
+	handle.Start()
 	renderTime := handle.Wait()
 	fmt.Printf("Render time: %s\n", renderTime)
 	scene.Film.WriteToPng(scene.Filename)
@@ -79,4 +83,6 @@ func main() {
 		f.Close()
 		return
 	}
+	//renderer.RenderPixel(scene, 300, 300)
+	done <- true
 }
