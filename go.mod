@@ -4,7 +4,6 @@ go 1.14
 
 require (
 	fyne.io/fyne v1.4.3
-	github.com/VividCortex/ewma v1.2.0 // indirect
 	github.com/barnex/fmath v0.0.0-20150108074215-ec9671f295c2
 	github.com/cheggaaa/pb/v3 v3.1.4
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
@@ -18,6 +17,6 @@ require (
 	github.com/srwiley/rasterx v0.0.0-20220730225603-2ab79fcdd4ef // indirect
 	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/ungerik/go3d v0.0.0-20220309204530-55ced4bcb334
-	golang.org/x/image v0.11.0 // indirect
-	golang.org/x/net v0.14.0 // indirect
+	golang.org/x/image v0.13.0 // indirect
+	golang.org/x/net v0.17.0 // indirect
 )
