@@ -66,6 +66,7 @@ func main() {
 		fyne.CurrentApp().Driver().Run()
 	}
 	<-done
+	// TODO(panmari): Call p.Update() once done to immediately update the screen.
 }
 
 func waitForRendering(scene *scenes.Scene, handle *renderer.Handle, done chan bool) {

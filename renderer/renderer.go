@@ -12,8 +12,10 @@ import (
 	"github.com/ungerik/go3d/vec2"
 )
 
-const taskSize = 64
+// taskWindowSize is the maximum size of a window that a task will render.
+const taskWindowSize = 64
 
+// Handle encapsulates all structures necessary for rendering.
 type Handle struct {
 	started, finished time.Time
 	tasks             []task
@@ -23,6 +25,7 @@ type Handle struct {
 	bar util.AbstractProgressBar
 }
 
+// Start initializes the rendering process, creating tasks for parts of the image.
 func (h *Handle) Start() {
 	h.started = time.Now()
 	h.wg.Add(len(h.tasks))
@@ -60,10 +63,14 @@ func StartRendering(scene *scenes.Scene, enableProgressbar bool) *Handle {
 }
 
 func createTasks(scene *scenes.Scene) []task {
-	tasks := make([]task, 0, scene.Film.GetWidth()*scene.Film.GetHeight()/(taskSize*taskSize)+1)
-	for x := 0; x < scene.Film.GetWidth(); x += taskSize {
-		for y := 0; y < scene.Film.GetHeight(); y += taskSize {
-			tasks = append(tasks, task{scene: scene, minX: x, minY: y})
+	tasks := make([]task, 0, scene.Film.GetWidth()*scene.Film.GetHeight()/(taskWindowSize*taskWindowSize)+1)
+	for x := 0; x < scene.Film.GetWidth(); x += taskWindowSize {
+		for y := 0; y < scene.Film.GetHeight(); y += taskWindowSize {
+			tasks = append(tasks, task{scene: scene,
+				minX: x,
+				maxX: x + taskWindowSize,
+				minY: y,
+				maxY: y + taskWindowSize})
 		}
 	}
 	// Re-order tasks so the center of the image is rendered first.
@@ -78,16 +85,17 @@ func createTasks(scene *scenes.Scene) []task {
 
 func worker(taskChan <-chan task, wg *sync.WaitGroup, bar util.AbstractProgressBar) {
 	for t := range taskChan {
-		maxX := util.Min(t.minX+taskSize, t.scene.Film.GetWidth())
-		maxY := util.Min(t.minY+taskSize, t.scene.Film.GetHeight())
+		// TODO(panmari): Move this to task construction.
+		maxX := util.Min(t.maxX, t.scene.Film.GetWidth())
+		maxY := util.Min(t.maxY, t.scene.Film.GetHeight())
 		renderWindow(t.scene, t.minX, int(maxX), t.minY, int(maxY), bar)
 		wg.Done()
 	}
 }
 
 type task struct {
-	scene      *scenes.Scene
-	minX, minY int
+	scene                  *scenes.Scene
+	minX, maxX, minY, maxY int
 }
 
 // renderWindow renders all pixels in the rectangle ((left, bottom), (top, right)) of the given scene.
