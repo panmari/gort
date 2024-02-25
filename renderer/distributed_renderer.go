@@ -23,7 +23,7 @@ func handleConnection(conn net.Conn) {
 	log.Println("Received scene ", s.Filename)
 	log.Println("Start rendering...")
 	start := time.Now()
-	StartRendering(s, false, 0*time.Second)
+	StartRendering(s, false)
 	duration := time.Since(start)
 	log.Println("Finished rendering in", duration.String())
 	encoder := gob.NewEncoder(conn)

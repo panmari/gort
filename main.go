@@ -8,6 +8,8 @@ import (
 	"runtime/pprof"
 	"time"
 
+	"fyne.io/fyne/v2"
+	"github.com/panmari/gort/gui"
 	"github.com/panmari/gort/renderer"
 	"github.com/panmari/gort/scenes"
 )
@@ -47,23 +49,41 @@ func main() {
 
 	if *startClient {
 		renderer.RenderOnServer(&scene)
-	} else {
-		start := time.Now()
-		renderer.StartRendering(&scene, *progressBar, *previewUpdateInterval)
-		//renderer.RenderPixel(scene, 300, 300)
-
-		duration := time.Since(start)
-		fmt.Printf("Render time: %s\n", duration.String())
-		scene.Film.WriteToPng(scene.Filename)
-		fmt.Printf("Wrote result to to %s\n", scene.Filename)
-		if *memprofile != "" {
-			f, err := os.Create(*memprofile)
-			if err != nil {
-				log.Fatal(err)
-			}
-			pprof.WriteHeapProfile(f)
-			f.Close()
-			return
-		}
+		return
 	}
+	handle := renderer.StartRendering(&scene, *progressBar)
+	done := make(chan bool)
+	go waitForRendering(&scene, handle, done)
+
+	if *previewUpdateInterval > 0*time.Second {
+		p := gui.Create(scene.Film)
+		go func() {
+			for {
+				time.Sleep(*previewUpdateInterval)
+				p.Update()
+			}
+		}()
+		fyne.CurrentApp().Driver().Run()
+	}
+	<-done
+	// TODO(panmari): Call p.Update() once done to immediately update the screen.
+}
+
+func waitForRendering(scene *scenes.Scene, handle *renderer.Handle, done chan bool) {
+	handle.Start()
+	renderTime := handle.Wait()
+	fmt.Printf("Render time: %s\n", renderTime)
+	scene.Film.WriteToPng(scene.Filename)
+	fmt.Printf("Wrote result to to %s\n", scene.Filename)
+	if *memprofile != "" {
+		f, err := os.Create(*memprofile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		pprof.WriteHeapProfile(f)
+		f.Close()
+		return
+	}
+	//renderer.RenderPixel(scene, 300, 300)
+	done <- true
 }
