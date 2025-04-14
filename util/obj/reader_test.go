@@ -2,9 +2,10 @@ package obj
 
 import (
 	"bufio"
-	"github.com/ungerik/go3d/vec3"
 	"strings"
 	"testing"
+
+	"github.com/ungerik/go3d/vec3"
 )
 
 func TestParseVertex(t *testing.T) {
@@ -65,7 +66,7 @@ func TestParseFacePointNoTc(t *testing.T) {
 func TestParseFace(t *testing.T) {
 	o := Data{}
 	line := "f 1/2/3 5/6/7 11/12/13"
-	o.InsertLine(line)
+	o.InsertLine([]byte(line))
 	if n := len(o.Faces); n != 1 {
 		t.Error("Not correct amount of faces:", n)
 	}
@@ -84,7 +85,7 @@ func TestParseFace(t *testing.T) {
 func TestParseQuadrangleFace(t *testing.T) {
 	o := Data{}
 	line := "f 1/2/3 5/6/7 11/12/13 21/22/23"
-	o.InsertLine(line)
+	o.InsertLine([]byte(line))
 	if len(o.Faces) != 2 {
 		t.Fatal("Quadrangle should have 2 faces, instead:", len(o.Faces))
 	}
@@ -114,10 +115,10 @@ const EPSILON = 1e-6
 
 func TestNormalInterpolation(t *testing.T) {
 	o := Data{}
-	o.InsertLine("f 1/1 2/2 3/3 ")
-	o.InsertLine("v 170.897228 77.953877 -1.212034")
-	o.InsertLine("v 170.893054 198.184678 -0.928379")
-	o.InsertLine("v 173.441402 79.129056 -1.212072")
+	o.InsertLine([]byte("f 1/1 2/2 3/3 "))
+	o.InsertLine([]byte("v 170.897228 77.953877 -1.212034"))
+	o.InsertLine([]byte("v 170.893054 198.184678 -0.928379"))
+	o.InsertLine([]byte("v 173.441402 79.129056 -1.212072"))
 	if got := len(o.Normals); got != 0 {
 		t.Fatalf("Normals before interpolating: got %d, want 0", got)
 	}
@@ -141,7 +142,7 @@ func BenchmarkParseLine(b *testing.B) {
 	line := "v 3.4 1.2 4.1"
 	for i := 0; i < b.N; i++ {
 		o := Data{}
-		o.InsertLine(line)
+		o.InsertLine([]byte(line))
 	}
 }
 
