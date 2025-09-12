@@ -7,7 +7,6 @@ import (
 	"math"
 	"os"
 	"strconv"
-	"strings"
 
 	"github.com/ungerik/go3d/vec2"
 	"github.com/ungerik/go3d/vec3"
@@ -28,7 +27,7 @@ func Read(fileName string, scale float32) *Data {
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		data.InsertLine(scanner.Text())
+		data.InsertLine(scanner.Bytes())
 	}
 	if scanner.Err() != nil {
 		panic(scanner.Err())
@@ -71,8 +70,8 @@ type Data struct {
 	max          vec3.T
 }
 
-func (o *Data) InsertLine(line string) {
-	scanner := bufio.NewScanner(strings.NewReader(line))
+func (o *Data) InsertLine(line []byte) {
+	scanner := bufio.NewScanner(bytes.NewReader(line))
 	scanner.Split(bufio.ScanWords)
 	scanner.Scan()
 	switch scanner.Text() {
@@ -102,7 +101,7 @@ func (o *Data) InsertLine(line string) {
 	case "f":
 		o.Faces = append(o.Faces, parseFaces(scanner)...)
 	default:
-		if len(strings.TrimSpace(line)) > 0 {
+		if len(line) > 0 {
 			//log.Printf("Unknown token (ignored): %s", line)
 		}
 	}
@@ -192,16 +191,15 @@ func parseFacePoint(data []byte) (int, int, int) {
 
 	vertex_id := parseId(scanner)
 	texCoord_id := parseId(scanner)
-	normal_id := -1
-	if strings.Count(string(data), "/") == 2 {
-		normal_id = parseId(scanner)
-	}
+	normal_id := parseId(scanner)
 
 	return vertex_id, texCoord_id, normal_id
 }
 
 func parseId(scanner *bufio.Scanner) int {
-	scanner.Scan()
+	if !scanner.Scan() {
+		return -1
+	}
 	t := scanner.Text()
 	if t == "" {
 		return -1
